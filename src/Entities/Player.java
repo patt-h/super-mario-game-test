@@ -69,8 +69,7 @@ public class Player extends Entity{
         if (direction == RIGHT) {
             if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
                 g.drawImage(animations[accurateAnimationRow][animationIndex],(int)x-2,(int)y+12,120,120,null);
-            }
-            if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
+            } else if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
                 g.drawImage(img, (int)x-71, (int)y, 120, 120, null);
             }
             else {
@@ -82,7 +81,8 @@ public class Player extends Entity{
                 g.drawImage(img,(int)x-69,(int)y+12,120,120,null);
             } else if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x, (int)y, 120, 120, null);
-            } else {
+            }
+            else {
                 g.drawImage(img, (int)x-71, (int)y, 120, 120, null);
             }
         }
