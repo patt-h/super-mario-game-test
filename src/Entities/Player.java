@@ -237,6 +237,7 @@ public class Player extends Entity{
                 ducking = true;
                 left = false;
                 right = false;
+                System.out.println("huj");
             }
         }
     }
