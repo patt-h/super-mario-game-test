@@ -29,21 +29,8 @@ public class Player extends Entity{
     private boolean left, up, right, down, jump, duck, sprint;
     private int accurateAnimationRow;
 
-
-    private int tileX, tileY;
-    private float offX, offY;
-    private float fallDistance = 0;
-    private float fallSpeed = 10;
-
-    Playing playing = new Playing();
-
-
     public Player(int x, int y) {
         super(x, y);
-        this.tileX = x;
-        this.tileY = y;
-        this.offX = 0;
-        this.offY = 0;
         loadAnimation();
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
@@ -160,8 +147,6 @@ public class Player extends Entity{
         }
     }
 
-
-
     private void updatePosition() {
         moving = false;
         jumping = false;
@@ -172,7 +157,6 @@ public class Player extends Entity{
         Playing.checkCollisions();
 
         if (!Playing.collision) {
-
             //MOVING LEFT
             if (left && !right && !duck) {
                 if (rightPlayerSprint > minSprint) {
