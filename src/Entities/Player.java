@@ -17,7 +17,7 @@ public class Player extends Entity{
     private BufferedImage[][] animations;
     private int animationTick, animationIndex, animationSpeed = 25;
     private float playerSpeed = 1.0f;
-    private float minSprint = 1.0f;
+    public static float minSprint = 1.0f;
     private float maxSprint = 2.0f;
     public static float leftPlayerSprint;
     public static float rightPlayerSprint;

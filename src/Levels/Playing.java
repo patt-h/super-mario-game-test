@@ -52,6 +52,13 @@ public class Playing  {
                 tileNum2 = lvl[entityBottomRow][entityRightCol];
                 tileNum3 = lvl[entityBottomRow][entityLeftCol];
 
+                //COLLISION WHILE SLIDING
+                if (Player.leftPlayerSprint > Player.minSprint) {
+                    if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) || Player.x < 0) {
+                        Player.leftPlayerSprint = Player.minSprint;
+                        collision = true;
+                    }
+                }
                 //RIGHT SIDE OF MAP
                 if (Entity.x + Entity.hitbox.width >= 958) {
                     Player.rightPlayerSprint = 1;
@@ -86,6 +93,13 @@ public class Playing  {
                 tileNum2 = lvl[entityBottomRow][entityLeftCol];
                 tileNum3 = lvl[entityBottomRow][entityRightCol];
 
+                //COLLISION WHILE SLIDING
+                if (Player.rightPlayerSprint > Player.minSprint) {
+                    if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) ) {
+                        Player.rightPlayerSprint = Player.minSprint;
+                        collision = true;
+                    }
+                }
                 //LEFT SIDE OF MAP
                 if (Entity.x < 0) {
                     Player.rightPlayerSprint = 1;
