@@ -18,7 +18,6 @@ public class Playing  {
     }
 
     public void render(Graphics g) {
-
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 int id = lvl[i][j];
@@ -30,64 +29,81 @@ public class Playing  {
     public static void checkCollisions() {
         collision = false;
 
-        int entityLeftX = (int) Entity.x;
+        int entityLeftX = (int)Entity.x;
         int entityRightX = (int)Entity.x + (int)Entity.hitbox.width;
         int entityTopY = (int)Entity.y;
-        int entityBottomY = (int)Entity.y + (int)Entity.hitbox.height;
+        int entityBottomY = (int)Entity.y + (int)Entity.hitbox.height -3;
 
         int entityLeftCol = entityLeftX / Game.TILES_SIZE;
         int entityRightCol = entityRightX / Game.TILES_SIZE;
         int entityTopRow = entityTopY / Game.TILES_SIZE;
         int entityBottomRow = entityBottomY / Game.TILES_SIZE;
 
-        int tileNum1, tileNum2, tileNum3, tileNum4;
-
+        int tileNum1, tileNum2, tileNum3;
 
         switch (Entity.direction) {
             case Directions.RIGHT -> {
                 tileNum1 = lvl[entityTopRow][entityRightCol];
                 tileNum2 = lvl[entityBottomRow][entityRightCol];
+                tileNum3 = lvl[entityBottomRow][entityLeftCol];
 
-                if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                //RIGHT SIDE OF MAP
+                if (Entity.x + Entity.hitbox.width >= 958) {
                     Player.rightPlayerSprint = 1;
                     Player.leftPlayerSprint = 1;
                     collision = true;
                 }
-
+                //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
+                if (Player.inAir && Player.airSpeed > 0 && levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
+                    Player.y = entityBottomRow*48 - 88;
+                    Player.inAir = false;
+                }
+                //COLLISION WHILE WALKING AND JUMPING
+                if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                    if (Player.inAir && Player.airSpeed > 0) {
+                        Player.y = entityBottomRow*48 - 88;
+                        Player.inAir = false;
+                    }
+                    Player.rightPlayerSprint = 1;
+                    Player.leftPlayerSprint = 1;
+                    collision = true;
+                }
+                //FALLING
+                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)) {
+                    Player.inAir = true;
+                }
             }
             case Directions.LEFT -> {
                 tileNum1 = lvl[entityTopRow][entityLeftCol];
                 tileNum2 = lvl[entityBottomRow][entityLeftCol];
+                tileNum3 = lvl[entityBottomRow][entityRightCol];
 
+                //LEFT SIDE OF MAP
                 if (Entity.x < 0) {
                     Player.rightPlayerSprint = 1;
                     Player.leftPlayerSprint = 1;
                     collision = true;
                 }
-
+                //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
+                if (Player.inAir && Player.airSpeed > 0 && levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
+                    Player.y = entityBottomRow*48 - 88;
+                    Player.inAir = false;
+                }
+                //COLLISION WHILE WALKING AND JUMPING
                 if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                    if (Player.inAir && Player.airSpeed > 0) {
+                        Player.y = entityBottomRow*48 - 88;
+                        Player.inAir = false;
+                    }
                     Player.rightPlayerSprint = 1;
                     Player.leftPlayerSprint = 1;
                     collision = true;
                 }
-            }
-            case Directions.UP -> {
-
-                tileNum1 = lvl[entityBottomRow][entityRightCol];
-                tileNum2 = lvl[entityBottomRow][entityLeftCol];
-                tileNum3 = lvl[entityTopRow][entityRightCol];
-                tileNum4 = lvl[entityTopRow][entityLeftCol];
-
-
-
-                if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90)
-                        || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                    collision = true;
-
-                }
-
-                if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)
-                        || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90)) {
+                //FALLING
+                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)) {
+                    Player.inAir = true;
                 }
             }
         }

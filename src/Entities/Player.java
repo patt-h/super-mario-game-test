@@ -23,25 +23,32 @@ public class Player extends Entity{
     public static float rightPlayerSprint;
     private int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
-    private boolean jumping = false;
+    public static boolean jumping = false;
     private boolean ducking = false;
     public static boolean turning = false;
     private boolean left, up, right, down, jump, duck, sprint;
     private int accurateAnimationRow;
+
+    //JUMPING
+    public static float airSpeed = 0.0f;
+    private float gravity = 0.04f * Game.SCALE;
+    private float jumpSpeed = -2.25f * Game.SCALE;
+    public static boolean inAir = false;
+
 
     public Player(int x, int y) {
         super(x, y);
         loadAnimation();
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
-        hitbox.width = 15 * Game.SCALE;
+        hitbox.width = 11 * Game.SCALE;
         hitbox.height = 30 * Game.SCALE;
     }
 
     public void update() {
-        updatePosition();
         updateAnimationTick();
         setAnimation();
+        updatePosition();
     }
     public void render(Graphics g) {
         //MIRROR REFLECTION
@@ -55,10 +62,10 @@ public class Player extends Entity{
             if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
                 g.drawImage(animations[accurateAnimationRow][animationIndex],(int)x-2,(int)y+12,120,120,null);
             } else if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                g.drawImage(img, (int)x-71, (int)y, 120, 120, null);
+                g.drawImage(img, (int)x-71, (int)y+3, 120, 120, null);
             }
             else {
-                g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x, (int)y, 120, 120, null);
+                g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x-5, (int)y, 120, 120, null);
             }
         }
         else if (direction == LEFT) {
@@ -68,7 +75,8 @@ public class Player extends Entity{
                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x, (int)y, 120, 120, null);
             }
             else {
-                g.drawImage(img, (int)x-71, (int)y, 120, 120, null);
+                //g.drawImage(img, (int)x-71, (int)y, 120, 120, null);
+                g.drawImage(img, (int)x-81, (int)y, 120, 120, null);
             }
         }
 
@@ -154,6 +162,7 @@ public class Player extends Entity{
         sprintCounter();
         Playing.checkCollisions();
 
+
         if (!Playing.collision) {
             //MOVING LEFT
             if (left && !right && !duck) {
@@ -205,11 +214,6 @@ public class Player extends Entity{
                     moving = true;
                 }
             }
-            //JUMPING
-            if (jump) {
-                jumping = true;
-            }
-
             //MOVING UP ON LADDER OR PIPE
             if (up && !duck) {
                 moving = true;
@@ -221,6 +225,24 @@ public class Player extends Entity{
                 right = false;
             }
         }
+        //JUMPING
+        if (jump) {
+            jump();
+        }
+        if (inAir) {
+            y += airSpeed;
+            airSpeed += gravity;
+            jumping = true;
+            moving = false;
+        }
+    }
+
+    private void jump() {
+        if (inAir) {
+            return;
+        }
+        inAir = true;
+        airSpeed = jumpSpeed;
     }
 
     private void loadAnimation() {
@@ -286,7 +308,6 @@ public class Player extends Entity{
     }
 
     public void setJump(boolean jump) {
-        direction = UP;
         this.jump = jump;
     }
 

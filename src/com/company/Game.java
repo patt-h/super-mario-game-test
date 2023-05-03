@@ -24,10 +24,10 @@ public class Game implements Runnable{
     private Playing playing;
 
     public final static int TILES_DEFAULT_SIZE = 16;
-    public final static float SCALE = 3.0f;
+    public final static int SCALE = 3;
     public final static int TILES_IN_WIDTH = 20;
     public final static int TILES_IN_HEIGHT = 15;
-    public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+    public final static int TILES_SIZE = TILES_DEFAULT_SIZE * SCALE;
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
@@ -46,7 +46,7 @@ public class Game implements Runnable{
 
     private void initClasses() {
         levelManager = new LevelManager();
-        player = new Player(50,533);
+        player = new Player(50,536);
         playing = new Playing();
 
     }
@@ -57,8 +57,6 @@ public class Game implements Runnable{
     }
     public void update() {
         player.update();
-
-
     }
 
     public void render(Graphics g) {
