@@ -36,8 +36,6 @@ public class Player extends Entity{
         hitbox = new Rectangle2D.Float();
         hitbox.width = 15 * Game.SCALE;
         hitbox.height = 30 * Game.SCALE;
-
-
     }
 
     public void update() {

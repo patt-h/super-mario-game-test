@@ -1,11 +1,9 @@
 package Input;
 
-import Entities.Player;
 import com.company.GamePanel;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import static Utilities.Constants.Directions.*;
 
 public class KeyInputs implements KeyListener {
     private GamePanel gamePanel;
