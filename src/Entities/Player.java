@@ -31,7 +31,7 @@ public class Player extends Entity{
 
     //JUMPING
     public static float airSpeed = 0.0f;
-    private float gravity = 0.04f * Game.SCALE;
+    public static float gravity = 0.04f * Game.SCALE;
     private float jumpSpeed = -2.25f * Game.SCALE;
     public static boolean inAir = false;
 
@@ -60,7 +60,7 @@ public class Player extends Entity{
 
         if (direction == RIGHT) {
             if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
-                g.drawImage(animations[accurateAnimationRow][animationIndex],(int)x-2,(int)y+12,120,120,null);
+                g.drawImage(animations[accurateAnimationRow][animationIndex],(int)x-17,(int)y+12,120,120,null);
             } else if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
                 g.drawImage(img, (int)x-71, (int)y+3, 120, 120, null);
             }
@@ -75,13 +75,12 @@ public class Player extends Entity{
                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x, (int)y, 120, 120, null);
             }
             else {
-                //g.drawImage(img, (int)x-71, (int)y, 120, 120, null);
                 g.drawImage(img, (int)x-81, (int)y, 120, 120, null);
             }
         }
 
         g.setColor(Color.RED);
-        g.drawRect((int)x, (int)y, (int)hitbox.width, (int)(hitbox.height));
+        //g.drawRect((int)x, (int)y, (int)hitbox.width, (int)(hitbox.height));
     }
 
     private void updateAnimationTick() {
@@ -131,10 +130,18 @@ public class Player extends Entity{
         if (direction == LEFT || direction == RIGHT) {
             //ADDING UP SPRINT VALUE
             if ((sprint && leftPlayerSprint <= maxSprint) && (left)) {
-                leftPlayerSprint += 0.005f;
+                if (inAir) {
+                    leftPlayerSprint += 0.001f;
+                } else {
+                    leftPlayerSprint += 0.01f;
+                }
             }
             if ((sprint && rightPlayerSprint <= maxSprint) && (right)) {
-                rightPlayerSprint += 0.005f;
+                if (inAir) {
+                    rightPlayerSprint += 0.001f;
+                } else {
+                    rightPlayerSprint += 0.01f;
+                }
             }
             //SLOWING DOWN WHEN NOTHING IS PRESSED AND MARIO SPRINTED
             if (direction == LEFT && (!sprint && leftPlayerSprint > minSprint) || (!left && !right)) {
@@ -218,12 +225,6 @@ public class Player extends Entity{
             if (up && !duck) {
                 moving = true;
             }
-            //DUCKING
-            else if (duck && !jump) {
-                ducking = true;
-                left = false;
-                right = false;
-            }
         }
         //JUMPING
         if (jump) {
@@ -234,6 +235,17 @@ public class Player extends Entity{
             airSpeed += gravity;
             jumping = true;
             moving = false;
+            if (direction == LEFT) {
+                rightPlayerSprint = minSprint;
+            } else if (direction == RIGHT) {
+                leftPlayerSprint = minSprint;
+            }
+        }
+        //DUCKING
+        if (duck && !jump) {
+            ducking = true;
+            left = false;
+            right = false;
         }
     }
 

@@ -8,6 +8,7 @@ import java.io.InputStream;
 public class LoadSave {
     public static final String PLAYER_ATLAS = "sheet.png";
     public static final String LEVEL_ATLAS = "tiles.png";
+    public static final String BACKGROUND_IMG = "background1.png";
 
     public static BufferedImage GetSpriteAtlas(String fileName) {
         BufferedImage img = null;

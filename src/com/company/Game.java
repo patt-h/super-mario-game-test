@@ -1,7 +1,6 @@
 package com.company;
 
 import Entities.Player;
-import Levels.LevelBuilder;
 import Levels.LevelManager;
 
 import javax.swing.*;

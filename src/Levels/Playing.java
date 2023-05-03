@@ -3,21 +3,26 @@ package Levels;
 import Entities.Entity;
 import Entities.Player;
 import Utilities.Constants.Directions;
+import Utilities.LoadSave;
 import com.company.Game;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Playing  {
     static private int[][] lvl;
     static private LevelManager levelManager;
     public static boolean collision;
+    private BufferedImage backgroundImg;
 
     public Playing() {
         lvl = LevelBuilder.getLevelData();
         levelManager = new LevelManager();
+        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
     }
 
     public void render(Graphics g) {
+        g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 int id = lvl[i][j];
@@ -55,12 +60,14 @@ public class Playing  {
                 }
                 //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
                 if (Player.inAir && Player.airSpeed > 0 && levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
+                    Player.airSpeed = 0;
                     Player.y = entityBottomRow*48 - 88;
                     Player.inAir = false;
                 }
                 //COLLISION WHILE WALKING AND JUMPING
-                if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                else if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
                     if (Player.inAir && Player.airSpeed > 0) {
+                        Player.airSpeed = 0;
                         Player.y = entityBottomRow*48 - 88;
                         Player.inAir = false;
                     }
@@ -87,12 +94,14 @@ public class Playing  {
                 }
                 //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
                 if (Player.inAir && Player.airSpeed > 0 && levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
+                    Player.airSpeed = 0;
                     Player.y = entityBottomRow*48 - 88;
                     Player.inAir = false;
                 }
                 //COLLISION WHILE WALKING AND JUMPING
-                if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                else if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
                     if (Player.inAir && Player.airSpeed > 0) {
+                        Player.airSpeed = 0;
                         Player.y = entityBottomRow*48 - 88;
                         Player.inAir = false;
                     }
