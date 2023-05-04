@@ -31,6 +31,7 @@ public class Playing  {
         }
     }
 
+
     public static void checkCollisions() {
         collision = false;
 
@@ -44,14 +45,21 @@ public class Playing  {
         int entityTopRow = entityTopY / Game.TILES_SIZE;
         int entityBottomRow = entityBottomY / Game.TILES_SIZE;
 
-        int tileNum1, tileNum2, tileNum3;
+        int tileNum1, tileNum2, tileNum3, tileNum4;
 
         switch (Entity.direction) {
             case Directions.RIGHT -> {
                 tileNum1 = lvl[entityTopRow][entityRightCol];
                 tileNum2 = lvl[entityBottomRow][entityRightCol];
                 tileNum3 = lvl[entityBottomRow][entityLeftCol];
+                tileNum4 = lvl[entityTopRow][entityLeftCol];
 
+                //RIGHT SIDE OF MAP
+                if (Entity.x + Entity.hitbox.width >= 958) {
+                    Player.rightPlayerSprint = 1;
+                    Player.leftPlayerSprint = 1;
+                    collision = true;
+                }
                 //COLLISION WHILE SLIDING
                 if (Player.leftPlayerSprint > Player.minSprint) {
                     if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) || Player.x < 0) {
@@ -59,10 +67,16 @@ public class Playing  {
                         collision = true;
                     }
                 }
-                //RIGHT SIDE OF MAP
-                if (Entity.x + Entity.hitbox.width >= 958) {
-                    Player.rightPlayerSprint = 1;
-                    Player.leftPlayerSprint = 1;
+                //COLLISION WHILE HITTING CEILING
+                if (Player.inAir && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
+                    //MOVING BACK WHEN STAYS NEXT TO STRUCTURE THAT IS HIGHER THAN PLAYER
+                    if (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                        Player.inAir = false;
+                        Player.x -= 0.5f;
+                    }
+                    //FALLING DOWN WHEN HIT CEILING
+                    Player.airSpeed = 0;
+                    Player.y += 1;
                     collision = true;
                 }
                 //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
@@ -70,14 +84,21 @@ public class Playing  {
                     Player.airSpeed = 0;
                     Player.y = entityBottomRow*48 - 88;
                     Player.inAir = false;
+                    collision = true;
                 }
                 //COLLISION WHILE WALKING AND JUMPING
                 else if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                    //MOVING BACK WHEN JUMPING NEXT TO ONE BLOCK STRUCTURE, SO PLAYER WON'T LAND ON NEXT BLOCK IF DIDN'T MOVE
+                    if (Player.inAir && levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                        Player.x -= 0.5f;
+                    }
+                    //LANDING ON THE FLOOR
                     if (Player.inAir && Player.airSpeed > 0) {
                         Player.airSpeed = 0;
                         Player.y = entityBottomRow*48 - 88;
                         Player.inAir = false;
                     }
+                    //RESETTING SPRINT VALUES WHEN SPRINTING NEXT TO WALL
                     Player.rightPlayerSprint = 1;
                     Player.leftPlayerSprint = 1;
                     collision = true;
@@ -92,7 +113,14 @@ public class Playing  {
                 tileNum1 = lvl[entityTopRow][entityLeftCol];
                 tileNum2 = lvl[entityBottomRow][entityLeftCol];
                 tileNum3 = lvl[entityBottomRow][entityRightCol];
+                tileNum4 = lvl[entityTopRow][entityRightCol];
 
+                //LEFT SIDE OF MAP
+                if (Entity.x < 0) {
+                    Player.rightPlayerSprint = 1;
+                    Player.leftPlayerSprint = 1;
+                    collision = true;
+                }
                 //COLLISION WHILE SLIDING
                 if (Player.rightPlayerSprint > Player.minSprint) {
                     if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) ) {
@@ -100,10 +128,16 @@ public class Playing  {
                         collision = true;
                     }
                 }
-                //LEFT SIDE OF MAP
-                if (Entity.x < 0) {
-                    Player.rightPlayerSprint = 1;
-                    Player.leftPlayerSprint = 1;
+                //COLLISI0N WHILE HITTING CEILING
+                if (Player.inAir && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
+                    //MOVING BACK WHEN STAYS NEXT TO STRUCTURE THAT IS HIGHER THAN PLAYER
+                    if (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                        Player.inAir = false;
+                        Player.x += 0.5f;
+                    }
+                    //FALLING DOWN WHEN HIT CEILING
+                    Player.airSpeed = 0;
+                    Player.y += 1;
                     collision = true;
                 }
                 //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
@@ -114,11 +148,17 @@ public class Playing  {
                 }
                 //COLLISION WHILE WALKING AND JUMPING
                 else if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                    //MOVING BACK WHEN JUMPING NEXT TO ONE BLOCK STRUCTURE, SO PLAYER WON'T LAND ON NEXT BLOCK IF DIDN'T MOVE
+                    if (Player.inAir && levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
+                        Player.x += 0.5f;
+                    }
+                    //LANDING ON THE FLOOR
                     if (Player.inAir && Player.airSpeed > 0) {
                         Player.airSpeed = 0;
                         Player.y = entityBottomRow*48 - 88;
                         Player.inAir = false;
                     }
+                    //RESETTING SPRINT VALUES WHEN SPRINTING NEXT TO WALL
                     Player.rightPlayerSprint = 1;
                     Player.leftPlayerSprint = 1;
                     collision = true;
@@ -130,6 +170,5 @@ public class Playing  {
                 }
             }
         }
-
     }
 }
