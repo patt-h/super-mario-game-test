@@ -21,7 +21,8 @@ public class Player extends Entity{
     private float maxSprint = 2.0f;
     public static float leftPlayerSprint;
     public static float rightPlayerSprint;
-    private int playerAction = BIG_MARIO_IDLE;
+    public static int playerStatus = BIG;
+    public int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
     public static boolean jumping = false;
     private boolean ducking = false;
@@ -36,7 +37,7 @@ public class Player extends Entity{
     public static boolean inAir = false;
 
 
-    public Player(int x, int y) {
+    public Player(float x, float y) {
         super(x, y);
         loadAnimation();
         direction = RIGHT;
@@ -114,16 +115,26 @@ public class Player extends Entity{
     }
 
     private void setAnimation() {
-        if (moving) {
-            playerAction = BIG_MARIO_RUN;
-        } else if (jumping) {
-            playerAction = BIG_MARIO_JUMP;
-        } else if (ducking) {
-            playerAction = BIG_MARIO_DUCK;
-        } else if (turning) {
-            playerAction = BIG_MARIO_TURN;
+//        if (playerStatus == SMALL) {
+//            if (moving) {
+//                playerAction = SMALL_MARIO_RUN;
+//            } else if (jumping) {
+//                playerAction = SMALL_MARIO_JUMP;
+//            } else if (turning) {
+//                playerAction = BIG_MARIO_TURN;
+//            } else playerAction = SMALL_MARIO_IDLE;
+//        }
+        if (playerStatus == BIG) {
+            if (moving) {
+                playerAction = BIG_MARIO_RUN;
+            } else if (jumping) {
+                playerAction = BIG_MARIO_JUMP;
+            } else if (ducking) {
+                playerAction = BIG_MARIO_DUCK;
+            } else if (turning) {
+                playerAction = BIG_MARIO_TURN;
+            } else playerAction = BIG_MARIO_IDLE;
         }
-        else playerAction = BIG_MARIO_IDLE;
     }
 
     private void sprintCounter() {
@@ -145,10 +156,10 @@ public class Player extends Entity{
             }
             //SLOWING DOWN WHEN NOTHING IS PRESSED AND MARIO SPRINTED
             if (direction == LEFT && (!sprint && leftPlayerSprint > minSprint) || (!left && !right)) {
-                leftPlayerSprint -= 0.01f;
+                leftPlayerSprint -= 0.02f;
             }
             if (direction == RIGHT && (!sprint && rightPlayerSprint > minSprint) || (!left && !right)) {
-                rightPlayerSprint -= 0.01f;
+                rightPlayerSprint -= 0.02f;
             }
             //PREVIOUS VALUE WHEN PLAYER SPRINT IS BELOW ZERO
             if (leftPlayerSprint < minSprint) {

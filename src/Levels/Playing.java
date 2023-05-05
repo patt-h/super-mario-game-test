@@ -3,17 +3,21 @@ package Levels;
 import Entities.Entity;
 import Entities.Player;
 import Utilities.Constants.Directions;
+import static Utilities.Constants.PlayerConstants.SMALL;
 import Utilities.LoadSave;
 import com.company.Game;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Playing  {
+public class Playing {
     static private int[][] lvl;
     static private LevelManager levelManager;
     public static boolean collision;
     private BufferedImage backgroundImg;
+    static private  boolean moved = false;
+    static private int movedX, movedY;
+    private float counter;
 
     public Playing() {
         lvl = LevelBuilder.getLevelData();
@@ -29,8 +33,18 @@ public class Playing  {
                 g.drawImage(levelManager.sprites.get(id),j*48,i*48,48,48,null);
             }
         }
+        if (moved) {
+            g.drawImage(levelManager.sprites.get(190),movedX,movedY-5,48,48,null);
+            lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 90;
+            counter += 1;
+            if (counter >= 20) {
+                g.drawImage(levelManager.sprites.get(190),movedX,movedY+5,48,48,null);
+                lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 190;
+                counter = 0;
+                moved = false;
+            }
+        }
     }
-
 
     public static void checkCollisions() {
         collision = false;
@@ -53,6 +67,40 @@ public class Playing  {
                 tileNum2 = lvl[entityBottomRow][entityRightCol];
                 tileNum3 = lvl[entityBottomRow][entityLeftCol];
                 tileNum4 = lvl[entityTopRow][entityLeftCol];
+
+                //HITTING BRICKS
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) {
+                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
+                    if (Player.playerStatus == SMALL) {
+                        moved = true;
+                        movedX = entityRightCol * 48;
+                        movedY = entityTopRow * 48;
+                        System.out.println(Player.playerStatus);
+                    } else {
+                        lvl[entityTopRow][entityRightCol] = 90;
+                    }
+                    collision = true;
+                }
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
+                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
+                    if (Player.playerStatus == SMALL) {
+                        moved = true;
+                        movedX = entityLeftCol * 48;
+                        movedY = entityTopRow * 48;
+                    } else {
+                        lvl[entityTopRow][entityLeftCol] = 90;
+                    }
+                    collision = true;
+                }
+                //HITTING PRIZE BLOCK
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+                    lvl[entityTopRow][entityRightCol] = 152;
+                    collision = true;
+                }
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                    lvl[entityTopRow][entityLeftCol] = 152;
+                    collision = true;
+                }
 
                 //RIGHT SIDE OF MAP
                 if (Entity.x + Entity.hitbox.width >= 958) {
@@ -114,6 +162,39 @@ public class Playing  {
                 tileNum2 = lvl[entityBottomRow][entityLeftCol];
                 tileNum3 = lvl[entityBottomRow][entityRightCol];
                 tileNum4 = lvl[entityTopRow][entityRightCol];
+
+                //HITTING BRICKS
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) {
+                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
+                    if (Player.playerStatus == SMALL) {
+                        moved = true;
+                        movedX = entityLeftCol * 48;
+                        movedY = entityTopRow * 48;
+                    } else {
+                        lvl[entityTopRow][entityLeftCol] = 90;
+                    }
+                    collision = true;
+                }
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
+                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
+                    if (Player.playerStatus == SMALL) {
+                        moved = true;
+                        movedX = entityRightCol * 48;
+                        movedY = entityTopRow * 48;
+                    } else {
+                        lvl[entityTopRow][entityRightCol] = 90;
+                    }
+                    collision = true;
+                }
+                //HITTING PRIZE BLOCK
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+                    lvl[entityTopRow][entityLeftCol] = 152;
+                    collision = true;
+                }
+                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                    lvl[entityTopRow][entityRightCol] = 152;
+                    collision = true;
+                }
 
                 //LEFT SIDE OF MAP
                 if (Entity.x < 0) {
