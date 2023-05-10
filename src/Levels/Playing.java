@@ -18,6 +18,8 @@ public class Playing {
     static private  boolean moved = false;
     static private int movedX, movedY;
     private float counter;
+    private static float distanceX;
+    private static float distanceY;
 
     public Playing() {
         lvl = LevelBuilder.getLevelData();
@@ -102,11 +104,41 @@ public class Playing {
                     collision = true;
                 }
 
-                //RIGHT SIDE OF MAP
-                if (Entity.x + Entity.hitbox.width >= 958) {
-                    Player.rightPlayerSprint = 1;
-                    Player.leftPlayerSprint = 1;
-                    collision = true;
+                //COLLISION WHILE MOVING
+                if (levelManager.sprites.get(lvl[entityTopRow][entityRightCol+1]) != levelManager.sprites.get(90)
+                        || levelManager.sprites.get(lvl[entityBottomRow][entityRightCol+1]) != levelManager.sprites.get(90)) {
+                    distanceX = (entityRightCol+1)*Game.TILES_SIZE - entityRightX;
+                    if (distanceX <= 5) {
+                        Player.rightPlayerSprint = 1;
+                        Player.leftPlayerSprint = 1;
+                        collision = true;
+                    }
+                }
+                //COLLISION WHEN FALLING
+                if (Player.inAir
+                        && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
+                    distanceY = (entityBottomRow)*Game.TILES_SIZE - entityBottomY;
+                    if (distanceY < 0) {
+                        Player.y = entityTopRow*Game.TILES_SIZE+8;
+                        Player.inAir = false;
+                        Player.airSpeed = 0;
+                    }
+                }
+                //COLLISION WHEN JUMPING
+                if (Player.inAir && Player.airSpeed < 0
+                        && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
+                    distanceY = (entityTopRow)*Game.TILES_SIZE - entityTopY;
+                    if (distanceY < 0) {
+                        Player.y = (entityTopRow+1)*Game.TILES_SIZE;
+                        Player.airSpeed = 0;
+                    }
+                }
+                //FALLING
+                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
+                    Player.inAir = true;
                 }
                 //COLLISION WHILE SLIDING
                 if (Player.leftPlayerSprint > Player.minSprint) {
@@ -114,47 +146,6 @@ public class Playing {
                         Player.leftPlayerSprint = Player.minSprint;
                         collision = true;
                     }
-                }
-                //COLLISION WHILE HITTING CEILING
-                if (Player.inAir && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
-                    //MOVING BACK WHEN STAYS NEXT TO STRUCTURE THAT IS HIGHER THAN PLAYER
-                    if (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                        Player.inAir = false;
-                        Player.x -= 0.5f;
-                    }
-                    //FALLING DOWN WHEN HIT CEILING
-                    Player.airSpeed = 0;
-                    Player.y += 1;
-                    collision = true;
-                }
-                //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
-                if (Player.inAir && Player.airSpeed > 0 && levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
-                    Player.airSpeed = 0;
-                    Player.y = entityBottomRow*48 - 88;
-                    Player.inAir = false;
-                    collision = true;
-                }
-                //COLLISION WHILE WALKING AND JUMPING
-                else if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                    //MOVING BACK WHEN JUMPING NEXT TO ONE BLOCK STRUCTURE, SO PLAYER WON'T LAND ON NEXT BLOCK IF DIDN'T MOVE
-                    if (Player.inAir && levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                        Player.x -= 0.5f;
-                    }
-                    //LANDING ON THE FLOOR
-                    if (Player.inAir && Player.airSpeed > 0) {
-                        Player.airSpeed = 0;
-                        Player.y = entityBottomRow*48 - 88;
-                        Player.inAir = false;
-                    }
-                    //RESETTING SPRINT VALUES WHEN SPRINTING NEXT TO WALL
-                    Player.rightPlayerSprint = 1;
-                    Player.leftPlayerSprint = 1;
-                    collision = true;
-                }
-                //FALLING
-                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
-                        && levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)) {
-                    Player.inAir = true;
                 }
             }
             case Directions.LEFT -> {
@@ -196,11 +187,41 @@ public class Playing {
                     collision = true;
                 }
 
-                //LEFT SIDE OF MAP
-                if (Entity.x < 0) {
-                    Player.rightPlayerSprint = 1;
-                    Player.leftPlayerSprint = 1;
-                    collision = true;
+                //COLLISION WHILE MOVING
+                if (levelManager.sprites.get(lvl[entityTopRow][entityLeftCol-1]) != levelManager.sprites.get(90)
+                        || levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol-1]) != levelManager.sprites.get(90)) {
+                    distanceX = entityLeftX - (entityLeftCol)*Game.TILES_SIZE;
+                    if (distanceX <= 5) {
+                        Player.rightPlayerSprint = 1;
+                        Player.leftPlayerSprint = 1;
+                        collision = true;
+                    }
+                }
+                //COLLISION WHEN FALLING
+                if (Player.inAir
+                        && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
+                    distanceY = (entityBottomRow)*Game.TILES_SIZE - entityBottomY;
+                    if (distanceY < 0) {
+                        Player.y = entityTopRow*Game.TILES_SIZE+8;
+                        Player.inAir = false;
+                        Player.airSpeed = 0;
+                    }
+                }
+                //COLLISION WHEN JUMPING
+                if (Player.inAir && Player.airSpeed < 0
+                        && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
+                    distanceY = (entityTopRow)*Game.TILES_SIZE - entityTopY;
+                    if (distanceY < 0) {
+                        Player.y = (entityTopRow+1)*Game.TILES_SIZE;
+                        Player.airSpeed = 0;
+                    }
+                }
+                //FALLING
+                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
+                        && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
+                    Player.inAir = true;
                 }
                 //COLLISION WHILE SLIDING
                 if (Player.rightPlayerSprint > Player.minSprint) {
@@ -208,46 +229,6 @@ public class Playing {
                         Player.rightPlayerSprint = Player.minSprint;
                         collision = true;
                     }
-                }
-                //COLLISI0N WHILE HITTING CEILING
-                if (Player.inAir && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
-                    //MOVING BACK WHEN STAYS NEXT TO STRUCTURE THAT IS HIGHER THAN PLAYER
-                    if (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                        Player.inAir = false;
-                        Player.x += 0.5f;
-                    }
-                    //FALLING DOWN WHEN HIT CEILING
-                    Player.airSpeed = 0;
-                    Player.y += 1;
-                    collision = true;
-                }
-                //CHECKING IF OPPOSITE HITBOX SIDE HAS COLLISION
-                if (Player.inAir && Player.airSpeed > 0 && levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
-                    Player.airSpeed = 0;
-                    Player.y = entityBottomRow*48 - 88;
-                    Player.inAir = false;
-                }
-                //COLLISION WHILE WALKING AND JUMPING
-                else if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                    //MOVING BACK WHEN JUMPING NEXT TO ONE BLOCK STRUCTURE, SO PLAYER WON'T LAND ON NEXT BLOCK IF DIDN'T MOVE
-                    if (Player.inAir && levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90)) {
-                        Player.x += 0.5f;
-                    }
-                    //LANDING ON THE FLOOR
-                    if (Player.inAir && Player.airSpeed > 0) {
-                        Player.airSpeed = 0;
-                        Player.y = entityBottomRow*48 - 88;
-                        Player.inAir = false;
-                    }
-                    //RESETTING SPRINT VALUES WHEN SPRINTING NEXT TO WALL
-                    Player.rightPlayerSprint = 1;
-                    Player.leftPlayerSprint = 1;
-                    collision = true;
-                }
-                //FALLING
-                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
-                        && levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)) {
-                    Player.inAir = true;
                 }
             }
         }

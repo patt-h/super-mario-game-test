@@ -27,7 +27,7 @@ public class Player extends Entity{
     public static boolean jumping = false;
     private boolean ducking = false;
     public static boolean turning = false;
-    private boolean left, up, right, down, jump, duck, sprint;
+    public static boolean left, up, right, down, jump, duck, sprint;
     private int accurateAnimationRow;
 
     //JUMPING
@@ -81,7 +81,7 @@ public class Player extends Entity{
         }
 
         g.setColor(Color.RED);
-        //g.drawRect((int)x, (int)y, (int)hitbox.width, (int)(hitbox.height));
+        g.drawRect((int)x, (int)y, (int)hitbox.width, (int)(hitbox.height));
     }
 
     private void updateAnimationTick() {
@@ -309,7 +309,7 @@ public class Player extends Entity{
         this.up = up;
     }
 
-    public boolean isRight() {
+    public static boolean isRight() {
         return right;
     }
 
