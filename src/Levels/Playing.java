@@ -38,7 +38,7 @@ public class Playing {
         if (moved) {
             g.drawImage(levelManager.sprites.get(190),movedX,movedY-5,48,48,null);
             lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 90;
-            counter += 1;
+            counter ++;
             if (counter >= 20) {
                 g.drawImage(levelManager.sprites.get(190),movedX,movedY+5,48,48,null);
                 lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 190;
@@ -123,6 +123,7 @@ public class Playing {
                     distanceY = (entityBottomRow)*Game.TILES_SIZE - entityBottomY;
                     if (distanceY < 0) {
                         Player.y = entityTopRow*Game.TILES_SIZE+8;
+                        Player.jump = false;
                         Player.inAir = false;
                         Player.airSpeed = 0;
                     }
@@ -214,6 +215,7 @@ public class Playing {
                     distanceY = (entityBottomRow)*Game.TILES_SIZE - entityBottomY;
                     if (distanceY < 0) {
                         Player.y = entityTopRow*Game.TILES_SIZE+8;
+                        Player.jump = false;
                         Player.inAir = false;
                         Player.airSpeed = 0;
                     }

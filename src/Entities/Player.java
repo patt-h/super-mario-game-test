@@ -32,8 +32,9 @@ public class Player extends Entity{
 
     //JUMPING
     public static float airSpeed = 0.0f;
-    public static float gravity = 0.04f * Game.SCALE;
-    private float jumpSpeed = -2.25f * Game.SCALE;
+    private static float gravity = 0.04f * Game.SCALE;
+    private static float strongerGravity = 0.08f * Game.SCALE;
+    private static float jumpSpeed = -2.55f * Game.SCALE;
     public static boolean inAir = false;
 
 
@@ -140,14 +141,14 @@ public class Player extends Entity{
     private void sprintCounter() {
         if (direction == LEFT || direction == RIGHT) {
             //ADDING UP SPRINT VALUE
-            if ((sprint && leftPlayerSprint <= maxSprint) && (left)) {
+            if ((sprint && leftPlayerSprint <= maxSprint) && (left) && (!right)) {
                 if (inAir) {
                     leftPlayerSprint += 0.001f;
                 } else {
                     leftPlayerSprint += 0.01f;
                 }
             }
-            if ((sprint && rightPlayerSprint <= maxSprint) && (right)) {
+            if ((sprint && rightPlayerSprint <= maxSprint) && (right) && (!left)) {
                 if (inAir) {
                     rightPlayerSprint += 0.001f;
                 } else {
@@ -244,6 +245,9 @@ public class Player extends Entity{
         if (inAir) {
             y += airSpeed;
             airSpeed += gravity;
+            if (!jump && airSpeed < 0) {
+                airSpeed += strongerGravity;
+            }
             jumping = true;
             moving = false;
             if (direction == LEFT) {
