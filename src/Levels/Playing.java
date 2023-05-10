@@ -56,6 +56,9 @@ public class Playing {
         int entityTopY = (int)Entity.y;
         int entityBottomY = (int)Entity.y + (int)Entity.hitbox.height -3;
 
+        int entityMiddleY = (int)Entity.y + (int)Entity.hitbox.height/2;
+        int entityMiddleRow = entityMiddleY / Game.TILES_SIZE;
+
         int entityLeftCol = entityLeftX / Game.TILES_SIZE;
         int entityRightCol = entityRightX / Game.TILES_SIZE;
         int entityTopRow = entityTopY / Game.TILES_SIZE;
@@ -125,16 +128,24 @@ public class Playing {
                     }
                 }
                 //COLLISION WHEN JUMPING
-                if (Player.inAir && Player.airSpeed < 0
+                if (Player.inAir
                         && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
                     distanceY = (entityTopRow)*Game.TILES_SIZE - entityTopY;
                     if (distanceY < 0) {
                         Player.y = (entityTopRow+1)*Game.TILES_SIZE;
                         Player.airSpeed = 0;
+                        collision = true;
+                    }
+                }
+                //COLLISION WHEN JUMPING PLAYER HITS BLOCK IN HALF
+                if (Player.inAir && levelManager.sprites.get(lvl[entityMiddleRow][entityRightCol+1]) != levelManager.sprites.get(90)) {
+                    distanceX = (entityRightCol+1)*Game.TILES_SIZE - entityRightX;
+                    if (distanceX <= 5) {
+                        Player.rightPlayerSprint = 0;
                     }
                 }
                 //FALLING
-                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
+                if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
@@ -208,7 +219,7 @@ public class Playing {
                     }
                 }
                 //COLLISION WHEN JUMPING
-                if (Player.inAir && Player.airSpeed < 0
+                if (Player.inAir
                         && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
                     distanceY = (entityTopRow)*Game.TILES_SIZE - entityTopY;
                     if (distanceY < 0) {
@@ -216,8 +227,15 @@ public class Playing {
                         Player.airSpeed = 0;
                     }
                 }
+                //COLLISION WHEN JUMPING PLAYER HITS BLOCK IN HALF
+                if (Player.inAir && levelManager.sprites.get(lvl[entityMiddleRow][entityLeftCol-1]) != levelManager.sprites.get(90)) {
+                    distanceX = entityLeftX - (entityLeftCol)*Game.TILES_SIZE ;
+                    if (distanceX <= 5) {
+                        Player.leftPlayerSprint = 0;
+                    }
+                }
                 //FALLING
-                else if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
+                if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
