@@ -16,6 +16,7 @@ import static Utilities.Constants.Directions.*;
 public class Player extends Entity{
     private BufferedImage[][] animations;
     private int animationTick, animationIndex, animationSpeed = 25;
+    private int accurateAnimationRow;
     private float playerSpeed = 1.0f;
     public static float minSprint = 1.0f;
     private float maxSprint = 2.0f;
@@ -28,23 +29,21 @@ public class Player extends Entity{
     private boolean ducking = false;
     public static boolean turning = false;
     public static boolean left, up, right, down, jump, duck, sprint;
-    private int accurateAnimationRow;
 
     //JUMPING
     public static float airSpeed = 0.0f;
+    public static boolean inAir = false;
     private static float gravity = 0.04f * Game.SCALE;
     private static float strongerGravity = 0.08f * Game.SCALE;
     private static float jumpSpeed = -2.55f * Game.SCALE;
-    public static boolean inAir = false;
 
+    public boolean debugMode = false;
 
     public Player(float x, float y) {
         super(x, y);
         loadAnimation();
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
-        hitbox.width = 11 * Game.SCALE;
-        hitbox.height = 30 * Game.SCALE;
     }
 
     public void update() {
@@ -52,7 +51,7 @@ public class Player extends Entity{
         updateAnimationTick();
         setAnimation();
     }
-    public void render(Graphics g) {
+    public void render(Graphics g, int lvlOffset) {
         //MIRROR REFLECTION
         BufferedImage img = animations[accurateAnimationRow][animationIndex];
         AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
@@ -61,34 +60,88 @@ public class Player extends Entity{
         img = op.filter(img,null);
 
         if (direction == RIGHT) {
-            if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
-                g.drawImage(animations[accurateAnimationRow][animationIndex],(int)x-17,(int)y+12,120,120,null);
-            } else if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                g.drawImage(img, (int)x-71, (int)y+3, 120, 120, null);
+            if (playerStatus == SMALL) {
+                //TURNING
+                if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
+                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y - 6, 120, 120, null);
+                }
+                //RUNNING FIXED
+                else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]){
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
+                }
+                //EVERYTHING ELSE
+                else {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y-4, 120, 120, null);
+                }
             }
-            else {
-                g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x-5, (int)y, 120, 120, null);
+            if (playerStatus == BIG) {
+                //TURNING
+                if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
+                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y + 3, 120, 120, null);
+                }
+                //DUCKING
+                else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 17) - lvlOffset, (int) y + 12, 120, 120, null);
+                }
+                //EVERYTHING ELSE
+                else {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+                }
             }
         }
         else if (direction == LEFT) {
-            if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
-                g.drawImage(img,(int)x-69,(int)y+12,120,120,null);
-            } else if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                g.drawImage(animations[accurateAnimationRow][animationIndex], (int)x, (int)y, 120, 120, null);
+            if (playerStatus == SMALL) {
+                //TURNING
+                if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
+                }
+                //RUNNING FIXED
+                else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]){
+                    g.drawImage(img, (int)(x- 81) - lvlOffset, (int) y - 6, 120, 120, null);
+                }
+                //EVERYTHING ELSE
+                else {
+                    g.drawImage(img, (int)(x- 81) - lvlOffset, (int) y-4, 120, 120, null);
+                }
             }
-            else {
-                g.drawImage(img, (int)x-81, (int)y, 120, 120, null);
+            if (playerStatus == BIG) {
+                //TURNING
+                if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+                }
+                //DUCKING
+                else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
+                    g.drawImage(img, (int)(x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
+                }
+                //EVERYTHING ELSE
+                else {
+                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y, 120, 120, null);
+                }
             }
         }
-
-        g.setColor(Color.RED);
-        g.drawRect((int)x, (int)y, (int)hitbox.width, (int)(hitbox.height));
+        if (debugMode) {
+            if (duck && !inAir) {
+                g.setColor(Color.BLACK);
+                g.drawRect((int) x - lvlOffset, (int) y + Game.TILES_SIZE - 3, (int) hitbox.width, (int) (hitbox.height));
+            } else {
+                g.setColor(Color.RED);
+                g.drawRect((int) x - lvlOffset, (int) y, (int) hitbox.width, (int) (hitbox.height));
+            }
+        }
     }
 
     private void updateAnimationTick() {
         animationTick++;
-        if (playerAction == SMALL_MARIO_IDLE || playerAction == SMALL_MARIO_WALK || playerAction == SMALL_MARIO_RUN || playerAction == SMALL_MARIO_JUMP) {
+        if (playerAction == SMALL_MARIO_IDLE || playerAction == SMALL_MARIO_WALK || playerAction == SMALL_MARIO_RUN) {
             accurateAnimationRow = 0;
+        }
+        if (playerAction == SMALL_MARIO_JUMP) {
+            accurateAnimationRow = 0;
+            animationIndex = 3;
+        }
+        if (playerAction == SMALL_MARIO_TURN) {
+            accurateAnimationRow = 0;
+            animationIndex = 4;
         }
         if (playerAction == BIG_MARIO_IDLE || playerAction == BIG_MARIO_WALK || playerAction == BIG_MARIO_RUN) {
             accurateAnimationRow = 2;
@@ -106,7 +159,9 @@ public class Player extends Entity{
             animationIndex = 3;
         }
 
-        if (animationTick >= animationSpeed && playerAction != BIG_MARIO_DUCK && playerAction != BIG_MARIO_JUMP && playerAction != BIG_MARIO_TURN) {
+        if (animationTick >= animationSpeed
+                && playerAction != SMALL_MARIO_JUMP && playerAction != SMALL_MARIO_TURN
+                && playerAction != BIG_MARIO_DUCK && playerAction != BIG_MARIO_JUMP && playerAction != BIG_MARIO_TURN) {
             animationTick = 0;
             animationIndex++;
             if (animationIndex >= getSpriteAmount(playerAction))  {
@@ -116,15 +171,15 @@ public class Player extends Entity{
     }
 
     private void setAnimation() {
-//        if (playerStatus == SMALL) {
-//            if (moving) {
-//                playerAction = SMALL_MARIO_RUN;
-//            } else if (jumping) {
-//                playerAction = SMALL_MARIO_JUMP;
-//            } else if (turning) {
-//                playerAction = BIG_MARIO_TURN;
-//            } else playerAction = SMALL_MARIO_IDLE;
-//        }
+        if (playerStatus == SMALL) {
+            if (moving) {
+                playerAction = SMALL_MARIO_RUN;
+            } else if (jumping) {
+                playerAction = SMALL_MARIO_JUMP;
+            } else if (turning) {
+                playerAction = SMALL_MARIO_TURN;
+            } else playerAction = SMALL_MARIO_IDLE;
+        }
         if (playerStatus == BIG) {
             if (moving) {
                 playerAction = BIG_MARIO_RUN;
@@ -179,8 +234,17 @@ public class Player extends Entity{
         turning = false;
         animationSpeed = 12;
         sprintCounter();
+        Playing.checkCloseToBorder();
         Playing.checkCollisions();
 
+        if (playerStatus == SMALL || (duck && !inAir)) {
+            hitbox.width = 11 * Game.SCALE;
+            hitbox.height = 14 * Game.SCALE;
+        }
+        else if (playerStatus == BIG) {
+            hitbox.width = 11 * Game.SCALE;
+            hitbox.height = 30 * Game.SCALE;
+        }
 
         if (!Playing.collision) {
             //MOVING LEFT
@@ -239,7 +303,7 @@ public class Player extends Entity{
             }
         }
         //JUMPING
-        if (jump) {
+        if (jump && !duck) {
             jump();
         }
         if (inAir) {
@@ -250,6 +314,7 @@ public class Player extends Entity{
             }
             jumping = true;
             moving = false;
+            ducking = false;
             if (direction == LEFT) {
                 rightPlayerSprint = minSprint;
             } else if (direction == RIGHT) {
@@ -257,8 +322,9 @@ public class Player extends Entity{
             }
         }
         //DUCKING
-        if (duck && !jump) {
+        if (duck) {
             ducking = true;
+            jump = false;
             left = false;
             right = false;
         }

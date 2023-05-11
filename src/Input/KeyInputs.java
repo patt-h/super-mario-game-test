@@ -13,7 +13,6 @@ public class KeyInputs implements KeyListener {
     }
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
     @Override
     public void keyPressed(KeyEvent e) {
@@ -24,6 +23,9 @@ public class KeyInputs implements KeyListener {
             case KeyEvent.VK_RIGHT -> gamePanel.getGame().getPlayer().setRight(true);
             case KeyEvent.VK_Z -> gamePanel.getGame().getPlayer().setJump(true);
             case KeyEvent.VK_X -> gamePanel.getGame().getPlayer().setSprint(true);
+
+            case KeyEvent.VK_PAGE_UP -> gamePanel.getGame().getPlayer().debugMode = true;
+            case KeyEvent.VK_PAGE_DOWN -> gamePanel.getGame().getPlayer().debugMode = false;
         }
     }
     @Override

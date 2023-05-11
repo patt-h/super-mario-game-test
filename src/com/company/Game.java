@@ -59,9 +59,8 @@ public class Game implements Runnable{
     }
 
     public void render(Graphics g) {
-        playing.render(g);
-        player.render(g);
-
+        playing.render(g, Playing.xLvlOffset);
+        player.render(g, Playing.xLvlOffset);
     }
 
     @Override

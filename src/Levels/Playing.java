@@ -4,6 +4,7 @@ import Entities.Entity;
 import Entities.Player;
 import Utilities.Constants.Directions;
 import static Utilities.Constants.PlayerConstants.SMALL;
+import static Utilities.Constants.ObjectConstants.*;
 import Utilities.LoadSave;
 import com.company.Game;
 
@@ -11,7 +12,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Playing {
-    static private int[][] lvl;
+    static private int[][] lvl = LevelBuilder.getLevelData();;
     static private LevelManager levelManager;
     public static boolean collision;
     private BufferedImage backgroundImg;
@@ -21,20 +22,55 @@ public class Playing {
     private static float distanceX;
     private static float distanceY;
 
+    public static int xLvlOffset;
+    private static int leftBorder = (int)(0.5 * Game.GAME_WIDTH);
+    private static int rightBorder = (int)(0.5 * Game.GAME_WIDTH);
+    private static int lvlTilesWide = lvl[0].length;
+    private static int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
+    private static int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
+
+    private BufferedImage[][] animations;
+    private int animationTick, animationIndex, animationSpeed = 16;
+    private int accurateAnimationRow;
+    private int blockType;
+
+
     public Playing() {
-        lvl = LevelBuilder.getLevelData();
+        loadAnimation();
         levelManager = new LevelManager();
         backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
     }
 
-    public void render(Graphics g) {
+    public static void checkCloseToBorder() {
+        int playerX = (int)Player.x + 17;
+        int diff = playerX - xLvlOffset;
+        if (diff > rightBorder) {
+            xLvlOffset += diff - rightBorder;
+        } else if (diff < leftBorder) {
+            xLvlOffset += diff - leftBorder;
+        }
+
+        if (xLvlOffset > maxLvlOffsetX) {
+            xLvlOffset = maxLvlOffsetX;
+        } else if (xLvlOffset < 0) {
+            xLvlOffset = 0;
+        }
+    }
+
+    public void render(Graphics g, int LvlOffset) {
+        updateAnimationTick();
         g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 int id = lvl[i][j];
-                g.drawImage(levelManager.sprites.get(id),j*48,i*48,48,48,null);
+                if (levelManager.sprites.get(id) == levelManager.sprites.get(115)) {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], j * 48 - LvlOffset, i * 48, 48, 48, null);
+                } else {
+                    g.drawImage(levelManager.sprites.get(id), j * 48 - LvlOffset, i * 48, 48, 48, null);
+                }
             }
         }
+
         if (moved) {
             g.drawImage(levelManager.sprites.get(190),movedX,movedY-5,48,48,null);
             lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 90;
@@ -48,14 +84,43 @@ public class Playing {
         }
     }
 
+    private void loadAnimation() {
+        BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.POWERUPS_ATLAS);
+
+        animations = new BufferedImage[5][11];
+        for (int y = 0; y < animations.length; y++) {
+            for (int x = 0; x < animations[y].length; x++) {
+                animations[y][x] = img.getSubimage((x*16)+x+1,(y*16)+y+1,16,16);
+            }
+        }
+    }
+
+    private void updateAnimationTick() {
+        animationTick++;
+        if (blockType == COIN_PRIZE_BLOCK) {
+            accurateAnimationRow = 3;
+        }
+
+        if (animationTick >= animationSpeed) {
+            animationTick = 0;
+            animationIndex++;
+            if (animationIndex >= getSpriteAmount(blockType)) {
+                animationIndex = 0;
+            }
+        }
+    }
+
     public static void checkCollisions() {
         collision = false;
 
         int entityLeftX = (int)Entity.x;
         int entityRightX = (int)Entity.x + (int)Entity.hitbox.width;
         int entityTopY = (int)Entity.y;
-        int entityBottomY = (int)Entity.y + (int)Entity.hitbox.height -3;
-
+        int entityBottomY = (int) Entity.y + (int) Entity.hitbox.height - 3;
+        if (Player.duck) {
+            entityTopY = (int)Entity.y + Game.TILES_SIZE - 3;
+            entityBottomY = (int)Entity.y + Game.TILES_SIZE + (int) Entity.hitbox.height - 3;
+        }
         int entityMiddleY = (int)Entity.y + (int)Entity.hitbox.height/2;
         int entityMiddleRow = entityMiddleY / Game.TILES_SIZE;
 
@@ -80,7 +145,6 @@ public class Playing {
                         moved = true;
                         movedX = entityRightCol * 48;
                         movedY = entityTopRow * 48;
-                        System.out.println(Player.playerStatus);
                     } else {
                         lvl[entityTopRow][entityRightCol] = 90;
                     }
@@ -122,10 +186,11 @@ public class Playing {
                         && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
                     distanceY = (entityBottomRow)*Game.TILES_SIZE - entityBottomY;
                     if (distanceY < 0) {
-                        Player.y = entityTopRow*Game.TILES_SIZE+8;
+                        Player.y = entityTopRow * Game.TILES_SIZE + 8;
                         Player.jump = false;
                         Player.inAir = false;
                         Player.airSpeed = 0;
+                        collision = true;
                     }
                 }
                 //COLLISION WHEN JUMPING
@@ -214,7 +279,7 @@ public class Playing {
                         && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
                     distanceY = (entityBottomRow)*Game.TILES_SIZE - entityBottomY;
                     if (distanceY < 0) {
-                        Player.y = entityTopRow*Game.TILES_SIZE+8;
+                        Player.y = entityTopRow * Game.TILES_SIZE + 8;
                         Player.jump = false;
                         Player.inAir = false;
                         Player.airSpeed = 0;
