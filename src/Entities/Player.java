@@ -77,7 +77,7 @@ public class Player extends Entity{
             if (playerStatus == BIG) {
                 //TURNING
                 if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y + 3, 120, 120, null);
+                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y - 2, 120, 120, null);
                 }
                 //DUCKING
                 else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
@@ -93,7 +93,7 @@ public class Player extends Entity{
             if (playerStatus == SMALL) {
                 //TURNING
                 if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
                 }
                 //RUNNING FIXED
                 else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]){
@@ -107,7 +107,7 @@ public class Player extends Entity{
             if (playerStatus == BIG) {
                 //TURNING
                 if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 2, 120, 120, null);
                 }
                 //DUCKING
                 else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
@@ -347,6 +347,9 @@ public class Player extends Entity{
                 animations[j][i] = img.getSubimage(i * 40, j * 40, 40, 40);
                 if (animations[j][i] == animations[3][3]) {
                     animations[j][i] = img.getSubimage((i * 40) - 1, j * 40, 40, 40);
+                }
+                if (animations[j][i] == animations[2][4]) {
+                    animations[j][i] = img.getSubimage(i * 40, (j * 40) - 1, 40, 40);
                 }
             }
         }
