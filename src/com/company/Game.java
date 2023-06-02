@@ -5,7 +5,11 @@ import Levels.LevelManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
 import Levels.Playing;
+import Objects.ObjectManager;
+import Utilities.LoadSave;
 
 public class Game implements Runnable{
     private GameWindow gameWindow;
@@ -18,6 +22,8 @@ public class Game implements Runnable{
 
     private Player player;
     private LevelManager levelManager;
+    private ObjectManager objectManager;
+    private BufferedImage backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
 
     private Menu menu;
     private Playing playing;
@@ -47,6 +53,7 @@ public class Game implements Runnable{
         levelManager = new LevelManager();
         player = new Player(50,200);
         playing = new Playing();
+        objectManager = new ObjectManager();
 
     }
 
@@ -55,10 +62,13 @@ public class Game implements Runnable{
         gameThread.start();
     }
     public void update() {
+        objectManager.update();
         player.update();
     }
 
     public void render(Graphics g) {
+        g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
+        objectManager.draw(g, Playing.xLvlOffset);
         playing.render(g, Playing.xLvlOffset);
         player.render(g, Playing.xLvlOffset);
     }
@@ -123,4 +133,7 @@ public class Game implements Runnable{
         return playing;
     }
 
+    public ObjectManager getObjectManager() {
+        return objectManager;
+    }
 }

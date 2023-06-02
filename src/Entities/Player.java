@@ -22,7 +22,7 @@ public class Player extends Entity{
     private float maxSprint = 2.0f;
     public static float leftPlayerSprint;
     public static float rightPlayerSprint;
-    public static int playerStatus = BIG;
+    public static int playerStatus = SMALL;
     public int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
     public static boolean jumping = false;
@@ -33,11 +33,13 @@ public class Player extends Entity{
     //JUMPING
     public static float airSpeed = 0.0f;
     public static boolean inAir = false;
-    private static float gravity = 0.04f * Game.SCALE;
+    public static float gravity = 0.04f * Game.SCALE;
     private static float strongerGravity = 0.08f * Game.SCALE;
-    private static float jumpSpeed = -2.55f * Game.SCALE;
+    public static float jumpSpeed = -2.55f * Game.SCALE;
 
     public boolean debugMode = false;
+
+    public static int coins = 0;
 
     public Player(float x, float y) {
         super(x, y);
@@ -58,6 +60,7 @@ public class Player extends Entity{
         tx.translate(-img.getWidth(null), 0);
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         img = op.filter(img,null);
+        //g.drawString(String.valueOf(coins),50,50);
 
         if (direction == RIGHT) {
             if (playerStatus == SMALL) {
@@ -93,7 +96,7 @@ public class Player extends Entity{
             if (playerStatus == SMALL) {
                 //TURNING
                 if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
                 }
                 //RUNNING FIXED
                 else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]){
@@ -228,6 +231,9 @@ public class Player extends Entity{
     }
 
     private void updatePosition() {
+        hitbox.x = x;
+        hitbox.y = y;
+
         moving = false;
         jumping = false;
         ducking = false;
@@ -237,6 +243,9 @@ public class Player extends Entity{
         Playing.checkCloseToBorder();
         Playing.checkCollisions();
 
+        if (playerStatus == SMALL) {
+            duck = false;
+        }
         if (playerStatus == SMALL || (duck && !inAir)) {
             hitbox.width = 11 * Game.SCALE;
             hitbox.height = 14 * Game.SCALE;

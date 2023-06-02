@@ -2,7 +2,10 @@ package Levels;
 
 import Entities.Entity;
 import Entities.Player;
+import Objects.Mushroom;
 import Utilities.Constants.Directions;
+
+import static Objects.Mushroom.list;
 import static Utilities.Constants.PlayerConstants.SMALL;
 import static Utilities.Constants.ObjectConstants.*;
 import Utilities.LoadSave;
@@ -12,10 +15,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Playing {
-    static private int[][] lvl = LevelBuilder.getLevelData();;
-    static private LevelManager levelManager;
+    static public int[][] lvl = LevelBuilder.getLevelData();
+    public static LevelManager levelManager;
     public static boolean collision;
-    private BufferedImage backgroundImg;
     static private  boolean moved = false;
     static private int movedX, movedY;
     private float counter;
@@ -38,7 +40,6 @@ public class Playing {
     public Playing() {
         loadAnimation();
         levelManager = new LevelManager();
-        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
     }
 
     public static void checkCloseToBorder() {
@@ -59,27 +60,35 @@ public class Playing {
 
     public void render(Graphics g, int LvlOffset) {
         updateAnimationTick();
-        g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 int id = lvl[i][j];
-                if (levelManager.sprites.get(id) == levelManager.sprites.get(115)) {
+                if (levelManager.sprites.get(id) == levelManager.sprites.get(115)
+                        || levelManager.sprites.get(id) == levelManager.sprites.get(114)) {
                     g.drawImage(animations[accurateAnimationRow][animationIndex], j * 48 - LvlOffset, i * 48, 48, 48, null);
-                } else {
+                }
+                else {
                     g.drawImage(levelManager.sprites.get(id), j * 48 - LvlOffset, i * 48, 48, 48, null);
                 }
             }
         }
 
         if (moved) {
-            g.drawImage(levelManager.sprites.get(190),movedX,movedY-5,48,48,null);
+            g.drawImage(levelManager.sprites.get(190),movedX - LvlOffset,movedY-8,48,48,null);
             lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 90;
-            counter ++;
+            //MUSHROOM REACTION FOR BRICKS
+            for (Mushroom m : list) {
+                if (m.x >= movedX-(Game.TILES_SIZE/2) && m.x <= movedX + Game.TILES_SIZE + (Game.TILES_SIZE/2)) {
+                    m.y -= 4;
+                    m.inAir = true;
+                }
+            }
+            counter++;
             if (counter >= 20) {
-                g.drawImage(levelManager.sprites.get(190),movedX,movedY+5,48,48,null);
-                lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 190;
+                g.drawImage(levelManager.sprites.get(190),movedX - LvlOffset,movedY+8,48,48,null);
                 counter = 0;
                 moved = false;
+                lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 190;
             }
         }
     }
@@ -162,12 +171,28 @@ public class Playing {
                     collision = true;
                 }
                 //HITTING PRIZE BLOCK
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
-                    lvl[entityTopRow][entityRightCol] = 152;
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityRightCol] = 152;
+                    }
+                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityLeftCol] = 152;
+                    }
                     collision = true;
+                    Player.coins++;
                 }
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
-                    lvl[entityTopRow][entityLeftCol] = 152;
+                //HITTING MUSHROOM BLOCK
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
+                        lvl[entityTopRow][entityRightCol] = 152;
+                        list.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                    }
+                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
+                        lvl[entityTopRow][entityLeftCol] = 152;
+                        list.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                    }
                     collision = true;
                 }
 
@@ -255,12 +280,28 @@ public class Playing {
                     collision = true;
                 }
                 //HITTING PRIZE BLOCK
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
-                    lvl[entityTopRow][entityLeftCol] = 152;
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityLeftCol] = 152;
+                    }
+                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityRightCol] = 152;
+                    }
                     collision = true;
+                    Player.coins++;
                 }
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
-                    lvl[entityTopRow][entityRightCol] = 152;
+
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
+                        lvl[entityTopRow][entityLeftCol] = 152;
+                        list.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                    }
+                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
+                        lvl[entityTopRow][entityRightCol] = 152;
+                        list.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                    }
                     collision = true;
                 }
 
