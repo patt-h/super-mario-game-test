@@ -91,6 +91,20 @@ public class Player extends Entity{
                     g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
                 }
             }
+            if (playerStatus == FIRE) {
+                //TURNING
+                if (animations[accurateAnimationRow][animationIndex] == animations[4][4]) {
+                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y - 2, 120, 120, null);
+                }
+                //DUCKING
+                else if (animations[accurateAnimationRow][animationIndex] == animations[5][3]) {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 17) - lvlOffset, (int) y + 12, 120, 120, null);
+                }
+                //EVERYTHING ELSE
+                else {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+                }
+            }
         }
         else if (direction == LEFT) {
             if (playerStatus == SMALL) {
@@ -114,6 +128,20 @@ public class Player extends Entity{
                 }
                 //DUCKING
                 else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
+                    g.drawImage(img, (int)(x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
+                }
+                //EVERYTHING ELSE
+                else {
+                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y, 120, 120, null);
+                }
+            }
+            if (playerStatus == FIRE) {
+                //TURNING
+                if (animations[accurateAnimationRow][animationIndex] == animations[4][4]) {
+                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 2, 120, 120, null);
+                }
+                //DUCKING
+                else if (animations[accurateAnimationRow][animationIndex] == animations[5][3]) {
                     g.drawImage(img, (int)(x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
                 }
                 //EVERYTHING ELSE
@@ -161,10 +189,26 @@ public class Player extends Entity{
             accurateAnimationRow = 3;
             animationIndex = 3;
         }
+        if (playerAction == FIRE_MARIO_IDLE || playerAction == FIRE_MARIO_WALK || playerAction == FIRE_MARIO_RUN) {
+            accurateAnimationRow = 4;
+        }
+        if (playerAction == FIRE_MARIO_JUMP) {
+            accurateAnimationRow = 4;
+            animationIndex = 3;
+        }
+        if (playerAction == FIRE_MARIO_TURN) {
+            accurateAnimationRow = 4;
+            animationIndex = 4;
+        }
+        if (playerAction == FIRE_MARIO_DUCK) {
+            accurateAnimationRow = 5;
+            animationIndex = 3;
+        }
 
         if (animationTick >= animationSpeed
                 && playerAction != SMALL_MARIO_JUMP && playerAction != SMALL_MARIO_TURN
-                && playerAction != BIG_MARIO_DUCK && playerAction != BIG_MARIO_JUMP && playerAction != BIG_MARIO_TURN) {
+                && playerAction != BIG_MARIO_DUCK && playerAction != BIG_MARIO_JUMP && playerAction != BIG_MARIO_TURN
+                && playerAction != FIRE_MARIO_DUCK && playerAction != FIRE_MARIO_JUMP && playerAction != FIRE_MARIO_TURN) {
             animationTick = 0;
             animationIndex++;
             if (animationIndex >= getSpriteAmount(playerAction))  {
@@ -193,6 +237,17 @@ public class Player extends Entity{
             } else if (turning) {
                 playerAction = BIG_MARIO_TURN;
             } else playerAction = BIG_MARIO_IDLE;
+        }
+        if (playerStatus == FIRE) {
+            if (moving) {
+                playerAction = FIRE_MARIO_RUN;
+            } else if (jumping) {
+                playerAction = FIRE_MARIO_JUMP;
+            } else if (ducking) {
+                playerAction = FIRE_MARIO_DUCK;
+            } else if (turning) {
+                playerAction = FIRE_MARIO_TURN;
+            } else playerAction = FIRE_MARIO_IDLE;
         }
     }
 
@@ -250,7 +305,7 @@ public class Player extends Entity{
             hitbox.width = 11 * Game.SCALE;
             hitbox.height = 14 * Game.SCALE;
         }
-        else if (playerStatus == BIG) {
+        else if (playerStatus == BIG || playerStatus == FIRE) {
             hitbox.width = 11 * Game.SCALE;
             hitbox.height = 30 * Game.SCALE;
         }
@@ -354,10 +409,20 @@ public class Player extends Entity{
         for (int j = 0; j < animations.length; j++) {
             for (int i = 0; i < animations[j].length; i++) {
                 animations[j][i] = img.getSubimage(i * 40, j * 40, 40, 40);
+                //BIG DUCKING
                 if (animations[j][i] == animations[3][3]) {
                     animations[j][i] = img.getSubimage((i * 40) - 1, j * 40, 40, 40);
                 }
+                //BIG TURNING
                 if (animations[j][i] == animations[2][4]) {
+                    animations[j][i] = img.getSubimage(i * 40, (j * 40) - 1, 40, 40);
+                }
+                //FIRE DUCKING
+                if (animations[j][i] == animations[5][3]) {
+                    animations[j][i] = img.getSubimage((i * 40) - 1, j * 40, 40, 40);
+                }
+                //FIRE TURNING
+                if (animations[j][i] == animations[4][4]) {
                     animations[j][i] = img.getSubimage(i * 40, (j * 40) - 1, 40, 40);
                 }
             }

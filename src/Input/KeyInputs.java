@@ -1,12 +1,25 @@
 package Input;
 
+import Entities.Player;
+import Objects.FireFlower;
+import Objects.Fireball;
+import com.company.Game;
 import com.company.GamePanel;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import static Objects.Fireball.FireballList;
+import static Utilities.Constants.Directions.LEFT;
+import static Utilities.Constants.Directions.RIGHT;
+import static Utilities.Constants.ObjectConstants.FIRE_BALL;
+import static Utilities.Constants.PlayerConstants.FIRE;
+
 public class KeyInputs implements KeyListener {
     private GamePanel gamePanel;
+    private boolean blockFire;
+    private boolean blockJump;
+    public static int activeBalls;
 
     public KeyInputs(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
@@ -21,8 +34,25 @@ public class KeyInputs implements KeyListener {
             case KeyEvent.VK_LEFT -> gamePanel.getGame().getPlayer().setLeft(true);
             case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(true);
             case KeyEvent.VK_RIGHT -> gamePanel.getGame().getPlayer().setRight(true);
-            case KeyEvent.VK_Z -> gamePanel.getGame().getPlayer().setJump(true);
-            case KeyEvent.VK_X -> gamePanel.getGame().getPlayer().setSprint(true);
+            case KeyEvent.VK_Z -> {
+                if (!blockJump) {
+                    gamePanel.getGame().getPlayer().setJump(true);
+                    blockJump = true;
+                }
+            }
+            case KeyEvent.VK_X -> {
+                gamePanel.getGame().getPlayer().setSprint(true);
+                if (gamePanel.getGame().getPlayer().playerStatus == FIRE && !blockFire && activeBalls < 2 && !gamePanel.getGame().getPlayer().isDuck()) {
+                    if (gamePanel.getGame().getPlayer().direction == RIGHT) {
+                        FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x + Game.TILES_SIZE / 2, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+                    }
+                    else if (gamePanel.getGame().getPlayer().direction == LEFT) {
+                        FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+                    }
+                    blockFire = true;
+                    activeBalls++;
+                }
+            }
 
             case KeyEvent.VK_PAGE_UP -> gamePanel.getGame().getPlayer().debugMode = true;
             case KeyEvent.VK_PAGE_DOWN -> gamePanel.getGame().getPlayer().debugMode = false;
@@ -35,8 +65,14 @@ public class KeyInputs implements KeyListener {
             case KeyEvent.VK_LEFT -> gamePanel.getGame().getPlayer().setLeft(false);
             case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(false);
             case KeyEvent.VK_RIGHT -> gamePanel.getGame().getPlayer().setRight(false);
-            case KeyEvent.VK_Z -> gamePanel.getGame().getPlayer().setJump(false);
-            case KeyEvent.VK_X -> gamePanel.getGame().getPlayer().setSprint(false);
+            case KeyEvent.VK_Z -> {
+                gamePanel.getGame().getPlayer().setJump(false);
+                blockJump = false;
+            }
+            case KeyEvent.VK_X -> {
+                gamePanel.getGame().getPlayer().setSprint(false);
+                blockFire = false;
+            }
         }
     }
 }

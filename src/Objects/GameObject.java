@@ -1,6 +1,5 @@
 package Objects;
 
-import Levels.LevelBuilder;
 import Levels.LevelManager;
 import Levels.Playing;
 import com.company.Game;
@@ -9,7 +8,7 @@ import com.company.Game;
 import java.awt.geom.Rectangle2D;
 
 import static Utilities.Constants.Directions.*;
-import static Utilities.Constants.ObjectConstants.getSpriteAmount;
+import static Utilities.Constants.ObjectConstants.*;
 
 public class GameObject {
 
@@ -17,7 +16,7 @@ public class GameObject {
     protected int objType;
     protected Rectangle2D.Float hitbox;
     protected boolean doAnimation, active = true;
-    protected int aniTick, aniIndex, aniSpeed;
+    protected int aniTick, aniIndex, aniSpeed = 8;
     protected int direction = RIGHT;
     public boolean inAir;
 
@@ -26,7 +25,7 @@ public class GameObject {
     private float distanceX;
     private float distanceY;
 
-    public static float airSpeed = 0.0f;
+    public float airSpeed = 0.0f;
     public static float gravity = 0.04f * Game.SCALE;
 
     public GameObject(int x, int y, int objType) {
@@ -37,6 +36,10 @@ public class GameObject {
     }
 
     protected void updateAnimationTick() {
+        if (objType == FIRE_BALL) {
+            aniSpeed = 12;
+        }
+
         aniTick++;
         if (aniTick >= aniSpeed) {
             aniTick = 0;
@@ -131,18 +134,6 @@ public class GameObject {
             }
         }
     }
-
-//    public void reset() {
-//        aniIndex = 0;
-//        aniTick = 0;
-//        active = true;
-//
-//        if (objType == MUSHROOM) {
-//            doAnimation = false;
-//        } else {
-//            doAnimation = true;
-//        }
-//    }
 
     public int getObjType() {
         return objType;

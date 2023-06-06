@@ -2,10 +2,12 @@ package Levels;
 
 import Entities.Entity;
 import Entities.Player;
+import Objects.FireFlower;
 import Objects.Mushroom;
 import Utilities.Constants.Directions;
 
-import static Objects.Mushroom.list;
+import static Objects.FireFlower.FireFlowerList;
+import static Objects.Mushroom.MushroomList;
 import static Utilities.Constants.PlayerConstants.SMALL;
 import static Utilities.Constants.ObjectConstants.*;
 import Utilities.LoadSave;
@@ -77,7 +79,7 @@ public class Playing {
             g.drawImage(levelManager.sprites.get(190),movedX - LvlOffset,movedY-8,48,48,null);
             lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 90;
             //MUSHROOM REACTION FOR BRICKS
-            for (Mushroom m : list) {
+            for (Mushroom m : MushroomList) {
                 if (m.x >= movedX-(Game.TILES_SIZE/2) && m.x <= movedX + Game.TILES_SIZE + (Game.TILES_SIZE/2)) {
                     m.y -= 4;
                     m.inAir = true;
@@ -106,7 +108,7 @@ public class Playing {
 
     private void updateAnimationTick() {
         animationTick++;
-        if (blockType == COIN_PRIZE_BLOCK) {
+        if (blockType == PRIZE_BLOCK) {
             accurateAnimationRow = 3;
         }
 
@@ -148,50 +150,64 @@ public class Playing {
                 tileNum4 = lvl[entityTopRow][entityLeftCol];
 
                 //HITTING BRICKS
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) {
-                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
-                    if (Player.playerStatus == SMALL) {
-                        moved = true;
-                        movedX = entityRightCol * 48;
-                        movedY = entityTopRow * 48;
-                    } else {
-                        lvl[entityTopRow][entityRightCol] = 90;
-                    }
-                    collision = true;
-                }
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
-                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
-                    if (Player.playerStatus == SMALL) {
-                        moved = true;
-                        movedX = entityLeftCol * 48;
-                        movedY = entityTopRow * 48;
-                    } else {
-                        lvl[entityTopRow][entityLeftCol] = 90;
-                    }
-                    collision = true;
-                }
-                //HITTING PRIZE BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
-                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
-                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
-                        lvl[entityTopRow][entityRightCol] = 152;
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190))) {
+                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) {
+                        if (Player.playerStatus == SMALL) {
+                            moved = true;
+                            movedX = entityRightCol * 48;
+                            movedY = entityTopRow * 48;
+                        } else {
+                            lvl[entityTopRow][entityRightCol] = 90;
+                        }
                     }
-                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
-                        lvl[entityTopRow][entityLeftCol] = 152;
+                    if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
+                        if (Player.playerStatus == SMALL) {
+                            moved = true;
+                            movedX = entityLeftCol * 48;
+                            movedY = entityTopRow * 48;
+                        } else {
+                            lvl[entityTopRow][entityLeftCol] = 90;
+                        }
                     }
                     collision = true;
-                    Player.coins++;
                 }
+                //HITTING COIN BLOCK
+//                if (Player.inAir && Player.airSpeed < 0 &&
+//                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
+//                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+//                        lvl[entityTopRow][entityRightCol] = 152;
+//                    }
+//                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+//                        lvl[entityTopRow][entityLeftCol] = 152;
+//                    }
+//                    collision = true;
+//                    Player.coins++;
+//                }
                 //HITTING MUSHROOM BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        list.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
                     }
                     else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        list.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                    }
+                    collision = true;
+                }
+                //HITTING FIREFLOWER BLOCK
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityRightCol] = 152;
+                        FireFlowerList.add(new FireFlower(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
+                    }
+                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityLeftCol] = 152;
+                        FireFlowerList.add(new FireFlower(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
                     }
                     collision = true;
                 }
@@ -257,50 +273,64 @@ public class Playing {
                 tileNum4 = lvl[entityTopRow][entityRightCol];
 
                 //HITTING BRICKS
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) {
-                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
-                    if (Player.playerStatus == SMALL) {
-                        moved = true;
-                        movedX = entityLeftCol * 48;
-                        movedY = entityTopRow * 48;
-                    } else {
-                        lvl[entityTopRow][entityLeftCol] = 90;
-                    }
-                    collision = true;
-                }
-                if (Player.inAir && Player.airSpeed < 0 && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
-                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
-                    if (Player.playerStatus == SMALL) {
-                        moved = true;
-                        movedX = entityRightCol * 48;
-                        movedY = entityTopRow * 48;
-                    } else {
-                        lvl[entityTopRow][entityRightCol] = 90;
-                    }
-                    collision = true;
-                }
-                //HITTING PRIZE BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
-                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
-                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
-                        lvl[entityTopRow][entityLeftCol] = 152;
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190))) {
+                    //WHEN PLAYER IS SMALL MARIO, BRICKS MOVE INSTEAD OF BREAKING
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) {
+                        if (Player.playerStatus == SMALL) {
+                            moved = true;
+                            movedX = entityLeftCol * 48;
+                            movedY = entityTopRow * 48;
+                        } else {
+                            lvl[entityTopRow][entityLeftCol] = 90;
+                        }
                     }
-                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
-                        lvl[entityTopRow][entityRightCol] = 152;
+                    if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
+                        if (Player.playerStatus == SMALL) {
+                            moved = true;
+                            movedX = entityRightCol * 48;
+                            movedY = entityTopRow * 48;
+                        } else {
+                            lvl[entityTopRow][entityRightCol] = 90;
+                        }
                     }
                     collision = true;
-                    Player.coins++;
                 }
-
+                //HITTING COIN BLOCK
+//                if (Player.inAir && Player.airSpeed < 0 &&
+//                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
+//                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+//                        lvl[entityTopRow][entityLeftCol] = 152;
+//                    }
+//                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+//                        lvl[entityTopRow][entityRightCol] = 152;
+//                    }
+//                    collision = true;
+//                    Player.coins++;
+//                }
+                //HITTING MUSHROOM BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        list.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
                     }
                     else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        list.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                    }
+                    collision = true;
+                }
+                //HITTING FIREFLOWER BLOCK
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityLeftCol] = 152;
+                        FireFlowerList.add(new FireFlower(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
+                    }
+                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                        lvl[entityTopRow][entityRightCol] = 152;
+                        FireFlowerList.add(new FireFlower(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
                     }
                     collision = true;
                 }

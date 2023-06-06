@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static Utilities.Constants.Directions.RIGHT;
 
 public class Mushroom extends GameObject {
-    public static ArrayList<Mushroom> list = new ArrayList<>();
+    public static ArrayList<Mushroom> MushroomList = new ArrayList<>();
     private int counter;
     public boolean ready = false;
 
@@ -43,7 +43,7 @@ public class Mushroom extends GameObject {
     }
 
     public static ArrayList<Mushroom> getMushrooms() {
-        return list;
+        return MushroomList;
     }
 
     public void update() {
