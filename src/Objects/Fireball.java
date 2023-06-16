@@ -1,6 +1,7 @@
 package Objects;
 
 import Entities.Player;
+import Input.KeyInputs;
 import Levels.LevelManager;
 import Levels.Playing;
 import com.company.Game;
@@ -8,6 +9,7 @@ import com.company.Game;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import static Levels.Playing.lvlLenght;
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.Directions.RIGHT;
 
@@ -86,17 +88,18 @@ public class Fireball extends GameObject {
                         tileNum2 = Playing.lvl[objectBottomRow][objectRightCol];
                         tileNum3 = Playing.lvl[objectBottomRow][objectLeftCol];
 
-                        //COLLISION WHILE MOVING
-                        if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectRightCol+1]) != levelManager.sprites.get(90)) {
-                            distanceX = (objectRightCol+1)*Game.TILES_SIZE - objectRightX;
-                            if (distanceX <= 16 && distanceX > 8) {
-                                fb.aniIndex = 0;
-                            }
-                            if (distanceX <= 8) {
-                                collisionX = true;
+                        if (objectRightX + 10*Game.TILES_SIZE < lvlLenght * Game.TILES_SIZE) {
+                            //COLLISION WHILE MOVING
+                            if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectRightCol + 1]) != levelManager.sprites.get(90)) {
+                                distanceX = (objectRightCol + 1) * Game.TILES_SIZE - objectRightX;
+                                if (distanceX <= 16 && distanceX > 8) {
+                                    fb.aniIndex = 0;
+                                }
+                                if (distanceX <= 8) {
+                                    collisionX = true;
+                                }
                             }
                         }
-
                         //COLLISION WHILE FALLING
                         if (inAir
                                 && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
@@ -120,14 +123,16 @@ public class Fireball extends GameObject {
                         tileNum2 = Playing.lvl[objectBottomRow][objectLeftCol];
                         tileNum3 = Playing.lvl[objectBottomRow][objectRightCol];
 
-                        //COLLISION WHILE MOVING
-                        if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectLeftCol-1]) != levelManager.sprites.get(90)) {
-                            distanceX = objectLeftX - (objectLeftCol-1)*Game.TILES_SIZE;
-                            if (distanceX <= Game.TILES_SIZE + 16 && distanceX > Game.TILES_SIZE + 8) {
-                                fb.aniIndex = 0;
-                            }
-                            if (distanceX <= Game.TILES_SIZE + 8) {
-                                collisionX = true;
+                        if (objectLeftX - 2*fb.hitbox.width > 0) {
+                            //COLLISION WHILE MOVING
+                            if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectLeftCol - 1]) != levelManager.sprites.get(90)) {
+                                distanceX = objectLeftX - (objectLeftCol - 1) * Game.TILES_SIZE;
+                                if (distanceX <= Game.TILES_SIZE + 16 && distanceX > Game.TILES_SIZE + 8) {
+                                    fb.aniIndex = 0;
+                                }
+                                if (distanceX <= Game.TILES_SIZE + 8) {
+                                    collisionX = true;
+                                }
                             }
                         }
                         //COLLISION WHILE FALLING

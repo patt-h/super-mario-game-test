@@ -1,7 +1,6 @@
 package Input;
 
 import Entities.Player;
-import Objects.FireFlower;
 import Objects.Fireball;
 import com.company.Game;
 import com.company.GamePanel;

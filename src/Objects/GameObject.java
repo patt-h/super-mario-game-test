@@ -36,8 +36,11 @@ public class GameObject {
     }
 
     protected void updateAnimationTick() {
-        if (objType == FIRE_BALL) {
+        if (objType == FIRE_BALL || objType == COIN_BRICK) {
             aniSpeed = 12;
+        }
+        if (objType == COIN) {
+            aniSpeed = 18;
         }
 
         aniTick++;

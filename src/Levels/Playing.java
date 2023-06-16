@@ -2,10 +2,12 @@ package Levels;
 
 import Entities.Entity;
 import Entities.Player;
+import Objects.Coin;
 import Objects.FireFlower;
 import Objects.Mushroom;
 import Utilities.Constants.Directions;
 
+import static Objects.Coin.CoinList;
 import static Objects.FireFlower.FireFlowerList;
 import static Objects.Mushroom.MushroomList;
 import static Utilities.Constants.PlayerConstants.SMALL;
@@ -17,13 +19,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Playing {
-    static public int[][] lvl = LevelBuilder.getLevelData();
+    public static int[][] lvl = LevelBuilder.getLevelData();
     public static LevelManager levelManager;
     public static boolean collision;
-    static private  boolean moved = false;
-    static private int movedX, movedY;
-    private float counter;
-    private static float distanceX;
+    private static boolean moved = false;
+    private static boolean movedCoin = false;
+    private static boolean broken = false;
+    private static int movedX, movedY;
+    private static int brokenX, brokenY;
+    private int counter;
+    public static float distanceX;
     private static float distanceY;
 
     public static int xLvlOffset;
@@ -37,11 +42,18 @@ public class Playing {
     private int animationTick, animationIndex, animationSpeed = 16;
     private int accurateAnimationRow;
     private int blockType;
+    public static int lvlLenght;
 
 
     public Playing() {
         loadAnimation();
         levelManager = new LevelManager();
+        CoinList.add(new Coin(200,200, COIN));
+        for (int i = 0; i < lvl.length; i++) {
+            for (int j = 0; j < lvl[i].length; j++) {
+                lvlLenght = lvl[i].length;
+            }
+        }
     }
 
     public static void checkCloseToBorder() {
@@ -68,30 +80,40 @@ public class Playing {
                 if (levelManager.sprites.get(id) == levelManager.sprites.get(115)
                         || levelManager.sprites.get(id) == levelManager.sprites.get(114)) {
                     g.drawImage(animations[accurateAnimationRow][animationIndex], j * 48 - LvlOffset, i * 48, 48, 48, null);
-                }
-                else {
+                } else if (levelManager.sprites.get(id) == levelManager.sprites.get(191)) {
+                    g.drawImage(levelManager.sprites.get(190), j * 48 - LvlOffset, i * 48, 48, 48, null);
+                } else {
                     g.drawImage(levelManager.sprites.get(id), j * 48 - LvlOffset, i * 48, 48, 48, null);
                 }
             }
         }
 
-        if (moved) {
-            g.drawImage(levelManager.sprites.get(190),movedX - LvlOffset,movedY-8,48,48,null);
-            lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 90;
+        if (moved || movedCoin) {
             //MUSHROOM REACTION FOR BRICKS
             for (Mushroom m : MushroomList) {
-                if (m.x >= movedX-(Game.TILES_SIZE/2) && m.x <= movedX + Game.TILES_SIZE + (Game.TILES_SIZE/2)) {
+                if (m.x >= movedX - (Game.TILES_SIZE / 2) && m.x <= movedX + Game.TILES_SIZE) {
                     m.y -= 4;
                     m.inAir = true;
                 }
             }
+            g.drawImage(levelManager.sprites.get(190), movedX - LvlOffset, movedY-counter, 48, 48, null);
+            lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 90;
             counter++;
             if (counter >= 20) {
-                g.drawImage(levelManager.sprites.get(190),movedX - LvlOffset,movedY+8,48,48,null);
                 counter = 0;
-                moved = false;
-                lvl[movedY/Game.TILES_SIZE][movedX/Game.TILES_SIZE] = 190;
+                if (moved) {
+                    moved = false;
+                    lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 190;
+                }
+                if (movedCoin) {
+                    movedCoin = false;
+                    lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 191;
+                }
             }
+        }
+
+        if (broken) {
+            g.drawImage(levelManager.sprites.get(228), brokenX - LvlOffset, brokenY-50, 48, 48, null);
         }
     }
 
@@ -149,6 +171,8 @@ public class Playing {
                 tileNum3 = lvl[entityBottomRow][entityLeftCol];
                 tileNum4 = lvl[entityTopRow][entityLeftCol];
 
+                //HITTING INTERACTIVE BLOCKS
+
                 //HITTING BRICKS
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190))) {
@@ -160,6 +184,7 @@ public class Playing {
                             movedY = entityTopRow * 48;
                         } else {
                             lvl[entityTopRow][entityRightCol] = 90;
+                            broken = true;
                         }
                     }
                     if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
@@ -169,32 +194,36 @@ public class Playing {
                             movedY = entityTopRow * 48;
                         } else {
                             lvl[entityTopRow][entityLeftCol] = 90;
+                            broken = true;
                         }
                     }
                     collision = true;
                 }
-                //HITTING COIN BLOCK
-//                if (Player.inAir && Player.airSpeed < 0 &&
-//                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
-//                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
-//                        lvl[entityTopRow][entityRightCol] = 152;
-//                    }
-//                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
-//                        lvl[entityTopRow][entityLeftCol] = 152;
-//                    }
-//                    collision = true;
-//                    Player.coins++;
-//                }
+                //HITTING COIN BRICKS
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                        movedX = entityRightCol * 48;
+                        movedY = entityTopRow * 48;
+                        CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                    }
+                    if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
+                        movedX = entityLeftCol * 48;
+                        movedY = entityTopRow * 48;
+                        CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                    }
+                    movedCoin = true;
+                    collision = true;
+                }
                 //HITTING MUSHROOM BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
-                    }
-                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
+                        MushroomList.add(new Mushroom(entityRightCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
+                    } else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityLeftCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
                     }
                     collision = true;
                 }
@@ -203,25 +232,51 @@ public class Playing {
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        FireFlowerList.add(new FireFlower(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
-                    }
-                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                        FireFlowerList.add(new FireFlower(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                    } else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        FireFlowerList.add(new FireFlower(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
+                        FireFlowerList.add(new FireFlower(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
                     }
                     collision = true;
                 }
 
-                //COLLISION WHILE MOVING
-                if (levelManager.sprites.get(lvl[entityTopRow][entityRightCol+1]) != levelManager.sprites.get(90)
-                        || levelManager.sprites.get(lvl[entityBottomRow][entityRightCol+1]) != levelManager.sprites.get(90)) {
-                    distanceX = (entityRightCol+1)*Game.TILES_SIZE - entityRightX;
-                    if (distanceX <= 5) {
-                        Player.rightPlayerSprint = 1;
-                        Player.leftPlayerSprint = 1;
-                        collision = true;
+                //WALKING COLLISIONS
+
+                //CHECKING IF NEXT BLOCK EXISTS
+                if (Player.x + 2*Game.TILES_SIZE < lvlLenght * Game.TILES_SIZE) {
+                    //COLLISION WHILE MOVING
+                    if (levelManager.sprites.get(lvl[entityTopRow][entityRightCol + 1]) != levelManager.sprites.get(90)
+                            || levelManager.sprites.get(lvl[entityBottomRow][entityRightCol + 1]) != levelManager.sprites.get(90)) {
+                        distanceX = (entityRightCol + 1) * Game.TILES_SIZE - entityRightX;
+                        if (distanceX <= 5) {
+                            Player.rightPlayerSprint = 1;
+                            Player.leftPlayerSprint = 1;
+                            collision = true;
+                        }
+                    }
+                    //COLLISION WHEN JUMPING PLAYER HITS BLOCK IN HALF
+                    if (Player.inAir && levelManager.sprites.get(lvl[entityMiddleRow][entityRightCol+1]) != levelManager.sprites.get(90)) {
+                        distanceX = (entityRightCol+1)*Game.TILES_SIZE - entityRightX;
+                        if (distanceX <= 5) {
+                            Player.rightPlayerSprint = 0;
+                        }
+                    }
+                    //COLLISION WHILE SLIDING
+                    if (Player.leftPlayerSprint > Player.minSprint) {
+                        if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90)) {
+                            Player.leftPlayerSprint = Player.minSprint;
+                            collision = true;
+                        }
                     }
                 }
+                else if (Player.x + Game.TILES_SIZE >= lvlLenght * Game.TILES_SIZE) {
+                    collision = true;
+                    Player.leftPlayerSprint = 0;
+                    Player.rightPlayerSprint = 0;
+                }
+
+                //PLAYER IN AIR COLLISIONS
+
                 //COLLISION WHEN FALLING
                 if (Player.inAir
                         && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
@@ -244,13 +299,6 @@ public class Playing {
                         collision = true;
                     }
                 }
-                //COLLISION WHEN JUMPING PLAYER HITS BLOCK IN HALF
-                if (Player.inAir && levelManager.sprites.get(lvl[entityMiddleRow][entityRightCol+1]) != levelManager.sprites.get(90)) {
-                    distanceX = (entityRightCol+1)*Game.TILES_SIZE - entityRightX;
-                    if (distanceX <= 5) {
-                        Player.rightPlayerSprint = 0;
-                    }
-                }
                 //FALLING
                 if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
@@ -258,20 +306,16 @@ public class Playing {
                         && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
                     Player.inAir = true;
                 }
-                //COLLISION WHILE SLIDING
-                if (Player.leftPlayerSprint > Player.minSprint) {
-                    if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) || Player.x < 0) {
-                        Player.leftPlayerSprint = Player.minSprint;
-                        collision = true;
-                    }
-                }
             }
+
             case Directions.LEFT -> {
                 tileNum1 = lvl[entityTopRow][entityLeftCol];
                 tileNum2 = lvl[entityBottomRow][entityLeftCol];
                 tileNum3 = lvl[entityBottomRow][entityRightCol];
                 tileNum4 = lvl[entityTopRow][entityRightCol];
 
+                //HITTING INTERACTIVE BLOCKS
+
                 //HITTING BRICKS
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(190)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190))) {
@@ -283,6 +327,7 @@ public class Playing {
                             movedY = entityTopRow * 48;
                         } else {
                             lvl[entityTopRow][entityLeftCol] = 90;
+                            broken = true;
                         }
                     }
                     if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(190)) {
@@ -292,32 +337,37 @@ public class Playing {
                             movedY = entityTopRow * 48;
                         } else {
                             lvl[entityTopRow][entityRightCol] = 90;
+                            broken = true;
                         }
                     }
                     collision = true;
                 }
-                //HITTING COIN BLOCK
-//                if (Player.inAir && Player.airSpeed < 0 &&
-//                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
-//                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
-//                        lvl[entityTopRow][entityLeftCol] = 152;
-//                    }
-//                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
-//                        lvl[entityTopRow][entityRightCol] = 152;
-//                    }
-//                    collision = true;
-//                    Player.coins++;
-//                }
+                //HITTING COIN BRICKS
+                if (Player.inAir && Player.airSpeed < 0 &&
+                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
+                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                        movedX = entityLeftCol * 48;
+                        movedY = entityTopRow * 48;
+                        CoinList.add(new Coin(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE, COIN_BRICK));
+                    }
+                    if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
+                        movedX = entityRightCol * 48;
+                        movedY = entityTopRow * 48;
+                        CoinList.add(new Coin(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE, COIN_BRICK));
+                    }
+                    movedCoin = true;
+                    collision = true;
+                }
                 //HITTING MUSHROOM BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE+3,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
                     }
                     else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE+3,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
                     }
                     collision = true;
                 }
@@ -335,16 +385,43 @@ public class Playing {
                     collision = true;
                 }
 
-                //COLLISION WHILE MOVING
-                if (levelManager.sprites.get(lvl[entityTopRow][entityLeftCol-1]) != levelManager.sprites.get(90)
-                        || levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol-1]) != levelManager.sprites.get(90)) {
-                    distanceX = entityLeftX - (entityLeftCol)*Game.TILES_SIZE;
-                    if (distanceX <= 5) {
-                        Player.rightPlayerSprint = 1;
-                        Player.leftPlayerSprint = 1;
-                        collision = true;
+                //WALKING COLLISIONS
+
+                //CHECKING IF NEXT BLOCK EXISTS
+                if (Player.x - Game.TILES_SIZE > 0) {
+                    //COLLISION WHILE MOVING
+                    if (levelManager.sprites.get(lvl[entityTopRow][entityLeftCol-1]) != levelManager.sprites.get(90)
+                            || levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol-1]) != levelManager.sprites.get(90)) {
+                        distanceX = entityLeftX - (entityLeftCol)*Game.TILES_SIZE;
+                        if (distanceX <= 5) {
+                            Player.rightPlayerSprint = 1;
+                            Player.leftPlayerSprint = 1;
+                            collision = true;
+                        }
+                    }
+                    //COLLISION WHEN JUMPING PLAYER HITS BLOCK IN HALF
+                    if (Player.inAir && levelManager.sprites.get(lvl[entityMiddleRow][entityLeftCol-1]) != levelManager.sprites.get(90)) {
+                        distanceX = entityLeftX - (entityLeftCol)*Game.TILES_SIZE ;
+                        if (distanceX <= 5) {
+                            Player.leftPlayerSprint = 0;
+                        }
+                    }
+                    //COLLISION WHILE SLIDING
+                    if (Player.rightPlayerSprint > Player.minSprint) {
+                        if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) ) {
+                            Player.rightPlayerSprint = Player.minSprint;
+                            collision = true;
+                        }
                     }
                 }
+                else if (Player.x - Game.TILES_SIZE/6.0f < 0) {
+                    Player.rightPlayerSprint = 0;
+                    Player.leftPlayerSprint = 0;
+                    collision = true;
+                }
+
+                //PLAYER IN AIR COLLISIONS
+
                 //COLLISION WHEN FALLING
                 if (Player.inAir
                         && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
@@ -365,26 +442,12 @@ public class Playing {
                         Player.airSpeed = 0;
                     }
                 }
-                //COLLISION WHEN JUMPING PLAYER HITS BLOCK IN HALF
-                if (Player.inAir && levelManager.sprites.get(lvl[entityMiddleRow][entityLeftCol-1]) != levelManager.sprites.get(90)) {
-                    distanceX = entityLeftX - (entityLeftCol)*Game.TILES_SIZE ;
-                    if (distanceX <= 5) {
-                        Player.leftPlayerSprint = 0;
-                    }
-                }
                 //FALLING
                 if (levelManager.sprites.get(lvl[entityBottomRow+1][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow+1][entityLeftCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
                         && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
                     Player.inAir = true;
-                }
-                //COLLISION WHILE SLIDING
-                if (Player.rightPlayerSprint > Player.minSprint) {
-                    if (levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90) ) {
-                        Player.rightPlayerSprint = Player.minSprint;
-                        collision = true;
-                    }
                 }
             }
         }

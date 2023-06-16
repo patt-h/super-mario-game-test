@@ -16,7 +16,7 @@ public class Mushroom extends GameObject {
         super(x, y, objType);
         doAnimation = false;
         hitbox = new Rectangle2D.Float();
-        hitbox.width = Game.TILES_SIZE;
+        hitbox.width = Game.TILES_SIZE-6;
         hitbox.height = Game.TILES_SIZE;
     }
 

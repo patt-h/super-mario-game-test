@@ -22,7 +22,7 @@ public class Player extends Entity{
     private float maxSprint = 2.0f;
     public static float leftPlayerSprint;
     public static float rightPlayerSprint;
-    public static int playerStatus = SMALL;
+    public static int playerStatus = FIRE;
     public int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
     public static boolean jumping = false;
@@ -39,7 +39,7 @@ public class Player extends Entity{
 
     public boolean debugMode = false;
 
-    public static int coins = 0;
+    public int coins = 0;
 
     public Player(float x, float y) {
         super(x, y);

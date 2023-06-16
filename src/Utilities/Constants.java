@@ -5,15 +5,17 @@ public class Constants {
     public static class ObjectConstants {
         public static final int PRIZE_BLOCK = 0;
         public static final int COIN = 2;
-        public static final int MUSHROOM = 3;
-        public static final int FIRE_FLOWER = 4;
-        public static final int FIRE_BALL = 5;
+        public static final int COIN_BRICK = 3;
+        public static final int MUSHROOM = 4;
+        public static final int FIRE_FLOWER = 5;
+        public static final int FIRE_BALL = 6;
 
         public static int getSpriteAmount(int object_type) {
             return switch (object_type) {
                 case MUSHROOM -> 0;
                 case PRIZE_BLOCK, COIN -> 3;
                 case FIRE_FLOWER, FIRE_BALL -> 4;
+                case COIN_BRICK -> 9;
                 default -> 0;
             };
         }
