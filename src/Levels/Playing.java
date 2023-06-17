@@ -215,27 +215,25 @@ public class Playing {
                     movedCoin = true;
                     collision = true;
                 }
-                //HITTING MUSHROOM BLOCK
-                if (Player.inAir && Player.airSpeed < 0 &&
-                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
-                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
-                        lvl[entityTopRow][entityRightCol] = 152;
-                        MushroomList.add(new Mushroom(entityRightCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
-                    } else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
-                        lvl[entityTopRow][entityLeftCol] = 152;
-                        MushroomList.add(new Mushroom(entityLeftCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
-                    }
-                    collision = true;
-                }
-                //HITTING FIREFLOWER BLOCK
+                //HITTING POWERUP BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        FireFlowerList.add(new FireFlower(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                        if (Player.playerStatus == SMALL) {
+                            MushroomList.add(new Mushroom(entityRightCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
+                        }
+                        else {
+                            FireFlowerList.add(new FireFlower(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                        }
                     } else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        FireFlowerList.add(new FireFlower(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                        if (Player.playerStatus == SMALL) {
+                            MushroomList.add(new Mushroom(entityLeftCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
+                        }
+                        else {
+                            FireFlowerList.add(new FireFlower(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                        }
                     }
                     collision = true;
                 }
@@ -358,29 +356,26 @@ public class Playing {
                     movedCoin = true;
                     collision = true;
                 }
-                //HITTING MUSHROOM BLOCK
-                if (Player.inAir && Player.airSpeed < 0 &&
-                        (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
-                    if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
-                        lvl[entityTopRow][entityLeftCol] = 152;
-                        MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE+3,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
-                    }
-                    else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
-                        lvl[entityTopRow][entityRightCol] = 152;
-                        MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE+3,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
-                    }
-                    collision = true;
-                }
-                //HITTING FIREFLOWER BLOCK
+                //HITTING POWERUP BLOCK
                 if (Player.inAir && Player.airSpeed < 0 &&
                         (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
                     if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115)) {
                         lvl[entityTopRow][entityLeftCol] = 152;
-                        FireFlowerList.add(new FireFlower(entityLeftCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
+                        if (Player.playerStatus == SMALL) {
+                            MushroomList.add(new Mushroom(entityLeftCol*Game.TILES_SIZE+3,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        }
+                        else {
+                            FireFlowerList.add(new FireFlower(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                        }
                     }
                     else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
                         lvl[entityTopRow][entityRightCol] = 152;
-                        FireFlowerList.add(new FireFlower(entityRightCol*Game.TILES_SIZE,(entityTopRow)*Game.TILES_SIZE-5, FIRE_FLOWER));
+                        if (Player.playerStatus == SMALL) {
+                            MushroomList.add(new Mushroom(entityRightCol*Game.TILES_SIZE+3,(entityTopRow)*Game.TILES_SIZE-5, MUSHROOM));
+                        }
+                        else {
+                            FireFlowerList.add(new FireFlower(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
+                        }
                     }
                     collision = true;
                 }

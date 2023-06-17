@@ -1,7 +1,5 @@
 package Objects;
 
-import Entities.Player;
-import Input.KeyInputs;
 import Levels.LevelManager;
 import Levels.Playing;
 import com.company.Game;
