@@ -2,6 +2,7 @@ package Objects;
 
 import Entities.Player;
 import Input.KeyInputs;
+import Levels.Playing;
 import Utilities.LoadSave;
 import com.company.Game;
 
@@ -16,7 +17,7 @@ import static Utilities.Constants.ObjectConstants.COIN_BRICK;
 import static Utilities.Constants.PlayerConstants.*;
 
 public class ObjectManager {
-    private BufferedImage[][] animations;
+    public BufferedImage[][] animations;
     private BufferedImage[][] effects;
     public ArrayList<Mushroom> mushrooms = new ArrayList<>();
     public ArrayList<FireFlower> fireFlowers = new ArrayList<>();
@@ -42,6 +43,8 @@ public class ObjectManager {
                 if (c.objType == COIN) {
                     if (Player.hitbox.intersects(c.hitbox.x, c.hitbox.y, (int) c.hitbox.width, (int) c.hitbox.height)) {
                         c.setActive(false);
+                        Playing.coins++;
+                        Playing.score += 200;
                     }
                 }
                 else if (c.objType == COIN_BRICK) {
@@ -61,6 +64,7 @@ public class ObjectManager {
                         Player.playerStatus = BIG;
                     }
                     m.setActive(false);
+                    Playing.score += 200;
                 }
             }
         }
@@ -76,6 +80,7 @@ public class ObjectManager {
                         Player.playerStatus = FIRE;
                     }
                     f.setActive(false);
+                    Playing.score += 600;
                 }
             }
         }

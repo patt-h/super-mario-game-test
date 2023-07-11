@@ -2,6 +2,18 @@ package Utilities;
 
 public class Constants {
 
+    public static class EnemyConstants {
+        public static final int GOOMBA = 0;
+        public static final int TROOPA = 1;
+
+        public static int getEnemySprite(int enemy_type) {
+            return switch (enemy_type) {
+                case GOOMBA, TROOPA -> 2;
+                default -> 0;
+            };
+        }
+    }
+
     public static class ObjectConstants {
         public static final int PRIZE_BLOCK = 0;
         public static final int COIN = 2;

@@ -30,9 +30,17 @@ public class KeyInputs implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(true);
-            case KeyEvent.VK_LEFT -> gamePanel.getGame().getPlayer().setLeft(true);
+            case KeyEvent.VK_LEFT -> {
+                if (!Player.duck) {
+                    gamePanel.getGame().getPlayer().setLeft(true);
+                }
+            }
             case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(true);
-            case KeyEvent.VK_RIGHT -> gamePanel.getGame().getPlayer().setRight(true);
+            case KeyEvent.VK_RIGHT -> {
+                if (!Player.duck) {
+                    gamePanel.getGame().getPlayer().setRight(true);
+                }
+            }
             case KeyEvent.VK_Z -> {
                 if (!blockJump) {
                     gamePanel.getGame().getPlayer().setJump(true);
@@ -61,9 +69,17 @@ public class KeyInputs implements KeyListener {
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(false);
-            case KeyEvent.VK_LEFT -> gamePanel.getGame().getPlayer().setLeft(false);
+            case KeyEvent.VK_LEFT -> {
+                if (!Player.duck) {
+                    gamePanel.getGame().getPlayer().setLeft(false);
+                }
+            }
             case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(false);
-            case KeyEvent.VK_RIGHT -> gamePanel.getGame().getPlayer().setRight(false);
+            case KeyEvent.VK_RIGHT -> {
+                if (!Player.duck) {
+                gamePanel.getGame().getPlayer().setRight(false);
+                }
+            }
             case KeyEvent.VK_Z -> {
                 gamePanel.getGame().getPlayer().setJump(false);
                 blockJump = false;

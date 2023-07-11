@@ -20,11 +20,11 @@ public class GamePanel extends JPanel {
         Dimension size = new Dimension(GAME_WIDTH,GAME_HEIGHT);
         setPreferredSize(size);
 
-        System.out.println("Size: " +GAME_WIDTH+ "x" +GAME_HEIGHT);
+        System.out.println("Size: " + GAME_WIDTH + "x" + GAME_HEIGHT);
     }
 
+    @Override
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         game.render(g);
     }

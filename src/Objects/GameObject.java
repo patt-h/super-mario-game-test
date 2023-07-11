@@ -10,17 +10,17 @@ import java.awt.geom.Rectangle2D;
 import static Utilities.Constants.Directions.*;
 import static Utilities.Constants.ObjectConstants.*;
 
-public class GameObject {
+public abstract class GameObject {
 
     public float x, y;
     protected int objType;
-    protected Rectangle2D.Float hitbox;
+    public Rectangle2D.Float hitbox;
     protected boolean doAnimation, active = true;
     protected int aniTick, aniIndex, aniSpeed = 8;
     protected int direction = RIGHT;
     public boolean inAir;
 
-    private LevelManager levelManager;
+    public LevelManager levelManager;
     private boolean collision;
     private float distanceX;
     private float distanceY;

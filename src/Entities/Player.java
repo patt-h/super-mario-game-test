@@ -1,7 +1,6 @@
 package Entities;
 
 import Levels.Playing;
-import Utilities.LoadSave;
 import com.company.Game;
 
 import java.awt.*;
@@ -14,7 +13,6 @@ import static Utilities.Constants.PlayerConstants.*;
 import static Utilities.Constants.Directions.*;
 
 public class Player extends Entity{
-    private BufferedImage[][] animations;
     private int animationTick, animationIndex, animationSpeed = 25;
     private int accurateAnimationRow;
     private float playerSpeed = 1.0f;
@@ -37,13 +35,10 @@ public class Player extends Entity{
     private static float strongerGravity = 0.08f * Game.SCALE;
     public static float jumpSpeed = -2.55f * Game.SCALE;
 
-    public boolean debugMode = false;
-
-    public int coins = 0;
+    public static boolean debugMode = false;
 
     public Player(float x, float y) {
         super(x, y);
-        loadAnimation();
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
     }
@@ -53,6 +48,7 @@ public class Player extends Entity{
         updateAnimationTick();
         setAnimation();
     }
+
     public void render(Graphics g, int lvlOffset) {
         //MIRROR REFLECTION
         BufferedImage img = animations[accurateAnimationRow][animationIndex];
@@ -60,7 +56,6 @@ public class Player extends Entity{
         tx.translate(-img.getWidth(null), 0);
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         img = op.filter(img,null);
-        //g.drawString(String.valueOf(coins),50,50);
 
         if (direction == RIGHT) {
             if (playerStatus == SMALL) {
@@ -386,7 +381,7 @@ public class Player extends Entity{
             }
         }
         //DUCKING
-        if (duck) {
+        if (duck && !inAir) {
             ducking = true;
             jump = false;
             left = false;
@@ -400,33 +395,6 @@ public class Player extends Entity{
         }
         inAir = true;
         airSpeed = jumpSpeed;
-    }
-
-    private void loadAnimation() {
-        BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
-
-        animations = new BufferedImage[11][10];
-        for (int j = 0; j < animations.length; j++) {
-            for (int i = 0; i < animations[j].length; i++) {
-                animations[j][i] = img.getSubimage(i * 40, j * 40, 40, 40);
-                //BIG DUCKING
-                if (animations[j][i] == animations[3][3]) {
-                    animations[j][i] = img.getSubimage((i * 40) - 1, j * 40, 40, 40);
-                }
-                //BIG TURNING
-                if (animations[j][i] == animations[2][4]) {
-                    animations[j][i] = img.getSubimage(i * 40, (j * 40) - 1, 40, 40);
-                }
-                //FIRE DUCKING
-                if (animations[j][i] == animations[5][3]) {
-                    animations[j][i] = img.getSubimage((i * 40) - 1, j * 40, 40, 40);
-                }
-                //FIRE TURNING
-                if (animations[j][i] == animations[4][4]) {
-                    animations[j][i] = img.getSubimage(i * 40, (j * 40) - 1, 40, 40);
-                }
-            }
-        }
     }
 
     public void resetDirBooleans() {
