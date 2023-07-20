@@ -130,9 +130,9 @@ public class Game implements Runnable{
     public void render(Graphics g) {
         g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
         objectManager.draw(g, Playing.xLvlOffset);
-        enemyManager.draw(g, Playing.xLvlOffset);
         playing.render(g, Playing.xLvlOffset);
         player.render(g, Playing.xLvlOffset);
+        enemyManager.draw(g, Playing.xLvlOffset);
 
         //COINS SECTION ON HUD
         miniCoinAniIndex();

@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 public class LoadSave {
     public static final String ENTITY_ATLAS = "sheet.png";
+    public static final String ENEMY_ATLAS = "enemy.png";
     public static final String LEVEL_ATLAS = "tiles.png";
     public static final String POWERUPS_ATLAS = "powerups.png";
     public static final String BACKGROUND_IMG = "background1.png";

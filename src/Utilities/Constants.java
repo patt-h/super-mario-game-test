@@ -5,10 +5,12 @@ public class Constants {
     public static class EnemyConstants {
         public static final int GOOMBA = 0;
         public static final int TROOPA = 1;
+        public static final int TROOPA_KICKED = 2;
 
         public static int getEnemySprite(int enemy_type) {
             return switch (enemy_type) {
                 case GOOMBA, TROOPA -> 2;
+                case TROOPA_KICKED -> 4;
                 default -> 0;
             };
         }

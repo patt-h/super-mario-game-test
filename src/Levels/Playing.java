@@ -3,11 +3,14 @@ package Levels;
 import Entities.Entity;
 import Entities.Goomba;
 import Entities.Player;
+import Entities.Troopa;
 import Objects.Coin;
 import Objects.FireFlower;
 import Objects.Mushroom;
 
 import static Entities.Goomba.GoombaList;
+import static Entities.Troopa.TroopaList;
+import static Levels.MapObjects.coinBlocksList;
 import static Objects.Coin.CoinList;
 import static Objects.FireFlower.FireFlowerList;
 import static Objects.Mushroom.MushroomList;
@@ -32,8 +35,12 @@ public class Playing {
     private static boolean movedCoin = false;
     private static boolean broken = false;
     private static int movedX, movedY;
+    private static int movedCoinX, movedCoinY;
     private static int brokenX, brokenY;
-    private int counter;
+    private int bricksCounter;
+    private int coinBricksCounter;
+    private int bricksDownCounter = 20;
+    private int coinBricksDownCounter = 20;
     public static float distanceX;
     private static float distanceY;
 
@@ -62,11 +69,17 @@ public class Playing {
         levelManager = new LevelManager();
         CoinList.add(new Coin(200,200, COIN));
         GoombaList.add(new Goomba(200,200));
+        TroopaList.add(new Troopa(500,200));
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 lvlLenght = lvl[i].length;
+                int id = lvl[i][j];
+                if (levelManager.sprites.get(id) == levelManager.sprites.get(191)) {
+                    coinBlocksList.add(new MapObjects(j*Game.TILES_SIZE, i*Game.TILES_SIZE));
+                }
             }
         }
+        coinBlocksList = MapObjects.getCoinBlocks();
     }
 
     public void timeCounter() {
@@ -120,19 +133,51 @@ public class Playing {
                     m.y -= 4;
                     m.inAir = true;
                 }
-            }
-            g.drawImage(levelManager.sprites.get(190), movedX - LvlOffset, movedY-counter, 48, 48, null);
-            lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 90;
-            counter++;
-            if (counter >= 20) {
-                counter = 0;
-                if (moved) {
-                    moved = false;
-                    lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 190;
+                if (m.x >= movedCoinX - (Game.TILES_SIZE / 2) && m.x <= movedCoinX + Game.TILES_SIZE) {
+                    m.y -= 4;
+                    m.inAir = true;
                 }
+            }
+            if (bricksCounter < 20) {
+                if (moved) {
+                    g.drawImage(levelManager.sprites.get(190), movedX - LvlOffset, movedY - bricksCounter, 48, 48, null);
+                }
+            }
+            if (coinBricksCounter < 20) {
                 if (movedCoin) {
-                    movedCoin = false;
-                    lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 191;
+                    g.drawImage(levelManager.sprites.get(190), movedCoinX - LvlOffset, movedCoinY - coinBricksCounter, 48, 48, null);
+                }
+            }
+            if (moved) {
+                lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 90;
+                bricksCounter++;
+            }
+            if (movedCoin) {
+                lvl[movedCoinY / Game.TILES_SIZE][movedCoinX / Game.TILES_SIZE] = 90;
+                coinBricksCounter++;
+            }
+            if (bricksCounter >= 20) {
+                bricksDownCounter -= 2;
+                if (moved) {
+                    g.drawImage(levelManager.sprites.get(190), movedX - LvlOffset, movedY - bricksDownCounter, 48, 48, null);
+                    if (bricksDownCounter == 0) {
+                        moved = false;
+                        lvl[movedY / Game.TILES_SIZE][movedX / Game.TILES_SIZE] = 190;
+                        bricksCounter = 0;
+                        bricksDownCounter = 20;
+                    }
+                }
+            }
+            if (coinBricksCounter >= 20) {
+                coinBricksDownCounter -= 2;
+                if (movedCoin) {
+                    g.drawImage(levelManager.sprites.get(190), movedCoinX - LvlOffset, movedCoinY - coinBricksDownCounter, 48, 48, null);
+                    if (coinBricksDownCounter == 0) {
+                        movedCoin = false;
+                        lvl[movedCoinY / Game.TILES_SIZE][movedCoinX / Game.TILES_SIZE] = 191;
+                        coinBricksCounter = 0;
+                        coinBricksDownCounter = 20;
+                    }
                 }
             }
         }
@@ -298,19 +343,38 @@ public class Playing {
                     //HITTING COIN BRICKS
                     if (Player.inAir && Player.airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
-                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
-                            movedX = entityRightCol * 48;
-                            movedY = entityTopRow * 48;
-                            CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                        for (MapObjects cb : coinBlocksList) {
+                            if (cb.isActive()) {
+                                if (Player.hitbox.intersects(cb.hitbox)) {
+                                    cb.coinsInside--;
+                                    if (cb.coinsInside > 0) {
+                                        movedCoin = true;
+                                        coins++;
+                                        score+=200;
+                                    }
+                                    if (cb.coinsInside == 0) {
+                                        coins++;
+                                        cb.setActive(false);
+                                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                                            lvl[entityTopRow][entityRightCol] = 152;
+                                        }
+                                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
+                                            lvl[entityTopRow][entityLeftCol] = 152;
+                                        }
+                                    }
+                                }
+                                if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                                    movedCoinX = entityRightCol * 48;
+                                    movedCoinY = entityTopRow * 48;
+                                    CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                                }
+                                if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
+                                    movedCoinX = entityLeftCol * 48;
+                                    movedCoinY = entityTopRow * 48;
+                                    CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                                }
+                            }
                         }
-                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
-                            movedX = entityLeftCol * 48;
-                            movedY = entityTopRow * 48;
-                            CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
-                        }
-                        coins++;
-                        score+=200;
-                        movedCoin = true;
                         collision = true;
                     }
                     //HITTING POWERUP BLOCK
@@ -438,19 +502,38 @@ public class Playing {
                     //HITTING COIN BRICKS
                     if (Player.inAir && Player.airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
-                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
-                            movedX = entityLeftCol * 48;
-                            movedY = entityTopRow * 48;
-                            CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                        for (MapObjects cb : coinBlocksList) {
+                            if (cb.isActive()) {
+                                if (Player.hitbox.intersects(cb.hitbox)) {
+                                    cb.coinsInside--;
+                                    if (cb.coinsInside > 0) {
+                                        movedCoin = true;
+                                        coins++;
+                                        score+=200;
+                                    }
+                                    if (cb.coinsInside == 0) {
+                                        coins++;
+                                        cb.setActive(false);
+                                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                                            lvl[entityTopRow][entityLeftCol] = 152;
+                                        }
+                                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
+                                            lvl[entityTopRow][entityRightCol] = 152;
+                                        }
+                                    }
+                                }
+                                if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                                    movedCoinX = entityLeftCol * 48;
+                                    movedCoinY = entityTopRow * 48;
+                                    CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                                }
+                                if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
+                                    movedCoinX = entityRightCol * 48;
+                                    movedCoinY = entityTopRow * 48;
+                                    CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                                }
+                            }
                         }
-                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
-                            movedX = entityRightCol * 48;
-                            movedY = entityTopRow * 48;
-                            CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
-                        }
-                        coins++;
-                        score+=200;
-                        movedCoin = true;
                         collision = true;
                     }
                     //HITTING POWERUP BLOCK

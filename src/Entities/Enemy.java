@@ -36,19 +36,33 @@ public abstract class Enemy {
         levelManager = new LevelManager();
         this.x = x;
         this.y = y;
+
     }
 
     protected void updateAnimationTick() {
-        if (enemyType == GOOMBA) {
-            accurateAnimationRow = 6;
-        }
-
         aniTick++;
-        if (aniTick >= aniSpeed) {
-            aniTick = 0;
-            aniIndex++;
-            if (aniIndex >= getEnemySprite(enemyType)) {
-                aniIndex = 0;
+        if (enemyType == TROOPA_KICKED) {
+            aniSpeed = 6;
+        }
+        if (enemyType == TROOPA && direction == RIGHT) {
+            if (aniIndex < 2) {
+                aniIndex = 2;
+            }
+            if (aniTick >= aniSpeed) {
+                aniTick = 0;
+                aniIndex++;
+                if (aniIndex >= 4) {
+                    aniIndex = 2;
+                }
+            }
+        }
+        else {
+            if (aniTick >= aniSpeed) {
+                aniTick = 0;
+                aniIndex++;
+                if (aniIndex >= getEnemySprite(enemyType)) {
+                    aniIndex = 0;
+                }
             }
         }
     }
