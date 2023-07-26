@@ -1,6 +1,7 @@
 package Entities;
 
 import Utilities.LoadSave;
+import com.company.Game;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;

@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 import static Utilities.Constants.PlayerConstants.*;
 import static Utilities.Constants.Directions.*;
 
-public class Player extends Entity{
+public class Player extends Entity {
     private int animationTick, animationIndex, animationSpeed = 25;
     private int accurateAnimationRow;
     private float playerSpeed = 1.0f;
@@ -20,13 +20,18 @@ public class Player extends Entity{
     private float maxSprint = 2.0f;
     public static float leftPlayerSprint;
     public static float rightPlayerSprint;
-    public static int playerStatus = FIRE;
+    public static int playerStatus = SMALL;
     public int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
     public static boolean jumping = false;
     private boolean ducking = false;
     public static boolean turning = false;
     public static boolean left, up, right, down, jump, duck, sprint;
+    public static boolean immortality = false;
+    public static boolean gotHit = false;
+    public static boolean bigUpgrade = false;
+    public static boolean fireUpgrade = false;
+    private int counter = 0;
 
     //JUMPING
     public static float airSpeed = 0.0f;
@@ -37,10 +42,16 @@ public class Player extends Entity{
 
     public static boolean debugMode = false;
 
+    BufferedImage img;
+    BufferedImage smallMario;
+    BufferedImage bigMario;
+    BufferedImage fireMario;
+
     public Player(float x, float y) {
         super(x, y);
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
+        mirrorReflection();
     }
 
     public void update() {
@@ -49,101 +60,246 @@ public class Player extends Entity{
         setAnimation();
     }
 
-    public void render(Graphics g, int lvlOffset) {
-        //MIRROR REFLECTION
-        BufferedImage img = animations[accurateAnimationRow][animationIndex];
+    private void mirrorReflection() {
+        img = animations[accurateAnimationRow][animationIndex];
+        smallMario = animations[0][animationIndex];
+        bigMario = animations[2][animationIndex];
+        fireMario = animations[4][animationIndex];
+
+        //MIRROR REFLECTION OF EVERY SPRITES
         AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
         tx.translate(-img.getWidth(null), 0);
         AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         img = op.filter(img,null);
 
-        if (direction == RIGHT) {
-            if (playerStatus == SMALL) {
-                //TURNING
-                if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
-                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y - 6, 120, 120, null);
+        //MIRROR REFLECTION OF SMALL MARIO SPRITES TO GETTING HIT ANIMATION
+        AffineTransform tx2 = AffineTransform.getScaleInstance(-1, 1);
+        tx2.translate(-smallMario.getWidth(null), 0);
+        AffineTransformOp op2 = new AffineTransformOp(tx2, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        smallMario = op2.filter(smallMario,null);
+
+        //MIRROR REFLECTION OF BIG MARIO SPRITES TO GETTING HIT ANIMATION
+        AffineTransform tx3 = AffineTransform.getScaleInstance(-1, 1);
+        tx3.translate(-bigMario.getWidth(null), 0);
+        AffineTransformOp op3 = new AffineTransformOp(tx3, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        bigMario = op3.filter(bigMario,null);
+
+        //MIRROR REFLECTION OF FIRE MARIO SPRITES TO GETTING HIT ANIMATION
+        AffineTransform tx4 = AffineTransform.getScaleInstance(-1, 1);
+        tx4.translate(-fireMario.getWidth(null), 0);
+        AffineTransformOp op4 = new AffineTransformOp(tx4, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        fireMario = op4.filter(fireMario,null);
+    }
+
+    public void render(Graphics g, int lvlOffset) {
+        mirrorReflection();
+
+        if (playerStatus != DEAD) {
+            if (direction == RIGHT) {
+                if (playerStatus == SMALL) {
+                    //TURNING
+                    if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
+                        g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 6, 120, 120, null);
+                    }
+                    //RUNNING FIXED
+                    else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
+                    }
+                    //EVERYTHING ELSE
+                    else {
+                        if (!gotHit) {
+                            g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 4, 120, 120, null);
+                        }
+                        if (gotHit) {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(animations[2][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 48, 120, 120, null);
+                            } else {
+                                g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 4, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                gotHit = false;
+                                immortality = false;
+                            }
+                        }
+                    }
                 }
-                //RUNNING FIXED
-                else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]){
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
+                if (playerStatus == BIG) {
+                    //TURNING
+                    if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
+                        g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 2, 120, 120, null);
+                    }
+                    //DUCKING
+                    else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 17) - lvlOffset, (int) y + 12, 120, 120, null);
+                    }
+                    //EVERYTHING ELSE
+                    else {
+                        if (!gotHit && !bigUpgrade) {
+                            g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                        }
+                        if (bigUpgrade) {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(animations[0][animationIndex], (int) (x - 5) - lvlOffset, (int) y + 44, 120, 120, null);
+                            } else {
+                                g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                bigUpgrade = false;
+                            }
+                        }
+                        if (gotHit) {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(null, (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                            } else {
+                                g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                gotHit = false;
+                                immortality = false;
+                            }
+                        }
+                    }
                 }
-                //EVERYTHING ELSE
-                else {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y-4, 120, 120, null);
+                if (playerStatus == FIRE) {
+                    //TURNING
+                    if (animations[accurateAnimationRow][animationIndex] == animations[4][4]) {
+                        g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 2, 120, 120, null);
+                    }
+                    //DUCKING
+                    else if (animations[accurateAnimationRow][animationIndex] == animations[5][3]) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 17) - lvlOffset, (int) y + 12, 120, 120, null);
+                    }
+                    //EVERYTHING ELSE
+                    else {
+                        if (!fireUpgrade) {
+                            g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                        }
+                        else {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(animations[2][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                            } else {
+                                g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                fireUpgrade = false;
+                            }
+                        }
+                    }
                 }
-            }
-            if (playerStatus == BIG) {
-                //TURNING
-                if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y - 2, 120, 120, null);
+            } else if (direction == LEFT) {
+                if (playerStatus == SMALL) {
+                    //TURNING
+                    if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
+                    }
+                    //RUNNING FIXED
+                    else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]) {
+                        g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 6, 120, 120, null);
+                    }
+                    //EVERYTHING ELSE
+                    else {
+                        if (!gotHit) {
+                            g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 4, 120, 120, null);
+                        }
+                        if (gotHit) {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(bigMario, (int) (x - 81) - lvlOffset, (int) y - 48, 120, 120, null);
+                            } else {
+                                g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 4, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                gotHit = false;
+                                immortality = false;
+                            }
+                        }
+                    }
                 }
-                //DUCKING
-                else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 17) - lvlOffset, (int) y + 12, 120, 120, null);
+                if (playerStatus == BIG) {
+                    //TURNING
+                    if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 2, 120, 120, null);
+                    }
+                    //DUCKING
+                    else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
+                        g.drawImage(img, (int) (x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
+                    }
+                    //EVERYTHING ELSE
+                    else {
+                        if (!gotHit && !bigUpgrade) {
+                            g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                        }
+                        if (bigUpgrade) {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(smallMario, (int) (x - 81) - lvlOffset, (int) y + 44, 120, 120, null);
+                            } else {
+                                g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                bigUpgrade = false;
+                            }
+                        }
+                        if (gotHit) {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(null, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                            } else {
+                                g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                gotHit = false;
+                                immortality = false;
+                            }
+                        }
+                    }
                 }
-                //EVERYTHING ELSE
-                else {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
-                }
-            }
-            if (playerStatus == FIRE) {
-                //TURNING
-                if (animations[accurateAnimationRow][animationIndex] == animations[4][4]) {
-                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y - 2, 120, 120, null);
-                }
-                //DUCKING
-                else if (animations[accurateAnimationRow][animationIndex] == animations[5][3]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 17) - lvlOffset, (int) y + 12, 120, 120, null);
-                }
-                //EVERYTHING ELSE
-                else {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+                if (playerStatus == FIRE) {
+                    //TURNING
+                    if (animations[accurateAnimationRow][animationIndex] == animations[4][4]) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 2, 120, 120, null);
+                    }
+                    //DUCKING
+                    else if (animations[accurateAnimationRow][animationIndex] == animations[5][3]) {
+                        g.drawImage(img, (int) (x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
+                    }
+                    //EVERYTHING ELSE
+                    else {
+                        if (!fireUpgrade) {
+                            g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                        }
+                        else {
+                            counter++;
+                            if (counter % 16 == 0 || counter % 16 == 1 || counter % 16 == 2 || counter % 16 == 3 || counter % 16 == 4 || counter % 16 == 5 || counter % 16 == 6 || counter % 16 == 7) {
+                                g.drawImage(bigMario, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                            } else {
+                                g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
+                            }
+                            if (counter >= 256) {
+                                counter = 0;
+                                fireUpgrade = false;
+                            }
+                        }
+                    }
                 }
             }
         }
-        else if (direction == LEFT) {
-            if (playerStatus == SMALL) {
-                //TURNING
-                if (animations[accurateAnimationRow][animationIndex] == animations[0][4]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 6, 120, 120, null);
-                }
-                //RUNNING FIXED
-                else if (animations[accurateAnimationRow][animationIndex] == animations[0][2]){
-                    g.drawImage(img, (int)(x- 81) - lvlOffset, (int) y - 6, 120, 120, null);
-                }
-                //EVERYTHING ELSE
-                else {
-                    g.drawImage(img, (int)(x- 81) - lvlOffset, (int) y-4, 120, 120, null);
-                }
-            }
-            if (playerStatus == BIG) {
-                //TURNING
-                if (animations[accurateAnimationRow][animationIndex] == animations[2][4]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 2, 120, 120, null);
-                }
-                //DUCKING
-                else if (animations[accurateAnimationRow][animationIndex] == animations[3][3]) {
-                    g.drawImage(img, (int)(x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
-                }
-                //EVERYTHING ELSE
-                else {
-                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y, 120, 120, null);
-                }
-            }
-            if (playerStatus == FIRE) {
-                //TURNING
-                if (animations[accurateAnimationRow][animationIndex] == animations[4][4]) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], (int)(x - 5) - lvlOffset, (int) y - 2, 120, 120, null);
-                }
-                //DUCKING
-                else if (animations[accurateAnimationRow][animationIndex] == animations[5][3]) {
-                    g.drawImage(img, (int)(x - 69) - lvlOffset, (int) y + 12, 120, 120, null);
-                }
-                //EVERYTHING ELSE
-                else {
-                    g.drawImage(img, (int)(x - 81) - lvlOffset, (int) y, 120, 120, null);
-                }
-            }
+        //DEAD ANIMATION
+        else {
+            g.drawImage(animations[1][2], (int)(x - 5) - lvlOffset, (int) y, 120, 120, null);
+            jump();
+            inAir = true;
         }
         if (debugMode) {
             if (duck && !inAir) {
@@ -200,7 +356,7 @@ public class Player extends Entity{
             animationIndex = 3;
         }
 
-        if (animationTick >= animationSpeed
+        if (animationTick >= animationSpeed && playerStatus != DEAD
                 && playerAction != SMALL_MARIO_JUMP && playerAction != SMALL_MARIO_TURN
                 && playerAction != BIG_MARIO_DUCK && playerAction != BIG_MARIO_JUMP && playerAction != BIG_MARIO_TURN
                 && playerAction != FIRE_MARIO_DUCK && playerAction != FIRE_MARIO_JUMP && playerAction != FIRE_MARIO_TURN) {
@@ -290,6 +446,7 @@ public class Player extends Entity{
         turning = false;
         animationSpeed = 12;
         sprintCounter();
+        fallenOutsideMap();
         Playing.checkCloseToBorder();
         Playing.checkCollisions();
 
@@ -305,7 +462,7 @@ public class Player extends Entity{
             hitbox.height = 30 * Game.SCALE;
         }
 
-        if (!Playing.collision) {
+        if (!Playing.collision && playerStatus != DEAD) {
             //MOVING LEFT
             if (left && !right && !duck) {
                 if (rightPlayerSprint > minSprint) {
@@ -368,7 +525,7 @@ public class Player extends Entity{
         if (inAir) {
             y += airSpeed;
             airSpeed += gravity;
-            if (!jump && airSpeed < 0) {
+            if (!jump && airSpeed < 0 && playerStatus != DEAD) {
                 airSpeed += strongerGravity;
             }
             jumping = true;
@@ -395,6 +552,14 @@ public class Player extends Entity{
         }
         inAir = true;
         airSpeed = jumpSpeed;
+    }
+
+    private void fallenOutsideMap() {
+        if (y > Game.GAME_HEIGHT && playerStatus != DEAD) {
+            playerStatus = DEAD;
+            y = Game.GAME_HEIGHT;
+            inAir = false;
+        }
     }
 
     public void resetDirBooleans() {
@@ -465,4 +630,3 @@ public class Player extends Entity{
         this.sprint = sprint;
     }
 }
-

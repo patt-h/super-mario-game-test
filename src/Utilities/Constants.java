@@ -46,6 +46,7 @@ public class Constants {
         public static final int SMALL = 0;
         public static final int BIG = 1;
         public static final int FIRE = 2;
+        public static final int DEAD = 3;
 
         public static final int SMALL_MARIO_IDLE = 0;
         public static final int SMALL_MARIO_WALK = 1;

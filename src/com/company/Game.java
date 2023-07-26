@@ -15,6 +15,9 @@ import Levels.Playing;
 import Objects.ObjectManager;
 import Utilities.LoadSave;
 
+import static Utilities.Constants.PlayerConstants.DEAD;
+import static Utilities.Constants.PlayerConstants.SMALL;
+
 public class Game implements Runnable{
     private GameWindow gameWindow;
     private GamePanel gamePanel = new GamePanel(this);
@@ -23,12 +26,12 @@ public class Game implements Runnable{
     private JLabel scoreLabel = new JLabel();
     private JLabel coinsLabel = new JLabel();
     private JLabel worldLabel = new JLabel();
+    private JLabel worldNameLabel = new JLabel();
     private JLabel timeLabel = new JLabel();
     private JLabel timerLabel = new JLabel();
     private Thread gameThread;
     private final int FPS_SET = 144;
     private final int UPS_SET = 200;
-    public int frames = 0;
 
     Font font;
 
@@ -59,6 +62,7 @@ public class Game implements Runnable{
         scoreLabel.setBounds(15,35,160,30);
         coinsLabel.setBounds(350,35,120,30);
         worldLabel.setBounds(595,15,120,30);
+        worldNameLabel.setBounds(595,35,100,30);
         timeLabel.setBounds(GAME_WIDTH-95, 15,120,30);
         timerLabel.setBounds(GAME_WIDTH-76, 35,120,30);
         gamePanel.setFocusable(true);
@@ -89,6 +93,10 @@ public class Game implements Runnable{
         worldLabel.setFont(font);
         worldLabel.setForeground(Color.WHITE);
 
+        worldNameLabel.setFont(font);
+        worldNameLabel.setForeground(Color.WHITE);
+        worldNameLabel.setHorizontalAlignment(JLabel.CENTER);
+
         timeLabel.setFont(font);
         timeLabel.setForeground(Color.WHITE);
 
@@ -99,14 +107,15 @@ public class Game implements Runnable{
         gamePanel.add(scoreLabel);
         gamePanel.add(coinsLabel);
         gamePanel.add(worldLabel);
+        gamePanel.add(worldNameLabel);
         gamePanel.add(timeLabel);
         gamePanel.add(timerLabel);
     }
 
     private void initClasses() {
         levelManager = new LevelManager();
-        player = new Player(50,200);
         playing = new Playing();
+        player = new Player(50,200);
 
         //THIS WILL BE MOVED TO CLASS WHERE MAP WILL BE INITIALIZED
         playing.timeCounter();
@@ -125,6 +134,16 @@ public class Game implements Runnable{
         objectManager.update();
         enemyManager.update();
         player.update();
+
+        //RESETTING WHOLE MAP AFTER DEATH
+        if (player.playerStatus == DEAD && player.y > 6 * GAME_HEIGHT) {
+            playing.lives--;
+            playing.initEntities();
+            player.resetDirBooleans();
+            player.playerStatus = SMALL;
+            player.x = Playing.startX;
+            player.y = Playing.startY;
+        }
     }
 
     public void render(Graphics g) {
@@ -136,7 +155,7 @@ public class Game implements Runnable{
 
         //COINS SECTION ON HUD
         miniCoinAniIndex();
-        g.drawImage(objectManager.animations[8][aniIndex], 330,43,14,16,null);
+        g.drawImage(objectManager.animations[8][aniIndex], 330,42,14,16,null);
         //OUTLINED TEXT ON HUD
         outlineShape(g);
     }
@@ -185,6 +204,15 @@ public class Game implements Runnable{
         g2.draw(worldShape);
         g2.translate(-596,-35);
 
+        //WORLD
+        GlyphVector glyphVectorWorldName = font.createGlyphVector(g2.getFontRenderContext(), Playing.worldName);
+        Shape worldNameShape = glyphVectorWorldName.getOutline();
+
+        g2.translate(606,55);
+        g2.setStroke(new BasicStroke(3.5f));
+        g2.draw(worldNameShape);
+        g2.translate(-606,-55);
+
         //TIME
         String time = "TIME";
         GlyphVector glyphVectorTime = font.createGlyphVector(g2.getFontRenderContext(), time);
@@ -210,6 +238,7 @@ public class Game implements Runnable{
         scoreLabel.setText(score);
         coinsLabel.setText(coins);
         worldLabel.setText(world);
+        worldNameLabel.setText(Playing.worldName);
         timeLabel.setText(time);
         timerLabel.setText(timer);
     }
@@ -224,10 +253,6 @@ public class Game implements Runnable{
                 aniIndex = 0;
             }
         }
-    }
-
-    private void timer() {
-
     }
 
     @Override

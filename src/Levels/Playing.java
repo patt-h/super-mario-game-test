@@ -57,16 +57,29 @@ public class Playing {
     private int blockType;
     public static int lvlLenght;
 
+    public static int startX = 50;
+    public static int startY = 200;
     public static int lives = 4;
     public static int score;
     public static int coins;
     public static int worldTime = 300;
+    public static String worldName = "TEST";
 
     public Timer timeCounter;
 
     public Playing() {
-        loadAnimation();
         levelManager = new LevelManager();
+        loadAnimation();
+        initEntities();
+    }
+
+    public void initEntities() {
+        lvl = LevelBuilder.getLevelData();
+        CoinList.clear();
+        GoombaList.clear();
+        TroopaList.clear();
+        coinBlocksList.clear();
+
         CoinList.add(new Coin(200,200, COIN));
         GoombaList.add(new Goomba(200,200));
         TroopaList.add(new Troopa(500,200));
@@ -79,7 +92,6 @@ public class Playing {
                 }
             }
         }
-        coinBlocksList = MapObjects.getCoinBlocks();
     }
 
     public void timeCounter() {
@@ -181,10 +193,6 @@ public class Playing {
                 }
             }
         }
-
-        if (broken) {
-            g.drawImage(levelManager.sprites.get(228), brokenX - LvlOffset, brokenY-50, 48, 48, null);
-        }
     }
 
     private void loadAnimation() {
@@ -203,7 +211,6 @@ public class Playing {
         if (blockType == PRIZE_BLOCK) {
             accurateAnimationRow = 3;
         }
-
         if (animationTick >= animationSpeed) {
             animationTick = 0;
             animationIndex++;
@@ -287,7 +294,7 @@ public class Playing {
                     && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
                 distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
                 if (distanceY < 0) {
-                    Player.y = (entityBottomRow - 2) * Game.TILES_SIZE + (Game.TILES_SIZE*2 - Player.hitbox.height);
+                    Player.y = (entityBottomRow - 2) * Game.TILES_SIZE + (Game.TILES_SIZE * 2 - Player.hitbox.height);
                     Player.jump = false;
                     Player.inAir = false;
                     Player.airSpeed = 0;
@@ -304,7 +311,7 @@ public class Playing {
         }
 
         //NORMAL COLLISIONS
-        if (Player.y > 0) {
+        if (Player.y > 0 && Player.y < Game.GAME_HEIGHT - 2*Game.TILES_SIZE) {
             switch (Entity.direction) {
                 case RIGHT -> {
                     tileNum1 = lvl[entityTopRow][entityRightCol];
@@ -350,7 +357,7 @@ public class Playing {
                                     if (cb.coinsInside > 0) {
                                         movedCoin = true;
                                         coins++;
-                                        score+=200;
+                                        score += 200;
                                     }
                                     if (cb.coinsInside == 0) {
                                         coins++;
@@ -435,7 +442,7 @@ public class Playing {
                     //PLAYER IN AIR COLLISIONS
 
                     //COLLISION WHEN FALLING
-                    if (Player.inAir
+                    if (Player.inAir && (Player.y < Game.GAME_HEIGHT - 3*Game.TILES_SIZE || Player.playerStatus == SMALL)
                             && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
                         distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
                         if (distanceY < 0) {
@@ -457,11 +464,13 @@ public class Playing {
                         }
                     }
                     //FALLING
-                    if (levelManager.sprites.get(lvl[entityBottomRow + 1][entityRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(lvl[entityBottomRow + 1][entityLeftCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
-                        Player.inAir = true;
+                    if (Player.y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE || Player.playerStatus == SMALL) {
+                        if (levelManager.sprites.get(lvl[entityBottomRow + 1][entityRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(lvl[entityBottomRow + 1][entityLeftCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
+                            Player.inAir = true;
+                        }
                     }
                 }
 
@@ -594,7 +603,7 @@ public class Playing {
                     //PLAYER IN AIR COLLISIONS
 
                     //COLLISION WHEN FALLING
-                    if (Player.inAir
+                    if (Player.inAir && (Player.y < Game.GAME_HEIGHT - 3*Game.TILES_SIZE || Player.playerStatus == SMALL)
                             && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
                         distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
                         if (distanceY < 0) {
@@ -614,11 +623,13 @@ public class Playing {
                         }
                     }
                     //FALLING
-                    if (levelManager.sprites.get(lvl[entityBottomRow + 1][entityRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(lvl[entityBottomRow + 1][entityLeftCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
-                        Player.inAir = true;
+                    if (Player.y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE || Player.playerStatus == SMALL) {
+                        if (levelManager.sprites.get(lvl[entityBottomRow + 1][entityRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(lvl[entityBottomRow + 1][entityLeftCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol]) == levelManager.sprites.get(90)) {
+                            Player.inAir = true;
+                        }
                     }
                 }
             }

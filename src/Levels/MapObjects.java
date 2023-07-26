@@ -19,10 +19,6 @@ public class MapObjects {
         hitbox.height = Game.TILES_SIZE;
     }
 
-    public static ArrayList<MapObjects> getCoinBlocks() {
-        return coinBlocksList;
-    }
-
     public boolean isActive() {
         return active;
     }

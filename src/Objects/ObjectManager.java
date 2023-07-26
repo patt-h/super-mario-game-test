@@ -62,6 +62,7 @@ public class ObjectManager {
                     if (Player.playerStatus == SMALL) {
                         Player.y -= Game.TILES_SIZE;
                         Player.playerStatus = BIG;
+                        Player.bigUpgrade = true;
                     }
                     m.setActive(false);
                     Playing.score += 200;
@@ -75,9 +76,11 @@ public class ObjectManager {
                     if (Player.playerStatus == SMALL) {
                         Player.y -= Game.TILES_SIZE;
                         Player.playerStatus = BIG;
+                        Player.bigUpgrade = true;
                     }
                     else if (Player.playerStatus == BIG) {
                         Player.playerStatus = FIRE;
+                        Player.fireUpgrade = true;
                     }
                     f.setActive(false);
                     Playing.score += 600;

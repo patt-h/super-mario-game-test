@@ -40,24 +40,33 @@ public class EnemyManager {
         for (Goomba go : goombas) {
             if (go.isActive()) {
                 go.update();
-                if (Player.hitbox.intersects(go.damageHitbox) && !Player.hitbox.intersects(go.hitbox) && Player.airSpeed > 0 && !go.fireballed) {
+                if (Player.hitbox.intersects(go.damageHitbox) && !Player.hitbox.intersects(go.hitbox) && Player.airSpeed > 0 && !go.fireballed && !go.stepped && Player.playerStatus != DEAD) {
                     go.stepped = true;
+                    Player.y -= 48;
+                    Player.airSpeed = -5;
                     Playing.score += 200;
                 }
                 else if (Player.hitbox.intersects(go.hitbox) && !go.stepped && !go.fireballed) {
-                    if (Player.playerStatus == FIRE) {
+                    if (Player.playerStatus == FIRE && !Player.immortality) {
                         Player.playerStatus = BIG;
+                        Player.immortality = true;
+                        Player.gotHit = true;
                     }
-                    if (Player.playerStatus == BIG) {
+                    if (Player.playerStatus == BIG && !Player.immortality) {
                         Player.playerStatus = SMALL;
+                        Player.immortality = true;
+                        Player.gotHit = true;
                         if (!Player.inAir) {
                             Player.y = Player.y + 48;
                         }
                     }
+                    if (Player.playerStatus == SMALL && !Player.immortality) {
+                        Player.playerStatus = DEAD;
+                    }
                 }
                 for (Fireball fb : fireballs) {
                     if (fb.isActive()) {
-                        if (fb.hitbox.intersects(go.hitbox)) {
+                        if (fb.hitbox.intersects(go.hitbox) && !go.stepped && !go.fireballed) {
                             go.fireballed = true;
                             fb.setActive(false);
                             KeyInputs.activeBalls--;
@@ -71,14 +80,14 @@ public class EnemyManager {
             if (tr.isActive()) {
                 tr.update();
                 //STEPPING
-                if (Player.hitbox.intersects(tr.damageHitbox) && !Player.hitbox.intersects(tr.hitbox) && Player.airSpeed > 0 && !tr.fireballed && !tr.kicked && !tr.stepped) {
+                if (Player.hitbox.intersects(tr.damageHitbox) && !Player.hitbox.intersects(tr.hitbox) && Player.airSpeed > 0 && Player.playerStatus != DEAD && !tr.fireballed && !tr.kicked && !tr.stepped) {
                     Player.y -= 48;
                     Player.airSpeed = -5;
                     Playing.score += 200;
                     tr.stepped = true;
                 }
                 //KICKING SHELL
-                if (Player.hitbox.intersects(tr.hitbox) && tr.stepped && Player.airSpeed >= 0 && !tr.kicked) {
+                if (Player.hitbox.intersects(tr.hitbox) && tr.stepped && Player.airSpeed >= 0 && Player.playerStatus != DEAD && !tr.kicked) {
                     tr.tempImmortal = 0;
                     tr.kicked = true;
                     tr.stepped = false;
@@ -91,7 +100,7 @@ public class EnemyManager {
                     }
                 }
                 //STOPPING SHELL
-                if (tr.kicked && Player.hitbox.intersects(tr.damageHitbox) && !Player.hitbox.intersects(tr.hitbox) && !tr.stepped && Player.airSpeed > 0) {
+                if (tr.kicked && Player.hitbox.intersects(tr.damageHitbox) && !Player.hitbox.intersects(tr.hitbox) && !tr.stepped && Player.airSpeed > 0 && Player.playerStatus != DEAD) {
                     tr.tempImmortal = 0;
                     Player.y -= 48;
                     Player.airSpeed = -5;
@@ -101,19 +110,26 @@ public class EnemyManager {
                 }
                 //GETTING HIT
                 if (Player.hitbox.intersects(tr.hitbox) && !tr.fireballed && tr.tempImmortal == 40) {
-                    if (Player.playerStatus == FIRE) {
+                    if (Player.playerStatus == FIRE && !Player.immortality) {
                         Player.playerStatus = BIG;
+                        Player.immortality = true;
+                        Player.gotHit = true;
                     }
-                    if (Player.playerStatus == BIG) {
+                    if (Player.playerStatus == BIG && !Player.immortality) {
                         Player.playerStatus = SMALL;
+                        Player.immortality = true;
+                        Player.gotHit = true;
                         if (!Player.inAir) {
                             Player.y = Player.y + 48;
                         }
                     }
+                    if (Player.playerStatus == SMALL && !Player.immortality) {
+                        Player.playerStatus = DEAD;
+                    }
                 }
                 for (Fireball fb : fireballs) {
                     if (fb.isActive()) {
-                        if (fb.hitbox.intersects(tr.hitbox)) {
+                        if (fb.hitbox.intersects(tr.hitbox) && !tr.fireballed) {
                             tr.fireballed = true;
                             tr.enemyType = TROOPA;
                             fb.setActive(false);

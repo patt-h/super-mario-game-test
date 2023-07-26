@@ -49,7 +49,6 @@ public class Troopa extends Enemy {
         if (kicked) {
             if (tempImmortal < 40) {
                 tempImmortal++;
-                System.out.println(tempImmortal);
             }
             if (direction == RIGHT) {
                 x += 3;
