@@ -59,9 +59,6 @@ public class Playing {
 
     public static int startX = 50;
     public static int startY = 200;
-    public static int lives = 4;
-    public static int score;
-    public static int coins;
     public static int worldTime = 300;
     public static String worldName = "TEST";
 
@@ -81,8 +78,16 @@ public class Playing {
         coinBlocksList.clear();
 
         CoinList.add(new Coin(200,200, COIN));
-        GoombaList.add(new Goomba(200,200));
-        TroopaList.add(new Troopa(500,200));
+        GoombaList.add(new Goomba(600,200));
+        GoombaList.add(new Goomba(800,200));
+        GoombaList.add(new Goomba(850,200));
+        GoombaList.add(new Goomba(870,200));
+        GoombaList.add(new Goomba(890,200));
+        GoombaList.add(new Goomba(900,200));
+        GoombaList.add(new Goomba(920,200));
+        GoombaList.add(new Goomba(930,200));
+        GoombaList.add(new Goomba(1030,200));
+        TroopaList.add(new Troopa(1400,500));
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 lvlLenght = lvl[i].length;
@@ -222,11 +227,7 @@ public class Playing {
 
     public static void checkCollisions() {
         collision = false;
-
-        if (coins == 100) {
-            lives++;
-            coins = 0;
-        }
+        Player.blockMovement = false;
 
         int entityLeftX = (int) Entity.x;
         int entityRightX = (int) Entity.x + (int) Entity.hitbox.width;
@@ -356,11 +357,11 @@ public class Playing {
                                     cb.coinsInside--;
                                     if (cb.coinsInside > 0) {
                                         movedCoin = true;
-                                        coins++;
-                                        score += 200;
+                                        Player.coins++;
+                                        Player.score += 200;
                                     }
                                     if (cb.coinsInside == 0) {
-                                        coins++;
+                                        Player.coins++;
                                         cb.setActive(false);
                                         if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
                                             lvl[entityTopRow][entityRightCol] = 152;
@@ -437,6 +438,17 @@ public class Playing {
                         collision = true;
                         Player.leftPlayerSprint = 0;
                         Player.rightPlayerSprint = 0;
+                    }
+                    //MOVING PLAYER FURTHER IF HE HAS BLOCK ABOVE WHILE DUCKING
+                    if (!Player.inAir && Player.playerStatus != SMALL) {
+                        if (levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90)) {
+                            Player.x++;
+                            Player.blockMovement = true;
+                        }
+                        if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(90)) {
+                            Player.x--;
+                            Player.blockMovement = true;
+                        }
                     }
 
                     //PLAYER IN AIR COLLISIONS
@@ -517,11 +529,11 @@ public class Playing {
                                     cb.coinsInside--;
                                     if (cb.coinsInside > 0) {
                                         movedCoin = true;
-                                        coins++;
-                                        score+=200;
+                                        Player.coins++;
+                                        Player.score+=200;
                                     }
                                     if (cb.coinsInside == 0) {
-                                        coins++;
+                                        Player.coins++;
                                         cb.setActive(false);
                                         if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
                                             lvl[entityTopRow][entityLeftCol] = 152;
@@ -598,6 +610,17 @@ public class Playing {
                         Player.rightPlayerSprint = 0;
                         Player.leftPlayerSprint = 0;
                         collision = true;
+                    }
+                    //MOVING PLAYER FURTHER IF HE HAS BLOCK ABOVE WHILE DUCKING
+                    if (!Player.inAir && Player.playerStatus != SMALL) {
+                        if (levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90)) {
+                            Player.x--;
+                            Player.blockMovement = true;
+                        }
+                        if (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) && levelManager.sprites.get(tileNum4) == levelManager.sprites.get(90)) {
+                            Player.x++;
+                            Player.blockMovement = true;
+                        }
                     }
 
                     //PLAYER IN AIR COLLISIONS

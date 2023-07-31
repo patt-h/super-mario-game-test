@@ -33,7 +33,8 @@ public class Game implements Runnable{
     private final int FPS_SET = 144;
     private final int UPS_SET = 200;
 
-    Font font;
+    public static Font font;
+    public static Font smallerFont;
 
     private Player player;
     private LevelManager levelManager;
@@ -80,6 +81,7 @@ public class Game implements Runnable{
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
+        smallerFont = Game.font.deriveFont(16f);
 
         playerLabel.setFont(font);
         playerLabel.setForeground(Color.WHITE);
@@ -137,9 +139,10 @@ public class Game implements Runnable{
 
         //RESETTING WHOLE MAP AFTER DEATH
         if (player.playerStatus == DEAD && player.y > 6 * GAME_HEIGHT) {
-            playing.lives--;
+            playing.worldTime = 300;
             playing.initEntities();
             player.resetDirBooleans();
+            player.lives--;
             player.playerStatus = SMALL;
             player.x = Playing.startX;
             player.y = Playing.startY;
@@ -165,7 +168,7 @@ public class Game implements Runnable{
         g2.setColor(new Color(15, 30, 60));
 
         //MARIO
-        String mario = "MARIO *" + Playing.lives;
+        String mario = "MARIO *" + Player.lives;
         GlyphVector glyphVectorMario = font.createGlyphVector(g2.getFontRenderContext(), mario);
         Shape marioShape = glyphVectorMario.getOutline();
 
@@ -175,7 +178,7 @@ public class Game implements Runnable{
         g2.translate(-16,-35);
 
         //SCORE
-        String score = String.format("%07d", Playing.score);
+        String score = String.format("%07d", Player.score);
         GlyphVector glyphVectorScore = font.createGlyphVector(g2.getFontRenderContext(), score);
         Shape scoreShape = glyphVectorScore.getOutline();
 
@@ -185,7 +188,7 @@ public class Game implements Runnable{
         g2.translate(-16,-55);
 
         //COINS
-        String coins = "^ " + String.format("%02d", Playing.coins);
+        String coins = "^ " + String.format("%02d", Player.coins);
         GlyphVector glyphVectorCoins = font.createGlyphVector(g2.getFontRenderContext(), coins);
         Shape coinsShape = glyphVectorCoins.getOutline();
 
@@ -204,7 +207,7 @@ public class Game implements Runnable{
         g2.draw(worldShape);
         g2.translate(-596,-35);
 
-        //WORLD
+        //WORLD NAME
         GlyphVector glyphVectorWorldName = font.createGlyphVector(g2.getFontRenderContext(), Playing.worldName);
         Shape worldNameShape = glyphVectorWorldName.getOutline();
 

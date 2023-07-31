@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.Directions.RIGHT;
+import static Utilities.Constants.EnemyConstants.GOOMBA;
 
 public class Goomba extends Enemy {
     public static ArrayList<Goomba> GoombaList = new ArrayList<>();
@@ -15,6 +16,7 @@ public class Goomba extends Enemy {
 
     public Goomba(float x, float y) {
         super(x, y);
+        enemyType = GOOMBA;
         direction = LEFT;
         hitbox = new Rectangle2D.Float();
         damageHitbox = new Rectangle2D.Float();
@@ -29,8 +31,10 @@ public class Goomba extends Enemy {
             y += airSpeed;
             airSpeed += gravity;
         }
-        hitbox.x = x;
-        hitbox.y = y;
+        if (!killed && !killedByShell) {
+            hitbox.x = x;
+            hitbox.y = y;
+        }
         damageHitbox.x = x;
         damageHitbox.y = y - 2 * Game.SCALE;
 

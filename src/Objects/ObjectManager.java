@@ -12,8 +12,7 @@ import java.util.ArrayList;
 
 import static Levels.Playing.lvlLenght;
 import static Utilities.Constants.Directions.LEFT;
-import static Utilities.Constants.ObjectConstants.COIN;
-import static Utilities.Constants.ObjectConstants.COIN_BRICK;
+import static Utilities.Constants.ObjectConstants.*;
 import static Utilities.Constants.PlayerConstants.*;
 
 public class ObjectManager {
@@ -43,8 +42,8 @@ public class ObjectManager {
                 if (c.objType == COIN) {
                     if (Player.hitbox.intersects(c.hitbox.x, c.hitbox.y, (int) c.hitbox.width, (int) c.hitbox.height)) {
                         c.setActive(false);
-                        Playing.coins++;
-                        Playing.score += 200;
+                        Player.coins++;
+                        Player.score += getScoreAmount(COIN);
                     }
                 }
                 else if (c.objType == COIN_BRICK) {
@@ -65,7 +64,8 @@ public class ObjectManager {
                         Player.bigUpgrade = true;
                     }
                     m.setActive(false);
-                    Playing.score += 200;
+                    m.setCollected(true);
+                    Player.score += getScoreAmount(MUSHROOM);
                 }
             }
         }
@@ -83,7 +83,8 @@ public class ObjectManager {
                         Player.fireUpgrade = true;
                     }
                     f.setActive(false);
-                    Playing.score += 600;
+                    f.setCollected(true);
+                    Player.score += getScoreAmount(FIRE_FLOWER);
                 }
             }
         }
@@ -162,6 +163,9 @@ public class ObjectManager {
             if (m.isActive()) {
                 g.drawImage(animations[0][m.getAniIndex()], (int)m.x - xLvlOffset - 3, (int)m.y+2, Game.TILES_SIZE, Game.TILES_SIZE, null);
             }
+            if (m.isCollected()) {
+                m.drawScoreAdded(m.x - xLvlOffset, m.y, getScoreAmount(MUSHROOM), g);
+            }
         }
     }
 
@@ -169,6 +173,9 @@ public class ObjectManager {
         for (FireFlower f : fireFlowers) {
             if (f.isActive()) {
                 g.drawImage(animations[1][f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y+2, (int)f.hitbox.width, (int)f.hitbox.height, null);
+            }
+            if (f.isCollected()) {
+                f.drawScoreAdded(f.x - xLvlOffset, f.y, getScoreAmount(FIRE_FLOWER), g);
             }
         }
     }

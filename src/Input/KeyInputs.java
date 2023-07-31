@@ -28,65 +28,68 @@ public class KeyInputs implements KeyListener {
     }
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(true);
-            case KeyEvent.VK_LEFT -> {
-                if (!Player.duck) {
-                    gamePanel.getGame().getPlayer().setLeft(true);
-                }
-            }
-            case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(true);
-            case KeyEvent.VK_RIGHT -> {
-                if (!Player.duck) {
-                    gamePanel.getGame().getPlayer().setRight(true);
-                }
-            }
-            case KeyEvent.VK_Z -> {
-                if (!blockJump) {
-                    gamePanel.getGame().getPlayer().setJump(true);
-                    blockJump = true;
-                }
-            }
-            case KeyEvent.VK_X -> {
-                gamePanel.getGame().getPlayer().setSprint(true);
-                if (gamePanel.getGame().getPlayer().playerStatus == FIRE && !blockFire && activeBalls < 2 && !gamePanel.getGame().getPlayer().isDuck()) {
-                    if (gamePanel.getGame().getPlayer().direction == RIGHT) {
-                        FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x + Game.TILES_SIZE / 2, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+        if (!Player.isBlockMovement()) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(true);
+                case KeyEvent.VK_LEFT -> {
+                    if (!Player.duck) {
+                        gamePanel.getGame().getPlayer().setLeft(true);
                     }
-                    else if (gamePanel.getGame().getPlayer().direction == LEFT) {
-                        FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
-                    }
-                    blockFire = true;
-                    activeBalls++;
                 }
-            }
+                case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(true);
+                case KeyEvent.VK_RIGHT -> {
+                    if (!Player.duck) {
+                        gamePanel.getGame().getPlayer().setRight(true);
+                    }
+                }
+                case KeyEvent.VK_Z -> {
+                    if (!blockJump) {
+                        gamePanel.getGame().getPlayer().setJump(true);
+                        blockJump = true;
+                    }
+                }
+                case KeyEvent.VK_X -> {
+                    gamePanel.getGame().getPlayer().setSprint(true);
+                    if (gamePanel.getGame().getPlayer().playerStatus == FIRE && !blockFire && activeBalls < 2 && !gamePanel.getGame().getPlayer().isDuck()) {
+                        if (gamePanel.getGame().getPlayer().direction == RIGHT) {
+                            FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x + Game.TILES_SIZE / 2, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+                        } else if (gamePanel.getGame().getPlayer().direction == LEFT) {
+                            FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+                        }
+                        blockFire = true;
+                        activeBalls++;
+                    }
+                }
 
-            case KeyEvent.VK_PAGE_UP -> gamePanel.getGame().getPlayer().debugMode = true;
-            case KeyEvent.VK_PAGE_DOWN -> gamePanel.getGame().getPlayer().debugMode = false;
+                case KeyEvent.VK_PAGE_UP -> gamePanel.getGame().getPlayer().debugMode = true;
+                case KeyEvent.VK_PAGE_DOWN -> gamePanel.getGame().getPlayer().debugMode = false;
+            }
         }
     }
     @Override
     public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(false);
-            case KeyEvent.VK_LEFT -> {
-                if (!Player.duck) {
-                    gamePanel.getGame().getPlayer().setLeft(false);
+        if (!Player.isBlockMovement()) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(false);
+                case KeyEvent.VK_LEFT -> {
+                    if (!Player.duck) {
+                        gamePanel.getGame().getPlayer().setLeft(false);
+                    }
                 }
-            }
-            case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(false);
-            case KeyEvent.VK_RIGHT -> {
-                if (!Player.duck) {
-                gamePanel.getGame().getPlayer().setRight(false);
+                case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(false);
+                case KeyEvent.VK_RIGHT -> {
+                    if (!Player.duck) {
+                        gamePanel.getGame().getPlayer().setRight(false);
+                    }
                 }
-            }
-            case KeyEvent.VK_Z -> {
-                gamePanel.getGame().getPlayer().setJump(false);
-                blockJump = false;
-            }
-            case KeyEvent.VK_X -> {
-                gamePanel.getGame().getPlayer().setSprint(false);
-                blockFire = false;
+                case KeyEvent.VK_Z -> {
+                    gamePanel.getGame().getPlayer().setJump(false);
+                    blockJump = false;
+                }
+                case KeyEvent.VK_X -> {
+                    gamePanel.getGame().getPlayer().setSprint(false);
+                    blockFire = false;
+                }
             }
         }
     }

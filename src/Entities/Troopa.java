@@ -1,5 +1,6 @@
 package Entities;
 
+import Levels.Playing;
 import com.company.Game;
 
 import java.awt.geom.Rectangle2D;
@@ -34,8 +35,10 @@ public class Troopa extends Enemy {
             y += airSpeed;
             airSpeed += gravity;
         }
-        hitbox.x = x;
-        hitbox.y = y;
+        if (!killed && !killedByShell) {
+            hitbox.x = x;
+            hitbox.y = y;
+        }
         damageHitbox.x = x;
         damageHitbox.y = y - 2 * Game.SCALE;
 

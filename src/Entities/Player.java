@@ -29,9 +29,14 @@ public class Player extends Entity {
     public static boolean left, up, right, down, jump, duck, sprint;
     public static boolean immortality = false;
     public static boolean gotHit = false;
+    public static boolean blockMovement = false;
     public static boolean bigUpgrade = false;
     public static boolean fireUpgrade = false;
     private int counter = 0;
+
+    public static int lives = 4;
+    public static int score;
+    public static int coins;
 
     //JUMPING
     public static float airSpeed = 0.0f;
@@ -55,6 +60,7 @@ public class Player extends Entity {
     }
 
     public void update() {
+        updateHitbox();
         updatePosition();
         updateAnimationTick();
         setAnimation();
@@ -117,7 +123,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y - 4, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 gotHit = false;
                                 immortality = false;
@@ -146,7 +152,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 bigUpgrade = false;
                             }
@@ -158,7 +164,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 gotHit = false;
                                 immortality = false;
@@ -187,7 +193,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(animations[accurateAnimationRow][animationIndex], (int) (x - 5) - lvlOffset, (int) y, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 fireUpgrade = false;
                             }
@@ -216,7 +222,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y - 4, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 gotHit = false;
                                 immortality = false;
@@ -245,7 +251,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 bigUpgrade = false;
                             }
@@ -257,7 +263,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 gotHit = false;
                                 immortality = false;
@@ -286,7 +292,7 @@ public class Player extends Entity {
                             } else {
                                 g.drawImage(img, (int) (x - 81) - lvlOffset, (int) y, 120, 120, null);
                             }
-                            if (counter >= 256) {
+                            if (counter >= 128) {
                                 counter = 0;
                                 fireUpgrade = false;
                             }
@@ -436,6 +442,17 @@ public class Player extends Entity {
         }
     }
 
+    private void updateHitbox() {
+        if (playerStatus == SMALL || (duck && !inAir)) {
+            hitbox.width = 11 * Game.SCALE;
+            hitbox.height = 14 * Game.SCALE;
+        }
+        else if (playerStatus == BIG || playerStatus == FIRE && !duck) {
+            hitbox.width = 11 * Game.SCALE;
+            hitbox.height = 30 * Game.SCALE;
+        }
+    }
+
     private void updatePosition() {
         hitbox.x = x;
         hitbox.y = y;
@@ -448,18 +465,12 @@ public class Player extends Entity {
         sprintCounter();
         fallenOutsideMap();
         Playing.checkCloseToBorder();
-        Playing.checkCollisions();
-
-        if (playerStatus == SMALL) {
-            duck = false;
+        if (playerStatus != DEAD) {
+            Playing.checkCollisions();
         }
-        if (playerStatus == SMALL || (duck && !inAir)) {
-            hitbox.width = 11 * Game.SCALE;
-            hitbox.height = 14 * Game.SCALE;
-        }
-        else if (playerStatus == BIG || playerStatus == FIRE) {
-            hitbox.width = 11 * Game.SCALE;
-            hitbox.height = 30 * Game.SCALE;
+        if (coins == 100) {
+            lives++;
+            coins = 0;
         }
 
         if (!Playing.collision && playerStatus != DEAD) {
@@ -543,6 +554,10 @@ public class Player extends Entity {
             jump = false;
             left = false;
             right = false;
+        }
+
+        if (playerStatus == SMALL) {
+            duck = false;
         }
     }
 
@@ -628,5 +643,9 @@ public class Player extends Entity {
 
     public void setSprint(boolean sprint) {
         this.sprint = sprint;
+    }
+
+    public static boolean isBlockMovement() {
+        return blockMovement;
     }
 }

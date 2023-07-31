@@ -1,10 +1,13 @@
 package Objects;
 
+import Entities.Player;
 import Levels.LevelManager;
 import Levels.Playing;
 import com.company.Game;
 
 
+import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 
 import static Utilities.Constants.Directions.*;
@@ -19,6 +22,8 @@ public abstract class GameObject {
     protected int aniTick, aniIndex, aniSpeed = 8;
     protected int direction = RIGHT;
     public boolean inAir;
+    public boolean collected;
+    private int collectedCounter;
 
     public LevelManager levelManager;
     private boolean collision;
@@ -49,6 +54,30 @@ public abstract class GameObject {
             aniIndex++;
             if (aniIndex >= getSpriteAmount(objType)) {
                 aniIndex = 0;
+            }
+        }
+    }
+
+    public void drawScoreAdded(float x, float y, int score, Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(new Color(15, 30, 60));
+
+        GlyphVector glyphVectorScore = Game.smallerFont.createGlyphVector(g2.getFontRenderContext(), String.valueOf(score));
+        Shape scoreShape = glyphVectorScore.getOutline();
+
+        g2.translate(x + 1, y);
+        g2.setStroke(new BasicStroke(3.5f));
+        g2.draw(scoreShape);
+        g2.translate(-(x + 1), -y);
+
+        g.setFont(Game.smallerFont);
+        g.setColor(Color.WHITE);
+        if (collected) {
+            collectedCounter++;
+            g.drawString(String.valueOf(score), (int) x, (int) y);
+            if (collectedCounter >= 60) {
+                collected = false;
+                collectedCounter = 0;
             }
         }
     }
@@ -152,6 +181,14 @@ public abstract class GameObject {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isCollected() {
+        return collected;
+    }
+
+    public void setCollected (boolean collected) {
+        this.collected = collected;
     }
 
     public int getAniIndex() {

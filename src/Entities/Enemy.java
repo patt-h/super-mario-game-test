@@ -4,6 +4,8 @@ import Levels.LevelManager;
 import Levels.Playing;
 import com.company.Game;
 
+import java.awt.*;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 
 import static Utilities.Constants.Directions.LEFT;
@@ -19,6 +21,10 @@ public abstract class Enemy {
     protected boolean active = true;
     protected int aniTick;
     public boolean inAir;
+    public int killstreak;
+    public boolean killed;
+    public boolean killedByShell;
+    private int killedCounter;
 
     public LevelManager levelManager;
     private boolean collision;
@@ -36,7 +42,6 @@ public abstract class Enemy {
         levelManager = new LevelManager();
         this.x = x;
         this.y = y;
-
     }
 
     protected void updateAnimationTick() {
@@ -63,6 +68,38 @@ public abstract class Enemy {
                 if (aniIndex >= getEnemySprite(enemyType)) {
                     aniIndex = 0;
                 }
+            }
+        }
+    }
+
+    public void drawScoreAdded(float x, float y, String score, Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(new Color(15, 30, 60));
+
+        GlyphVector glyphVectorScore = Game.smallerFont.createGlyphVector(g2.getFontRenderContext(), score);
+        Shape scoreShape = glyphVectorScore.getOutline();
+
+        g2.translate(x + 1, y);
+        g2.setStroke(new BasicStroke(3.5f));
+        g2.draw(scoreShape);
+        g2.translate(-(x + 1), -y);
+
+        g.setFont(Game.smallerFont);
+        g.setColor(Color.WHITE);
+        if (killed) {
+            killedCounter++;
+            g.drawString(score, (int) x, (int) y);
+            if (killedCounter >= 60) {
+                killed = false;
+                killedCounter = 0;
+            }
+        }
+        else if (killedByShell) {
+            killedCounter++;
+            g.drawString(score, (int) x, (int) y);
+            if (killedCounter >= 60) {
+                killedByShell = false;
+                killedCounter = 0;
             }
         }
     }
@@ -175,5 +212,21 @@ public abstract class Enemy {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isKilled() {
+        return killed;
+    }
+
+    public void setKilled(boolean killed) {
+        this.killed = killed;
+    }
+
+    public boolean isKilledByShell() {
+        return killedByShell;
+    }
+
+    public void setKilledByShell(boolean killedByShell) {
+        this.killedByShell = killedByShell;
     }
 }

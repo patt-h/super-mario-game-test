@@ -1,5 +1,7 @@
 package Utilities;
 
+import Entities.Player;
+
 public class Constants {
 
     public static class EnemyConstants {
@@ -11,6 +13,27 @@ public class Constants {
             return switch (enemy_type) {
                 case GOOMBA, TROOPA -> 2;
                 case TROOPA_KICKED -> 4;
+                default -> 0;
+            };
+        }
+
+        public static int getEnemyScoreAmount(int enemy_type) {
+            return switch (enemy_type) {
+                case GOOMBA, TROOPA -> 200;
+                default -> 0;
+            };
+        }
+
+        public static int getScoreKillstreak(int killstreak) {
+            return switch (killstreak) {
+                case 1 -> 200;
+                case 2 -> 400;
+                case 3 -> 500;
+                case 4 -> 800;
+                case 5 -> 1000;
+                case 6 -> 2000;
+                case 7 -> 4000;
+                case 8 -> 5000;
                 default -> 0;
             };
         }
@@ -30,6 +53,14 @@ public class Constants {
                 case PRIZE_BLOCK, COIN -> 3;
                 case FIRE_FLOWER, FIRE_BALL -> 4;
                 case COIN_BRICK -> 9;
+                default -> 0;
+            };
+        }
+
+        public static int getScoreAmount(int object_type) {
+            return switch (object_type) {
+                case MUSHROOM, COIN -> 200;
+                case FIRE_FLOWER -> 600;
                 default -> 0;
             };
         }
