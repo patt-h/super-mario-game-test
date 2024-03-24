@@ -28,17 +28,17 @@ public class KeyInputs implements KeyListener {
     }
     @Override
     public void keyPressed(KeyEvent e) {
-        if (!Player.isBlockMovement()) {
+        if (!gamePanel.getGame().getPlayer().isBlockMovement()) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(true);
                 case KeyEvent.VK_LEFT -> {
-                    if (!Player.duck) {
+                    if (!gamePanel.getGame().getPlayer().duck) {
                         gamePanel.getGame().getPlayer().setLeft(true);
                     }
                 }
                 case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(true);
                 case KeyEvent.VK_RIGHT -> {
-                    if (!Player.duck) {
+                    if (!gamePanel.getGame().getPlayer().duck) {
                         gamePanel.getGame().getPlayer().setRight(true);
                     }
                 }
@@ -52,33 +52,33 @@ public class KeyInputs implements KeyListener {
                     gamePanel.getGame().getPlayer().setSprint(true);
                     if (gamePanel.getGame().getPlayer().playerStatus == FIRE && !blockFire && activeBalls < 2 && !gamePanel.getGame().getPlayer().isDuck()) {
                         if (gamePanel.getGame().getPlayer().direction == RIGHT) {
-                            FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x + Game.TILES_SIZE / 2, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+                            FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x + Game.TILES_SIZE / 2, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, gamePanel.getGame().getPlayer().direction));
                         } else if (gamePanel.getGame().getPlayer().direction == LEFT) {
-                            FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, Player.direction));
+                            FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, gamePanel.getGame().getPlayer().direction));
                         }
                         blockFire = true;
                         activeBalls++;
                     }
                 }
 
-                case KeyEvent.VK_PAGE_UP -> gamePanel.getGame().getPlayer().debugMode = true;
-                case KeyEvent.VK_PAGE_DOWN -> gamePanel.getGame().getPlayer().debugMode = false;
+                case KeyEvent.VK_PAGE_UP -> Game.debugMode = true;
+                case KeyEvent.VK_PAGE_DOWN -> Game.debugMode = false;
             }
         }
     }
     @Override
     public void keyReleased(KeyEvent e) {
-        if (!Player.isBlockMovement()) {
+        if (!gamePanel.getGame().getPlayer().isBlockMovement()) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP -> gamePanel.getGame().getPlayer().setUp(false);
                 case KeyEvent.VK_LEFT -> {
-                    if (!Player.duck) {
+                    if (!gamePanel.getGame().getPlayer().duck) {
                         gamePanel.getGame().getPlayer().setLeft(false);
                     }
                 }
                 case KeyEvent.VK_DOWN -> gamePanel.getGame().getPlayer().setDuck(false);
                 case KeyEvent.VK_RIGHT -> {
-                    if (!Player.duck) {
+                    if (!gamePanel.getGame().getPlayer().duck) {
                         gamePanel.getGame().getPlayer().setRight(false);
                     }
                 }

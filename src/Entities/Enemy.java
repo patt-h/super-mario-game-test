@@ -124,7 +124,7 @@ public abstract class Enemy {
                 tileNum2 = Playing.lvl[objectBottomRow][objectRightCol];
                 tileNum3 = Playing.lvl[objectBottomRow][objectLeftCol];
 
-                if (x + 2*Game.TILES_SIZE < Playing.lvlLenght * Game.TILES_SIZE) {
+                if (x + 2*Game.TILES_SIZE < Playing.lvlLength * Game.TILES_SIZE) {
                     //COLLISION WHILE MOVING
                     if (levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol + 1]) != levelManager.sprites.get(90)) {
                         distanceX = (objectRightCol + 1) * Game.TILES_SIZE - objectRightX;
@@ -154,7 +154,7 @@ public abstract class Enemy {
                     }
                 }
                 else {
-                    if (x + 1.25*Game.TILES_SIZE >= Playing.lvlLenght * Game.TILES_SIZE) {
+                    if (x + 1.25*Game.TILES_SIZE >= Playing.lvlLength * Game.TILES_SIZE) {
                         collision = true;
                         direction = LEFT;
                     }

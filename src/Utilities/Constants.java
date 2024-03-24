@@ -1,7 +1,5 @@
 package Utilities;
 
-import Entities.Player;
-
 public class Constants {
 
     public static class EnemyConstants {
@@ -97,7 +95,7 @@ public class Constants {
         public static final int FIRE_MARIO_DUCK = 16;
         public static final int FIRE_MARIO_TURN = 17;
 
-        public static int getSpriteAmount(int player_action) {
+        public static int getPlayerSpriteAmount(int player_action) {
             return switch (player_action) {
                 case SMALL_MARIO_IDLE, BIG_MARIO_IDLE, FIRE_MARIO_IDLE -> 0;
                 case SMALL_MARIO_WALK, SMALL_MARIO_RUN, SMALL_MARIO_JUMP, BIG_MARIO_WALK, BIG_MARIO_RUN, BIG_MARIO_JUMP, BIG_MARIO_DUCK,

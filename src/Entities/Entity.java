@@ -1,14 +1,13 @@
 package Entities;
 
 import Utilities.LoadSave;
-import com.company.Game;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public abstract class Entity {
-    public static float x, y;
-    public static int direction;
+    public float x, y;
+    public int direction;
     public static Rectangle2D.Float hitbox;
     public BufferedImage[][] animations;
 

@@ -55,6 +55,8 @@ public class Game implements Runnable{
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
+    public static boolean debugMode;
+
     public Game() {
         initClasses();
         FPSlabel.setForeground(Color.GREEN);
@@ -116,15 +118,15 @@ public class Game implements Runnable{
 
     private void initClasses() {
         levelManager = new LevelManager();
-        playing = new Playing();
         player = new Player(50,200);
+        playing = new Playing(player);
 
         //THIS WILL BE MOVED TO CLASS WHERE MAP WILL BE INITIALIZED
         playing.timeCounter();
         playing.timeCounter.start();
 
-        objectManager = new ObjectManager();
-        enemyManager = new EnemyManager();
+        objectManager = new ObjectManager(player);
+        enemyManager = new EnemyManager(player);
     }
 
     private void startGameLoop() {
@@ -144,17 +146,17 @@ public class Game implements Runnable{
             player.resetDirBooleans();
             player.lives--;
             player.playerStatus = SMALL;
-            player.x = Playing.startX;
-            player.y = Playing.startY;
+            player.x = playing.startX;
+            player.y = playing.startY;
         }
     }
 
     public void render(Graphics g) {
         g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
-        objectManager.draw(g, Playing.xLvlOffset);
-        playing.render(g, Playing.xLvlOffset);
-        player.render(g, Playing.xLvlOffset);
-        enemyManager.draw(g, Playing.xLvlOffset);
+        objectManager.draw(g, player.xLvlOffset);
+        playing.render(g, player.xLvlOffset);
+        player.render(g, player.xLvlOffset);
+        enemyManager.draw(g, player.xLvlOffset);
 
         //COINS SECTION ON HUD
         miniCoinAniIndex();
@@ -168,7 +170,7 @@ public class Game implements Runnable{
         g2.setColor(new Color(15, 30, 60));
 
         //MARIO
-        String mario = "MARIO *" + Player.lives;
+        String mario = "MARIO *" + player.lives;
         GlyphVector glyphVectorMario = font.createGlyphVector(g2.getFontRenderContext(), mario);
         Shape marioShape = glyphVectorMario.getOutline();
 
@@ -178,7 +180,7 @@ public class Game implements Runnable{
         g2.translate(-16,-35);
 
         //SCORE
-        String score = String.format("%07d", Player.score);
+        String score = String.format("%07d", player.score);
         GlyphVector glyphVectorScore = font.createGlyphVector(g2.getFontRenderContext(), score);
         Shape scoreShape = glyphVectorScore.getOutline();
 
@@ -188,7 +190,7 @@ public class Game implements Runnable{
         g2.translate(-16,-55);
 
         //COINS
-        String coins = "^ " + String.format("%02d", Player.coins);
+        String coins = "^ " + String.format("%02d", player.coins);
         GlyphVector glyphVectorCoins = font.createGlyphVector(g2.getFontRenderContext(), coins);
         Shape coinsShape = glyphVectorCoins.getOutline();
 

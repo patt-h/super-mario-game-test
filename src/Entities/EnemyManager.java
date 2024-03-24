@@ -15,6 +15,7 @@ import static Utilities.Constants.EnemyConstants.*;
 import static Utilities.Constants.PlayerConstants.*;
 
 public class EnemyManager {
+    private Player player;
     public BufferedImage[][] animations;
     private int counter;
 
@@ -23,7 +24,8 @@ public class EnemyManager {
 
     public ArrayList<Fireball> fireballs = new ArrayList<>();
 
-    public EnemyManager() {
+    public EnemyManager(Player player) {
+        this.player = player;
         loadAnimation();
         addEnemies();
     }
@@ -46,10 +48,10 @@ public class EnemyManager {
                             go.setKilledByShell(true);
                             go.fireballed = true;
                             if (tr.killstreak < 9) {
-                                Player.score += getScoreKillstreak(tr.killstreak);
+                                player.score += getScoreKillstreak(tr.killstreak);
                             }
                             else {
-                                Player.lives++;
+                                player.lives++;
                             }
                         }
                     }
@@ -61,10 +63,10 @@ public class EnemyManager {
                             tr2.setKilledByShell(true);
                             tr2.fireballed = true;
                             if (tr.killstreak < 9) {
-                                Player.score += getScoreKillstreak(tr.killstreak);
+                                player.score += getScoreKillstreak(tr.killstreak);
                             }
                             else {
-                                Player.lives++;
+                                player.lives++;
                             }
                         }
                     }
@@ -78,30 +80,30 @@ public class EnemyManager {
         for (Goomba go : goombas) {
             if (go.isActive()) {
                 go.update();
-                if (Player.hitbox.intersects(go.damageHitbox) && !Player.hitbox.intersects(go.hitbox) && Player.airSpeed > 0 && !go.fireballed && !go.stepped && Player.playerStatus != DEAD) {
+                if (player.hitbox.intersects(go.damageHitbox) && !player.hitbox.intersects(go.hitbox) && player.airSpeed > 0 && !go.fireballed && !go.stepped && player.playerStatus != DEAD) {
                     go.stepped = true;
                     go.setKilled(true);
-                    Player.y -= 48;
-                    Player.airSpeed = -5;
-                    Player.score += getEnemyScoreAmount(GOOMBA);
+                    player.y -= 48;
+                    player.airSpeed = -5;
+                    player.score += getEnemyScoreAmount(GOOMBA);
                 }
-                else if (Player.hitbox.intersects(go.hitbox) && !go.stepped && !go.fireballed) {
-                    if (Player.playerStatus == FIRE && !Player.immortality) {
-                        Player.playerStatus = BIG;
-                        Player.immortality = true;
-                        Player.gotHit = true;
+                else if (player.hitbox.intersects(go.hitbox) && !go.stepped && !go.fireballed) {
+                    if (player.playerStatus == FIRE && !player.immortality) {
+                        player.playerStatus = BIG;
+                        player.immortality = true;
+                        player.gotHit = true;
                     }
-                    if (Player.playerStatus == BIG && !Player.immortality) {
-                        Player.playerStatus = SMALL;
-                        Player.immortality = true;
-                        Player.gotHit = true;
-                        if (!Player.inAir) {
-                            Player.y = Player.y + 48;
+                    if (player.playerStatus == BIG && !player.immortality) {
+                        player.playerStatus = SMALL;
+                        player.immortality = true;
+                        player.gotHit = true;
+                        if (!player.inAir) {
+                            player.y = player.y + 48;
                         }
                     }
-                    if (Player.playerStatus == SMALL && !Player.immortality) {
-                        Player.playerStatus = DEAD;
-                        Player.inAir = false;
+                    if (player.playerStatus == SMALL && !player.immortality) {
+                        player.playerStatus = DEAD;
+                        player.inAir = false;
                     }
                 }
                 for (Fireball fb : fireballs) {
@@ -111,7 +113,7 @@ public class EnemyManager {
                             go.setKilled(true);
                             fb.setActive(false);
                             KeyInputs.activeBalls--;
-                            Player.score += getEnemyScoreAmount(GOOMBA);
+                            player.score += getEnemyScoreAmount(GOOMBA);
                         }
                     }
                 }
@@ -121,20 +123,20 @@ public class EnemyManager {
             if (tr.isActive()) {
                 tr.update();
                 //STEPPING
-                if (Player.hitbox.intersects(tr.damageHitbox) && !Player.hitbox.intersects(tr.hitbox) && Player.airSpeed > 0 && Player.playerStatus != DEAD && !tr.fireballed && !tr.kicked && !tr.stepped) {
-                    Player.y -= 48;
-                    Player.airSpeed = -5;
-                    Player.score += getEnemyScoreAmount(TROOPA);
+                if (player.hitbox.intersects(tr.damageHitbox) && !player.hitbox.intersects(tr.hitbox) && player.airSpeed > 0 && player.playerStatus != DEAD && !tr.fireballed && !tr.kicked && !tr.stepped) {
+                    player.y -= 48;
+                    player.airSpeed = -5;
+                    player.score += getEnemyScoreAmount(TROOPA);
                     tr.stepped = true;
                     tr.killed = true;
                 }
                 //KICKING SHELL
-                if (Player.hitbox.intersects(tr.hitbox) && tr.stepped && Player.airSpeed >= 0 && Player.playerStatus != DEAD && !tr.kicked) {
+                if (player.hitbox.intersects(tr.hitbox) && tr.stepped && player.airSpeed >= 0 && player.playerStatus != DEAD && !tr.kicked) {
                     tr.tempImmortal = 0;
                     tr.kicked = true;
                     tr.stepped = false;
                     tr.enemyType = TROOPA_KICKED;
-                    if (Player.direction == RIGHT) {
+                    if (player.direction == RIGHT) {
                         tr.direction = RIGHT;
                     }
                     else {
@@ -142,33 +144,33 @@ public class EnemyManager {
                     }
                 }
                 //STOPPING SHELL
-                if (tr.kicked && Player.hitbox.intersects(tr.damageHitbox) && !Player.hitbox.intersects(tr.hitbox) && !tr.stepped && Player.airSpeed > 0 && Player.playerStatus != DEAD) {
+                if (tr.kicked && player.hitbox.intersects(tr.damageHitbox) && !player.hitbox.intersects(tr.hitbox) && !tr.stepped && player.airSpeed > 0 && player.playerStatus != DEAD) {
                     tr.tempImmortal = 0;
-                    Player.y -= 48;
-                    Player.airSpeed = -5;
+                    player.y -= 48;
+                    player.airSpeed = -5;
                     tr.stepped = true;
                     tr.kicked = false;
                     tr.killstreak = 0;
                     tr.enemyType = TROOPA;
                 }
                 //GETTING HIT
-                if (Player.hitbox.intersects(tr.hitbox) && !tr.fireballed && tr.tempImmortal == 40) {
-                    if (Player.playerStatus == FIRE && !Player.immortality) {
-                        Player.playerStatus = BIG;
-                        Player.immortality = true;
-                        Player.gotHit = true;
+                if (player.hitbox.intersects(tr.hitbox) && !tr.fireballed && tr.tempImmortal == 40) {
+                    if (player.playerStatus == FIRE && !player.immortality) {
+                        player.playerStatus = BIG;
+                        player.immortality = true;
+                        player.gotHit = true;
                     }
-                    if (Player.playerStatus == BIG && !Player.immortality) {
-                        Player.playerStatus = SMALL;
-                        Player.immortality = true;
-                        Player.gotHit = true;
-                        if (!Player.inAir) {
-                            Player.y = Player.y + 48;
+                    if (player.playerStatus == BIG && !player.immortality) {
+                        player.playerStatus = SMALL;
+                        player.immortality = true;
+                        player.gotHit = true;
+                        if (!player.inAir) {
+                            player.y = player.y + 48;
                         }
                     }
-                    if (Player.playerStatus == SMALL && !Player.immortality) {
-                        Player.playerStatus = DEAD;
-                        Player.inAir = false;
+                    if (player.playerStatus == SMALL && !player.immortality) {
+                        player.playerStatus = DEAD;
+                        player.inAir = false;
                     }
                 }
                 for (Fireball fb : fireballs) {
@@ -179,7 +181,7 @@ public class EnemyManager {
                             tr.enemyType = TROOPA;
                             fb.setActive(false);
                             KeyInputs.activeBalls--;
-                            Player.score += getEnemyScoreAmount(TROOPA);
+                            player.score += getEnemyScoreAmount(TROOPA);
                         }
                     }
                 }
@@ -228,7 +230,7 @@ public class EnemyManager {
                         go.setActive(false);
                     }
                 }
-                if (Player.debugMode) {
+                if (Game.debugMode) {
                     g.drawRect((int) go.hitbox.x - xLvlOffset, (int) go.hitbox.y, (int) go.hitbox.width, (int) go.hitbox.height);
                     g.setColor(Color.RED);
                     g.drawRect((int) go.damageHitbox.x - xLvlOffset, (int) go.damageHitbox.y, (int) go.damageHitbox.width, (int) go.damageHitbox.height);
@@ -270,7 +272,7 @@ public class EnemyManager {
                         tr.setActive(false);
                     }
                 }
-                if (Player.debugMode) {
+                if (Game.debugMode) {
                     g.drawRect((int) tr.hitbox.x - xLvlOffset, (int) tr.hitbox.y, (int) tr.hitbox.width, (int) tr.hitbox.height);
                     g.setColor(Color.RED);
                     g.drawRect((int) tr.damageHitbox.x - xLvlOffset, (int) tr.damageHitbox.y, (int) tr.damageHitbox.width, (int) tr.damageHitbox.height);

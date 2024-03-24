@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class MapObjects {
     public static ArrayList<MapObjects> coinBlocksList = new ArrayList<>();
-    Rectangle2D.Float hitbox;
+    public Rectangle2D.Float hitbox;
     public int coinsInside = 10;
     private boolean active = true;
 

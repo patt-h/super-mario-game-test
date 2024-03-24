@@ -6,7 +6,7 @@ import com.company.Game;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-import static Levels.Playing.lvlLenght;
+import static Levels.Playing.lvlLength;
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.Directions.RIGHT;
 
@@ -85,7 +85,7 @@ public class Fireball extends GameObject {
                         tileNum2 = Playing.lvl[objectBottomRow][objectRightCol];
                         tileNum3 = Playing.lvl[objectBottomRow][objectLeftCol];
 
-                        if (objectRightX + Game.TILES_SIZE < lvlLenght * Game.TILES_SIZE) {
+                        if (objectRightX + Game.TILES_SIZE < lvlLength * Game.TILES_SIZE) {
                             //COLLISION WHILE MOVING
                             if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectRightCol + 1]) != levelManager.sprites.get(90)
                                 || levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol + 1]) != levelManager.sprites.get(90)

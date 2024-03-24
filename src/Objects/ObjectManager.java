@@ -2,7 +2,6 @@ package Objects;
 
 import Entities.Player;
 import Input.KeyInputs;
-import Levels.Playing;
 import Utilities.LoadSave;
 import com.company.Game;
 
@@ -10,12 +9,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import static Levels.Playing.lvlLenght;
+import static Levels.Playing.lvlLength;
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.ObjectConstants.*;
 import static Utilities.Constants.PlayerConstants.*;
 
 public class ObjectManager {
+    Player player;
+
     public BufferedImage[][] animations;
     private BufferedImage[][] effects;
     public ArrayList<Mushroom> mushrooms = new ArrayList<>();
@@ -23,7 +24,8 @@ public class ObjectManager {
     public ArrayList<Fireball> fireballs = new ArrayList<>();
     public ArrayList<Coin> coins = new ArrayList<>();
 
-    public ObjectManager() {
+    public ObjectManager(Player player) {
+        this.player = player;
         loadImg();
         addObjects();
     }
@@ -40,10 +42,10 @@ public class ObjectManager {
             if (c.isActive()) {
                 c.update();
                 if (c.objType == COIN) {
-                    if (Player.hitbox.intersects(c.hitbox.x, c.hitbox.y, (int) c.hitbox.width, (int) c.hitbox.height)) {
+                    if (player.hitbox.intersects(c.hitbox.x, c.hitbox.y, (int) c.hitbox.width, (int) c.hitbox.height)) {
                         c.setActive(false);
-                        Player.coins++;
-                        Player.score += getScoreAmount(COIN);
+                        player.coins++;
+                        player.score += getScoreAmount(COIN);
                     }
                 }
                 else if (c.objType == COIN_BRICK) {
@@ -57,34 +59,34 @@ public class ObjectManager {
         for (Mushroom m : mushrooms) {
             if (m.isActive()) {
                 m.update();
-                if (Player.hitbox.intersects(m.hitbox.x, m.hitbox.y, (int) m.hitbox.width, (int) m.hitbox.height)) {
-                    if (Player.playerStatus == SMALL) {
-                        Player.y -= Game.TILES_SIZE;
-                        Player.playerStatus = BIG;
-                        Player.bigUpgrade = true;
+                if (player.hitbox.intersects(m.hitbox.x, m.hitbox.y, (int) m.hitbox.width, (int) m.hitbox.height)) {
+                    if (player.playerStatus == SMALL) {
+                        player.y -= Game.TILES_SIZE;
+                        player.playerStatus = BIG;
+                        player.bigUpgrade = true;
                     }
                     m.setActive(false);
                     m.setCollected(true);
-                    Player.score += getScoreAmount(MUSHROOM);
+                    player.score += getScoreAmount(MUSHROOM);
                 }
             }
         }
         for (FireFlower f : fireFlowers) {
             if (f.isActive()) {
                 f.update();
-                if (Player.hitbox.intersects(f.hitbox.x, f.hitbox.y, (int) f.hitbox.width, (int) f.hitbox.height)) {
-                    if (Player.playerStatus == SMALL) {
-                        Player.y -= Game.TILES_SIZE;
-                        Player.playerStatus = BIG;
-                        Player.bigUpgrade = true;
+                if (player.hitbox.intersects(f.hitbox.x, f.hitbox.y, (int) f.hitbox.width, (int) f.hitbox.height)) {
+                    if (player.playerStatus == SMALL) {
+                        player.y -= Game.TILES_SIZE;
+                        player.playerStatus = BIG;
+                        player.bigUpgrade = true;
                     }
-                    else if (Player.playerStatus == BIG) {
-                        Player.playerStatus = FIRE;
-                        Player.fireUpgrade = true;
+                    else if (player.playerStatus == BIG) {
+                        player.playerStatus = FIRE;
+                        player.fireUpgrade = true;
                     }
                     f.setActive(false);
                     f.setCollected(true);
-                    Player.score += getScoreAmount(FIRE_FLOWER);
+                    player.score += getScoreAmount(FIRE_FLOWER);
                 }
             }
         }
@@ -200,7 +202,7 @@ public class ObjectManager {
                         KeyInputs.activeBalls--;
                     }
                 }
-                if (fb.x + Game.TILES_SIZE+1 > lvlLenght * Game.TILES_SIZE || fb.x < 0){
+                if (fb.x + Game.TILES_SIZE+1 > lvlLength * Game.TILES_SIZE || fb.x < 0){
                     KeyInputs.activeBalls--;
                     fb.setActive(false);
                 }
