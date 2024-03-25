@@ -2,6 +2,7 @@ package com.company;
 
 import Entities.EnemyManager;
 import Entities.Player;
+import Levels.LevelBuilder;
 import Levels.LevelManager;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
 import Levels.Playing;
 import Objects.ObjectManager;
@@ -119,14 +121,13 @@ public class Game implements Runnable{
     private void initClasses() {
         levelManager = new LevelManager();
         player = new Player(50,200);
+        objectManager = new ObjectManager(player);
+        enemyManager = new EnemyManager(player);
         playing = new Playing(player);
 
         //THIS WILL BE MOVED TO CLASS WHERE MAP WILL BE INITIALIZED
         playing.timeCounter();
         playing.timeCounter.start();
-
-        objectManager = new ObjectManager(player);
-        enemyManager = new EnemyManager(player);
     }
 
     private void startGameLoop() {
@@ -154,9 +155,9 @@ public class Game implements Runnable{
     public void render(Graphics g) {
         g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
         objectManager.draw(g, player.xLvlOffset);
+        enemyManager.draw(g, player.xLvlOffset);
         playing.render(g, player.xLvlOffset);
         player.render(g, player.xLvlOffset);
-        enemyManager.draw(g, player.xLvlOffset);
 
         //COINS SECTION ON HUD
         miniCoinAniIndex();

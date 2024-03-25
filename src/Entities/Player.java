@@ -57,8 +57,8 @@ public class Player extends Entity {
     public boolean moved = false;
     public boolean movedCoin = false;
     public boolean broken = false;
-    public int movedX, movedY;
-    public int movedCoinX, movedCoinY;
+    public int movedX, movedY, leftMovedX, rightMovedX;
+    public int movedCoinX, movedCoinY, leftMovedCoinX, rightMovedCoinX;
     public int brokenX, brokenY;
 
     public int lives = 4;
@@ -736,6 +736,7 @@ public class Player extends Entity {
                             if (playerStatus == SMALL) {
                                 moved = true;
                                 movedX = entityRightCol * 48;
+                                rightMovedX = entityRightCol * 48;
                                 movedY = entityTopRow * 48;
                             } else {
                                 lvl[entityTopRow][entityRightCol] = 90;
@@ -746,6 +747,7 @@ public class Player extends Entity {
                             if (playerStatus == SMALL) {
                                 moved = true;
                                 movedX = entityLeftCol * 48;
+                                leftMovedX = entityLeftCol * 48;
                                 movedY = entityTopRow * 48;
                             } else {
                                 lvl[entityTopRow][entityLeftCol] = 90;
@@ -754,7 +756,8 @@ public class Player extends Entity {
                         }
                         collision = true;
                     }
-                    //HITTING COIN BRICKS
+                    // HITTING COIN BRICKS
+                    // ZAJAC SIE TYM JUTRO
                     if (inAir && airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
                         for (MapObjects cb : coinBlocksList) {
@@ -765,32 +768,29 @@ public class Player extends Entity {
                                         movedCoin = true;
                                         coins++;
                                         score += 200;
+                                        cb.movedBlock = true;
+                                        cb.setMovedCoinBlockX((int)cb.hitbox.x);
+                                        CoinList.add(new Coin((int)cb.hitbox.x, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                                     }
                                     if (cb.coinsInside == 0) {
                                         coins++;
+                                        score += 200;
                                         cb.setActive(false);
-                                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
-                                            lvl[entityTopRow][entityRightCol] = 152;
-                                        }
-                                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
-                                            lvl[entityTopRow][entityLeftCol] = 152;
-                                        }
                                     }
                                 }
                                 if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
                                     movedCoinX = entityRightCol * 48;
                                     movedCoinY = entityTopRow * 48;
-                                    CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                                 }
                                 if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
                                     movedCoinX = entityLeftCol * 48;
                                     movedCoinY = entityTopRow * 48;
-                                    CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                                 }
                             }
                         }
                         collision = true;
                     }
+
                     //HITTING POWERUP BLOCK
                     if (inAir && airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(115) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115))) {
@@ -908,6 +908,7 @@ public class Player extends Entity {
                             if (playerStatus == SMALL) {
                                 moved = true;
                                 movedX = entityLeftCol * 48;
+                                leftMovedX = entityLeftCol * 48;
                                 movedY = entityTopRow * 48;
                             } else {
                                 lvl[entityTopRow][entityLeftCol] = 90;
@@ -918,6 +919,7 @@ public class Player extends Entity {
                             if (playerStatus == SMALL) {
                                 moved = true;
                                 movedX = entityRightCol * 48;
+                                rightMovedX = entityRightCol * 48;
                                 movedY = entityTopRow * 48;
                             } else {
                                 lvl[entityTopRow][entityRightCol] = 90;

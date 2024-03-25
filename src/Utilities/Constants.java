@@ -6,10 +6,11 @@ public class Constants {
         public static final int GOOMBA = 0;
         public static final int TROOPA = 1;
         public static final int TROOPA_KICKED = 2;
+        public static final int PIRANHA = 3;
 
         public static int getEnemySprite(int enemy_type) {
             return switch (enemy_type) {
-                case GOOMBA, TROOPA -> 2;
+                case GOOMBA, TROOPA, PIRANHA -> 2;
                 case TROOPA_KICKED -> 4;
                 default -> 0;
             };
@@ -18,6 +19,7 @@ public class Constants {
         public static int getEnemyScoreAmount(int enemy_type) {
             return switch (enemy_type) {
                 case GOOMBA, TROOPA -> 200;
+                case PIRANHA -> 1000;
                 default -> 0;
             };
         }

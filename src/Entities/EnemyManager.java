@@ -21,6 +21,7 @@ public class EnemyManager {
 
     public ArrayList<Goomba> goombas = new ArrayList<>();
     public ArrayList<Troopa> troopas = new ArrayList<>();
+    public ArrayList<Piranha> piranhas = new ArrayList<>();
 
     public ArrayList<Fireball> fireballs = new ArrayList<>();
 
@@ -33,6 +34,7 @@ public class EnemyManager {
     private void addEnemies() {
         goombas = Goomba.getGoomba();
         troopas = Troopa.getTroopa();
+        piranhas = Piranha.getPiranha();
         fireballs = Fireball.getFireballs();
     }
 
@@ -187,6 +189,53 @@ public class EnemyManager {
                 }
             }
         }
+        for (Piranha pi : piranhas) {
+            //GETTING HIT
+            if (pi.isActive()) {
+                pi.update();
+
+                if (Math.abs(player.x - pi.x) <= 174 && Math.abs(player.x - pi.x) >= 0) {
+                    pi.setPlayerNearby(true);
+                }
+                else {
+                    if (pi.isPlayerNearby) {
+                        pi.setPlayerNearby(false);
+                    }
+                }
+
+                if (player.hitbox.intersects(pi.hitbox) && !pi.fireballed) {
+                    if (player.playerStatus == FIRE && !player.immortality) {
+                        player.playerStatus = BIG;
+                        player.immortality = true;
+                        player.gotHit = true;
+                    }
+                    if (player.playerStatus == BIG && !player.immortality) {
+                        player.playerStatus = SMALL;
+                        player.immortality = true;
+                        player.gotHit = true;
+                        if (!player.inAir) {
+                            player.y = player.y + 48;
+                        }
+                    }
+                    if (player.playerStatus == SMALL && !player.immortality) {
+                        player.playerStatus = DEAD;
+                        player.inAir = false;
+                    }
+                }
+                for (Fireball fb : fireballs) {
+                    if (fb.isActive()) {
+                        if (fb.hitbox.intersects(pi.hitbox) && !pi.fireballed) {
+                            pi.fireballed = true;
+                            pi.killed = true;
+                            pi.enemyType = TROOPA;
+                            fb.setActive(false);
+                            KeyInputs.activeBalls--;
+                            player.score += getEnemyScoreAmount(TROOPA);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void update() {
@@ -208,6 +257,7 @@ public class EnemyManager {
     public void draw(Graphics g, int xLvlOffset) {
         drawGoombas(g, xLvlOffset);
         drawTroopas(g, xLvlOffset);
+        drawPiranhas(g, xLvlOffset);
     }
 
     public void drawGoombas(Graphics g, int xLvlOffset) {
@@ -280,6 +330,24 @@ public class EnemyManager {
             }
             if (tr.isKilled()) {
                 tr.drawScoreAdded(tr.hitbox.x - xLvlOffset, tr.hitbox.y, String.valueOf(getEnemyScoreAmount(TROOPA)), g);
+            }
+        }
+    }
+
+    public void drawPiranhas(Graphics g, int xLvlOffset) {
+        for (Piranha pi : piranhas) {
+            if (pi.isActive()) {
+                if (!pi.fireballed) {
+                    g.drawImage(animations[4][pi.getAniIndex()], (int) pi.x - xLvlOffset, (int) pi.y - 20, 120, 120, null);
+                }
+                if (Game.debugMode) {
+                    g.drawRect((int) pi.hitbox.x - xLvlOffset, (int) pi.hitbox.y, (int) pi.hitbox.width, (int) pi.hitbox.height);
+                    g.setColor(Color.RED);
+                    g.drawRect((int) pi.damageHitbox.x - xLvlOffset, (int) pi.damageHitbox.y, (int) pi.damageHitbox.width, (int) pi.damageHitbox.height);
+                }
+            }
+            if (pi.isKilled()) {
+                pi.drawScoreAdded(pi.hitbox.x - xLvlOffset, pi.hitbox.y, String.valueOf(getEnemyScoreAmount(PIRANHA)), g);
             }
         }
     }
