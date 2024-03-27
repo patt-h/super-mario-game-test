@@ -14,7 +14,10 @@ import static Levels.MapObjects.coinBlocksList;
 import static Objects.Coin.CoinList;
 import static Objects.FireFlower.FireFlowerList;
 import static Objects.Mushroom.MushroomList;
+import static Objects.WarpPipe.WarpPipesMap;
 import static Utilities.Constants.ObjectConstants.*;
+
+import Objects.WarpPipe;
 import Utilities.LoadSave;
 import com.company.Game;
 
@@ -61,7 +64,7 @@ public class Playing {
         FireFlowerList.clear();
         coinBlocksList.clear();
 
-        CoinList.add(new Coin(200,200, COIN));
+//        CoinList.add(new Coin(200,200, COIN));
 //        GoombaList.add(new Goomba(600,200));
 //        GoombaList.add(new Goomba(800,200));
 //        GoombaList.add(new Goomba(850,200));
@@ -71,8 +74,9 @@ public class Playing {
 //        GoombaList.add(new Goomba(920,200));
 //        GoombaList.add(new Goomba(930,200));
 //        GoombaList.add(new Goomba(1030,200));
-        TroopaList.add(new Troopa(1400,500));
-        PiranhaList.add(new Piranha(456,490));
+//        TroopaList.add(new Troopa(1400,500));
+//        PiranhaList.add(new Piranha(456,490));
+//        WarpPipesMap.put(new WarpPipe(456, 470, WARPPIPE), new WarpPipe(1665, 470, WARPPIPE));
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 lvlLength = lvl[i].length;

@@ -8,6 +8,8 @@ import com.company.Game;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static Levels.Playing.lvlLength;
 import static Utilities.Constants.Directions.LEFT;
@@ -23,6 +25,7 @@ public class ObjectManager {
     public ArrayList<FireFlower> fireFlowers = new ArrayList<>();
     public ArrayList<Fireball> fireballs = new ArrayList<>();
     public ArrayList<Coin> coins = new ArrayList<>();
+    public Map<WarpPipe, WarpPipe> warppipes = new HashMap<>();
 
     public ObjectManager(Player player) {
         this.player = player;
@@ -35,6 +38,7 @@ public class ObjectManager {
         fireFlowers = FireFlower.getFireFlowers();
         fireballs = Fireball.getFireballs();
         coins = Coin.getCoins();
+        warppipes = WarpPipe.getWarpPipes();
     }
 
     public void checkTouched() {
@@ -100,6 +104,8 @@ public class ObjectManager {
                 }
             }
         }
+
+        warppipes.forEach((k, v) -> k.checkPlayerDuck(player));
     }
 
     private void loadImg() {
@@ -139,6 +145,7 @@ public class ObjectManager {
         drawFireFlowers(g, xLvlOffset);
         drawFireballs(g, xLvlOffset);
         drawCoins(g, xLvlOffset);
+        drawWarpPipes(g, xLvlOffset);
     }
 
     public void drawCoins(Graphics g, int xLvlOffset) {
@@ -208,5 +215,15 @@ public class ObjectManager {
                 }
             }
         }
+    }
+
+    public void drawWarpPipes(Graphics g, int xLvlOffset) {
+        warppipes.forEach((k, v) -> {
+            if (Game.debugMode) {
+                g.setColor(Color.RED);
+                g.drawRect((int) k.hitbox.x - xLvlOffset, (int) k.hitbox.y, (int) k.hitbox.width, (int) k.hitbox.height);
+                g.drawRect((int) v.hitbox.x - xLvlOffset, (int) v.hitbox.y, (int) v.hitbox.width, (int) v.hitbox.height);
+            }
+        });
     }
 }

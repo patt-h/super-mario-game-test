@@ -11,7 +11,6 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 
 import Levels.Playing;
 import Objects.ObjectManager;
@@ -143,8 +142,9 @@ public class Game implements Runnable{
         //RESETTING WHOLE MAP AFTER DEATH
         if (player.playerStatus == DEAD && player.y > 6 * GAME_HEIGHT) {
             playing.worldTime = 300;
-            playing.initEntities();
             player.resetDirBooleans();
+            player.lvl = LevelBuilder.getLevelData();
+            playing.initEntities();
             player.lives--;
             player.playerStatus = SMALL;
             player.x = playing.startX;
@@ -156,8 +156,8 @@ public class Game implements Runnable{
         g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
         objectManager.draw(g, player.xLvlOffset);
         enemyManager.draw(g, player.xLvlOffset);
-        playing.render(g, player.xLvlOffset);
         player.render(g, player.xLvlOffset);
+        playing.render(g, player.xLvlOffset);
 
         //COINS SECTION ON HUD
         miniCoinAniIndex();

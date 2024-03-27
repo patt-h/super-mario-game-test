@@ -53,6 +53,7 @@ public class Player extends Entity {
     public boolean fireUpgrade = false;
     private int counter = 0;
     private boolean collision;
+    public boolean isTeleporting = false;
 
     public boolean moved = false;
     public boolean movedCoin = false;
@@ -757,7 +758,6 @@ public class Player extends Entity {
                         collision = true;
                     }
                     // HITTING COIN BRICKS
-                    // ZAJAC SIE TYM JUTRO
                     if (inAir && airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
                         for (MapObjects cb : coinBlocksList) {
@@ -846,7 +846,7 @@ public class Player extends Entity {
                         rightPlayerSprint = 0;
                     }
                     //MOVING PLAYER FURTHER IF HE HAS BLOCK ABOVE WHILE DUCKING
-                    if (!inAir && playerStatus != SMALL) {
+                    if (!inAir && playerStatus != SMALL && !isTeleporting) {
                         if (levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90)) {
                             x++;
                             blockMovement = true;
@@ -1020,7 +1020,7 @@ public class Player extends Entity {
                         collision = true;
                     }
                     //MOVING PLAYER FURTHER IF HE HAS BLOCK ABOVE WHILE DUCKING
-                    if (!inAir && playerStatus != SMALL) {
+                    if (!inAir && playerStatus != SMALL && !isTeleporting) {
                         if (levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90)) {
                             x--;
                             blockMovement = true;
