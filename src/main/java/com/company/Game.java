@@ -38,12 +38,10 @@ public class Game implements Runnable{
     public static Font smallerFont;
 
     private Player player;
-    private LevelManager levelManager;
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
     private BufferedImage backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
 
-    private Menu menu;
     private Playing playing;
 
     private int aniTick, aniIndex, aniSpeed;
@@ -57,6 +55,8 @@ public class Game implements Runnable{
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
     public static boolean debugMode;
+    public static boolean shouldChange = false;
+    public static String world = "lobby";
 
     public Game() {
         initClasses();
@@ -118,15 +118,11 @@ public class Game implements Runnable{
     }
 
     private void initClasses() {
-        levelManager = new LevelManager();
-        player = new Player(50,200);
+        player = new Player(0,370);
         objectManager = new ObjectManager(player);
         enemyManager = new EnemyManager(player);
         playing = new Playing(player);
 
-        //THIS WILL BE MOVED TO CLASS WHERE MAP WILL BE INITIALIZED
-        playing.timeCounter();
-        playing.timeCounter.start();
     }
 
     private void startGameLoop() {
@@ -143,27 +139,64 @@ public class Game implements Runnable{
         if (player.playerStatus == DEAD && player.y > 6 * GAME_HEIGHT) {
             playing.worldTime = 300;
             player.resetDirBooleans();
+            enemyManager.resetEnemy();
+            objectManager.resetObjects();
             player.lvl = LevelBuilder.getLevelData();
-            playing.initEntities();
+            playing.initLevel();
             player.lives--;
             player.playerStatus = SMALL;
             player.x = playing.startX;
             player.y = playing.startY;
         }
+
+        if (shouldChange) {
+            load();
+            GameStates.gameStates = GameStates.PLAYING;
+        }
+
+        if (playing.lobby) {
+            playing.getOutOfStartingPipe();
+        }
+    }
+
+    public void load() {
+        player.x = playing.startX;
+        player.y = playing.startY;
+        player.resetDirBooleans();
+        enemyManager.resetEnemy();
+        objectManager.resetObjects();
+        player.lvl = LevelBuilder.getLevelData();
+        player.initBorderDistance();
+        playing.initLevel();
+        playing.timeCounter();
+        playing.timeCounter.start();
+        shouldChange = false;
     }
 
     public void render(Graphics g) {
-        g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
-        objectManager.draw(g, player.xLvlOffset);
-        enemyManager.draw(g, player.xLvlOffset);
-        player.render(g, player.xLvlOffset);
-        playing.render(g, player.xLvlOffset);
+        if (player.playerStatus != DEAD) {
+            g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+            objectManager.draw(g, player.xLvlOffset);
+            enemyManager.draw(g, player.xLvlOffset);
 
-        //COINS SECTION ON HUD
-        miniCoinAniIndex();
-        g.drawImage(objectManager.animations[8][aniIndex], 330,42,14,16,null);
-        //OUTLINED TEXT ON HUD
-        outlineShape(g);
+            playing.render(g, player.xLvlOffset);
+            player.render(g, player.xLvlOffset);
+        }
+        else {
+            g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
+            objectManager.draw(g, player.xLvlOffset);
+            enemyManager.draw(g, player.xLvlOffset);
+            playing.render(g, player.xLvlOffset);
+            player.render(g, player.xLvlOffset);
+        }
+
+        if (GameStates.gameStates == GameStates.PLAYING) {
+            //COINS SECTION ON HUD
+            miniCoinAniIndex();
+            g.drawImage(objectManager.animations[8][aniIndex], 330, 42, 14, 16, null);
+            //OUTLINED TEXT ON HUD
+            outlineShape(g);
+        }
     }
 
     private void outlineShape(Graphics g) {
@@ -211,13 +244,13 @@ public class Game implements Runnable{
         g2.translate(-596,-35);
 
         //WORLD NAME
-        GlyphVector glyphVectorWorldName = font.createGlyphVector(g2.getFontRenderContext(), Playing.worldName);
+        GlyphVector glyphVectorWorldName = font.createGlyphVector(g2.getFontRenderContext(), this.world);
         Shape worldNameShape = glyphVectorWorldName.getOutline();
 
-        g2.translate(606,55);
+        g2.translate(618,55);
         g2.setStroke(new BasicStroke(3.5f));
         g2.draw(worldNameShape);
-        g2.translate(-606,-55);
+        g2.translate(-618,-55);
 
         //TIME
         String time = "TIME";
@@ -244,7 +277,7 @@ public class Game implements Runnable{
         scoreLabel.setText(score);
         coinsLabel.setText(coins);
         worldLabel.setText(world);
-        worldNameLabel.setText(Playing.worldName);
+        worldNameLabel.setText(this.world);
         timeLabel.setText(time);
         timerLabel.setText(timer);
     }
@@ -313,9 +346,6 @@ public class Game implements Runnable{
         return player;
     }
 
-    public Menu getMenu() {
-        return menu;
-    }
 
     public Playing getPlaying() {
         return playing;

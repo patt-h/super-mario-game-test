@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import static Entities.Goomba.GoombaList;
+import static Entities.Piranha.PiranhaList;
+import static Entities.Troopa.TroopaList;
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.Directions.RIGHT;
 import static Utilities.Constants.EnemyConstants.*;
@@ -46,7 +49,6 @@ public class EnemyManager {
                         if (tr.hitbox.intersects(go.hitbox) && !go.stepped && !go.fireballed) {
                             tr.killstreak++;
                             go.killstreak = tr.killstreak;
-                            System.out.println(go.killstreak);
                             go.setKilledByShell(true);
                             go.fireballed = true;
                             if (tr.killstreak < 9) {
@@ -350,5 +352,11 @@ public class EnemyManager {
                 pi.drawScoreAdded(pi.hitbox.x - xLvlOffset, pi.hitbox.y, String.valueOf(getEnemyScoreAmount(PIRANHA)), g);
             }
         }
+    }
+
+    public void resetEnemy() {
+        GoombaList.clear();
+        TroopaList.clear();
+        PiranhaList.clear();
     }
 }

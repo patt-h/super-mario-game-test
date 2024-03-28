@@ -12,6 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static Levels.Playing.lvlLength;
+import static Objects.Coin.CoinList;
+import static Objects.CoinBlock.coinBlocksList;
+import static Objects.FireFlower.FireFlowerList;
+import static Objects.Fireball.FireballList;
+import static Objects.Mushroom.MushroomList;
+import static Objects.WarpPipe.WarpPipesMap;
+import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.ObjectConstants.*;
 import static Utilities.Constants.PlayerConstants.*;
@@ -26,6 +33,7 @@ public class ObjectManager {
     public ArrayList<Fireball> fireballs = new ArrayList<>();
     public ArrayList<Coin> coins = new ArrayList<>();
     public Map<WarpPipe, WarpPipe> warppipes = new HashMap<>();
+    public Map<WarpPipe, String> worldpipes = new HashMap<>();
 
     public ObjectManager(Player player) {
         this.player = player;
@@ -39,6 +47,7 @@ public class ObjectManager {
         fireballs = Fireball.getFireballs();
         coins = Coin.getCoins();
         warppipes = WarpPipe.getWarpPipes();
+        worldpipes = WarpPipe.getWorldPipes();
     }
 
     public void checkTouched() {
@@ -106,6 +115,7 @@ public class ObjectManager {
         }
 
         warppipes.forEach((k, v) -> k.checkPlayerDuck(player));
+        worldpipes.forEach((k, v) -> k.checkPlayerDuck(player));
     }
 
     private void loadImg() {
@@ -225,5 +235,21 @@ public class ObjectManager {
                 g.drawRect((int) v.hitbox.x - xLvlOffset, (int) v.hitbox.y, (int) v.hitbox.width, (int) v.hitbox.height);
             }
         });
+        worldpipes.forEach((k, v) -> {
+            if (Game.debugMode) {
+                g.setColor(Color.RED);
+                g.drawRect((int) k.hitbox.x - xLvlOffset, (int) k.hitbox.y, (int) k.hitbox.width, (int) k.hitbox.height);
+            }
+        });
+    }
+
+    public void resetObjects() {
+        MushroomList.clear();
+        FireFlowerList.clear();
+        coinBlocksList.clear();
+        CoinList.clear();
+        FireballList.clear();
+        WarpPipesMap.clear();
+        WorldWarpPipesMap.clear();
     }
 }

@@ -2,8 +2,8 @@ package Entities;
 
 import Levels.LevelBuilder;
 import Levels.LevelManager;
-import Levels.MapObjects;
 import Objects.Coin;
+import Objects.CoinBlock;
 import Objects.FireFlower;
 import Objects.Mushroom;
 import com.company.Game;
@@ -14,9 +14,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
-import static Levels.MapObjects.coinBlocksList;
 import static Levels.Playing.lvlLength;
 import static Objects.Coin.CoinList;
+import static Objects.CoinBlock.coinBlocksList;
 import static Objects.FireFlower.FireFlowerList;
 import static Objects.Mushroom.MushroomList;
 import static Utilities.Constants.ObjectConstants.*;
@@ -28,9 +28,9 @@ public class Player extends Entity {
     public int[][] lvl = LevelBuilder.getLevelData();
     private LevelManager levelManager;
     public int xLvlOffset;
-    private int lvlTilesWide = lvl[0].length;
-    private int maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
-    private int maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
+    public int lvlTilesWide;
+    private int maxTilesOffset;
+    private int maxLvlOffsetX;
 
     private int animationTick, animationIndex, animationSpeed = 25;
     private int accurateAnimationRow;
@@ -39,8 +39,8 @@ public class Player extends Entity {
     private float maxSprint = 2.0f;
     private float leftPlayerSprint;
     private float rightPlayerSprint;
-    public int playerStatus = SMALL;
-    private int playerAction = BIG_MARIO_IDLE;
+    public int playerStatus = BIG;
+    public int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
     private boolean jumping = false;
     private boolean ducking = false;
@@ -54,6 +54,12 @@ public class Player extends Entity {
     private int counter = 0;
     private boolean collision;
     public boolean isTeleporting = false;
+    public boolean teleportingIn = false;
+    public boolean worldTeleportingIn = false;
+    public boolean teleportingOut = false;
+    private int pipeCounter = 0;
+    public float exitX;
+    public float exitY;
 
     public boolean moved = false;
     public boolean movedCoin = false;
@@ -84,6 +90,7 @@ public class Player extends Entity {
         hitbox = new Rectangle2D.Float();
         levelManager = new LevelManager();
         mirrorReflection();
+        initBorderDistance();
     }
 
     public void update() {
@@ -91,6 +98,12 @@ public class Player extends Entity {
         updatePosition();
         updateAnimationTick();
         setAnimation();
+    }
+
+    public void initBorderDistance() {
+        lvlTilesWide = lvl[0].length;
+        maxTilesOffset = lvlTilesWide - Game.TILES_IN_WIDTH;
+        maxLvlOffsetX = maxTilesOffset * Game.TILES_SIZE;
     }
 
     private void mirrorReflection() {
@@ -480,6 +493,62 @@ public class Player extends Entity {
         }
     }
 
+    private void pipeAnimations() {
+        if (teleportingIn) {
+            y += 0.5;
+            ducking = true;
+            immortality = true;
+            isTeleporting = true;
+            pipeCounter++;
+            if (pipeCounter >= 96) {
+                duck = false;
+                pipeCounter = 0;
+                x = exitX;
+                y = exitY;
+                teleportingIn = false;
+                teleportingOut = true;
+            }
+        }
+        else if (teleportingOut) {
+            y -= 0.5;
+            ducking = true;
+            pipeCounter++;
+            if (playerStatus == SMALL) {
+                if (pipeCounter >= 60) {
+                    teleportingOut = false;
+                    pipeCounter = 0;
+                    immortality = false;
+                    isTeleporting = false;
+                }
+            }
+            else {
+                if (pipeCounter >= 155) {
+                    teleportingOut = false;
+                    pipeCounter = 0;
+                    immortality = false;
+                    isTeleporting = false;
+                }
+            }
+        }
+
+        if (worldTeleportingIn) {
+            y+=0.5;
+            duck = true;
+            immortality = true;
+            isTeleporting = true;
+            pipeCounter++;
+            if (pipeCounter >= 96) {
+                pipeCounter = 0;
+                hitbox.x = -999;
+                worldTeleportingIn = false;
+                duck = false;
+                isTeleporting = false;
+                immortality = false;
+                Game.shouldChange = true;
+            }
+        }
+    }
+
     private void updatePosition() {
         hitbox.x = x;
         hitbox.y = y;
@@ -489,10 +558,15 @@ public class Player extends Entity {
         ducking = false;
         turning = false;
         animationSpeed = 12;
+        pipeAnimations();
         sprintCounter();
         checkCloseToBorder();
-        checkCollisions();
         fallenOutsideMap();
+
+        if (playerStatus != DEAD) {
+            checkCollisions();
+        }
+
         if (coins == 100) {
             lives++;
             coins = 0;
@@ -760,22 +834,22 @@ public class Player extends Entity {
                     // HITTING COIN BRICKS
                     if (inAir && airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
-                        for (MapObjects cb : coinBlocksList) {
+                        for (CoinBlock cb : coinBlocksList) {
                             if (cb.isActive()) {
                                 if (Player.hitbox.intersects(cb.hitbox)) {
                                     cb.coinsInside--;
-                                    if (cb.coinsInside > 0) {
+                                    if (cb.coinsInside >= 0) {
                                         movedCoin = true;
                                         coins++;
-                                        score += 200;
+                                        score+=200;
                                         cb.movedBlock = true;
                                         cb.setMovedCoinBlockX((int)cb.hitbox.x);
                                         CoinList.add(new Coin((int)cb.hitbox.x, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                                     }
                                     if (cb.coinsInside == 0) {
-                                        coins++;
-                                        score += 200;
+                                        movedCoin = false;
                                         cb.setActive(false);
+                                        lvl[(int)cb.hitbox.y/Game.TILES_SIZE][(int)cb.hitbox.x/Game.TILES_SIZE] = 152;
                                     }
                                 }
                                 if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
@@ -931,35 +1005,31 @@ public class Player extends Entity {
                     //HITTING COIN BRICKS
                     if (inAir && airSpeed < 0 &&
                             (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191))) {
-                        for (MapObjects cb : coinBlocksList) {
+                        for (CoinBlock cb : coinBlocksList) {
                             if (cb.isActive()) {
                                 if (Player.hitbox.intersects(cb.hitbox)) {
                                     cb.coinsInside--;
-                                    if (cb.coinsInside > 0) {
+                                    if (cb.coinsInside >= 0) {
                                         movedCoin = true;
                                         coins++;
                                         score+=200;
+                                        cb.movedBlock = true;
+                                        cb.setMovedCoinBlockX((int)cb.hitbox.x);
+                                        CoinList.add(new Coin((int)cb.hitbox.x, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                                     }
                                     if (cb.coinsInside == 0) {
-                                        coins++;
+                                        movedCoin = false;
                                         cb.setActive(false);
-                                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
-                                            lvl[entityTopRow][entityLeftCol] = 152;
-                                        }
-                                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
-                                            lvl[entityTopRow][entityRightCol] = 152;
-                                        }
+                                        lvl[(int)cb.hitbox.y/Game.TILES_SIZE][(int)cb.hitbox.x/Game.TILES_SIZE] = 152;
                                     }
-                                }
-                                if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
-                                    movedCoinX = entityLeftCol * 48;
-                                    movedCoinY = entityTopRow * 48;
-                                    CoinList.add(new Coin(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                                 }
                                 if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(191)) {
                                     movedCoinX = entityRightCol * 48;
                                     movedCoinY = entityTopRow * 48;
-                                    CoinList.add(new Coin(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                                }
+                                if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(191)) {
+                                    movedCoinX = entityLeftCol * 48;
+                                    movedCoinY = entityTopRow * 48;
                                 }
                             }
                         }
@@ -1127,5 +1197,13 @@ public class Player extends Entity {
 
     public boolean isBlockMovement() {
         return blockMovement;
+    }
+
+    public void setBlockMovement(boolean blockMovement) {
+        this.blockMovement = blockMovement;
+    }
+
+    public int getPipeCounter() {
+        return pipeCounter;
     }
 }

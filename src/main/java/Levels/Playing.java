@@ -1,23 +1,15 @@
 package Levels;
 
-import Entities.Goomba;
-import Entities.Piranha;
 import Entities.Player;
-import Entities.Troopa;
-import Objects.Coin;
+import Objects.CoinBlock;
 import Objects.Mushroom;
 
-import static Entities.Goomba.GoombaList;
-import static Entities.Piranha.PiranhaList;
-import static Entities.Troopa.TroopaList;
-import static Levels.MapObjects.coinBlocksList;
-import static Objects.Coin.CoinList;
-import static Objects.FireFlower.FireFlowerList;
-import static Objects.Mushroom.MushroomList;
-import static Objects.WarpPipe.WarpPipesMap;
-import static Utilities.Constants.ObjectConstants.*;
 
-import Objects.WarpPipe;
+import static Objects.CoinBlock.coinBlocksList;
+import static Objects.Mushroom.MushroomList;
+import static Utilities.Constants.ObjectConstants.*;
+import static Utilities.Constants.PlayerConstants.*;
+
 import Utilities.LoadSave;
 import com.company.Game;
 
@@ -29,6 +21,7 @@ import javax.swing.Timer;
 
 public class Playing {
     private Player player;
+    public boolean lobby = true;
     public static int[][] lvl;
     public LevelManager levelManager;
     private int bricksCounter;
@@ -43,7 +36,6 @@ public class Playing {
     public int startX = 50;
     public int startY = 200;
     public static int worldTime = 300;
-    public static String worldName = "TEST";
 
     public Timer timeCounter;
 
@@ -51,39 +43,27 @@ public class Playing {
         this.player = player;
         levelManager = new LevelManager();
         loadAnimation();
-        initEntities();
+        initLevel();
     }
 
-    public void initEntities() {
+    public void initLevel() {
         lvl = player.lvl;
-        CoinList.clear();
-        GoombaList.clear();
-        TroopaList.clear();
-        PiranhaList.clear();
-        MushroomList.clear();
-        FireFlowerList.clear();
-        coinBlocksList.clear();
-
-//        CoinList.add(new Coin(200,200, COIN));
-//        GoombaList.add(new Goomba(600,200));
-//        GoombaList.add(new Goomba(800,200));
-//        GoombaList.add(new Goomba(850,200));
-//        GoombaList.add(new Goomba(870,200));
-//        GoombaList.add(new Goomba(890,200));
-//        GoombaList.add(new Goomba(900,200));
-//        GoombaList.add(new Goomba(920,200));
-//        GoombaList.add(new Goomba(930,200));
-//        GoombaList.add(new Goomba(1030,200));
-//        TroopaList.add(new Troopa(1400,500));
-//        PiranhaList.add(new Piranha(456,490));
-//        WarpPipesMap.put(new WarpPipe(456, 470, WARPPIPE), new WarpPipe(1665, 470, WARPPIPE));
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 lvlLength = lvl[i].length;
                 int id = lvl[i][j];
-                if (levelManager.sprites.get(id) == levelManager.sprites.get(191)) {
-                    coinBlocksList.add(new MapObjects(j*Game.TILES_SIZE, i*Game.TILES_SIZE));
-                }
+            }
+        }
+    }
+
+    public void getOutOfStartingPipe() {
+        if (lobby) {
+            player.x +=0.5;
+            player.playerAction = SMALL_MARIO_WALK;
+            if (player.x >= 3 * Game.TILES_SIZE) {
+                lobby = false;
+                player.setRight(false);
+                player.inAir = true;
             }
         }
     }
@@ -116,35 +96,6 @@ public class Playing {
             }
         }
 
-        for (MapObjects cb : coinBlocksList) {
-            if (cb.coinsInside == 0 && lvl[(int)cb.hitbox.y / Game.TILES_SIZE][(int)cb.hitbox.x / Game.TILES_SIZE] == 191) {
-                lvl[(int)cb.hitbox.y / Game.TILES_SIZE][(int)cb.hitbox.x / Game.TILES_SIZE] = 152;
-            }
-            if (cb.isActive() && cb.movedBlock) {
-                lvl[player.movedCoinY / Game.TILES_SIZE][player.movedCoinX / Game.TILES_SIZE] = 90;
-                lvl[player.movedCoinY / Game.TILES_SIZE][cb.getMovedCoinBlockX() / Game.TILES_SIZE] = 90;
-                cb.coinBricksCounter++;
-                if (cb.coinBricksCounter < 20) {
-                    g.drawImage(levelManager.sprites.get(190), player.movedCoinX - LvlOffset, player.movedCoinY - cb.coinBricksCounter, 48, 48, null);
-                    g.drawImage(levelManager.sprites.get(190), cb.getMovedCoinBlockX() - LvlOffset, player.movedCoinY - cb.coinBricksCounter, 48, 48, null);
-                }
-                if (cb.coinBricksCounter >= 20) {
-                    cb.coinBricksDownCounter -= 2;
-                    if (player.movedCoin) {
-                        g.drawImage(levelManager.sprites.get(190), player.movedCoinX - LvlOffset, player.movedCoinY - cb.coinBricksDownCounter, 48, 48, null);
-                        g.drawImage(levelManager.sprites.get(190), cb.getMovedCoinBlockX() - LvlOffset, player.movedCoinY - cb.coinBricksDownCounter, 48, 48, null);
-                        if (cb.coinBricksDownCounter == 0) {
-                            cb.movedBlock = false;
-                            lvl[player.movedCoinY / Game.TILES_SIZE][player.movedCoinX / Game.TILES_SIZE] = 191;
-                            lvl[player.movedCoinY / Game.TILES_SIZE][cb.getMovedCoinBlockX() / Game.TILES_SIZE] = 191;
-                            cb.coinBricksCounter = 0;
-                            cb.coinBricksDownCounter = 20;
-                        }
-                    }
-                }
-            }
-        }
-
         if (player.moved || player.movedCoin) {
             //MUSHROOM REACTION FOR BRICKS
             for (Mushroom m : MushroomList) {
@@ -155,6 +106,36 @@ public class Playing {
                 else if (m.x >= player.movedCoinX - (Game.TILES_SIZE / 2) && m.x <= player.movedCoinX + Game.TILES_SIZE) {
                     m.y -= 4;
                     m.inAir = true;
+                }
+            }
+
+            for (CoinBlock cb : coinBlocksList) {
+                if (cb.isActive() && cb.movedBlock) {
+                    //lvl[player.movedCoinY / Game.TILES_SIZE][player.movedCoinX / Game.TILES_SIZE] = 90;
+                    lvl[player.movedCoinY / Game.TILES_SIZE][cb.getMovedCoinBlockX() / Game.TILES_SIZE] = 90;
+                    cb.coinBricksCounter++;
+                    if (cb.coinBricksCounter < 20) {
+                        //g.drawImage(levelManager.sprites.get(190), player.movedCoinX - LvlOffset, player.movedCoinY - cb.coinBricksCounter, 48, 48, null);
+                        g.drawImage(levelManager.sprites.get(190), cb.getMovedCoinBlockX() - LvlOffset, player.movedCoinY - cb.coinBricksCounter, 48, 48, null);
+                    }
+                    if (cb.coinBricksCounter >= 20) {
+                        cb.coinBricksDownCounter -= 2;
+                        if (cb.movedBlock) {
+                            //g.drawImage(levelManager.sprites.get(190), player.movedCoinX - LvlOffset, player.movedCoinY - cb.coinBricksDownCounter, 48, 48, null);
+                            g.drawImage(levelManager.sprites.get(190), cb.getMovedCoinBlockX() - LvlOffset, player.movedCoinY - cb.coinBricksDownCounter, 48, 48, null);
+                            if (cb.coinBricksDownCounter == 0) {
+                                cb.movedBlock = false;
+                                player.movedCoin = false;
+                                //lvl[player.movedCoinY / Game.TILES_SIZE][player.movedCoinX / Game.TILES_SIZE] = 191;
+                                lvl[player.movedCoinY / Game.TILES_SIZE][cb.getMovedCoinBlockX() / Game.TILES_SIZE] = 191;
+                                cb.coinBricksCounter = 0;
+                                cb.coinBricksDownCounter = 20;
+                            }
+                            else if (cb.coinBricksDownCounter > 0) {
+                                player.movedCoin = true;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -188,7 +169,6 @@ public class Playing {
 
     private void loadAnimation() {
         BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.POWERUPS_ATLAS);
-
         animations = new BufferedImage[5][11];
         for (int y = 0; y < animations.length; y++) {
             for (int x = 0; x < animations[y].length; x++) {

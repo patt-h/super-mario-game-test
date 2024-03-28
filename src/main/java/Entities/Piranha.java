@@ -11,12 +11,12 @@ import static Utilities.Constants.EnemyConstants.PIRANHA;
 public class Piranha extends Enemy {
     public static ArrayList<Piranha> PiranhaList = new ArrayList<>();
     public boolean fireballed = false;
-    private boolean movingUp = true; // Flaga wskazująca kierunek ruchu (góra/dół)
-    private long lastDirectionChangeTime; // Czas ostatniej zmiany kierunku
+    private boolean movingUp = true;
+    private long lastDirectionChangeTime;
     private int counterUp;
     private int counterDown;
     public boolean isPlayerNearby;
-    private final int WAIT_TIME = 1000; // Czas oczekiwania w milisekundach
+    private final int WAIT_TIME = 1000;
 
     public Piranha(float x, float y) {
         super(x, y);
