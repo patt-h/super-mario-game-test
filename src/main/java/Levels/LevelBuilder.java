@@ -7,9 +7,16 @@ import Objects.Coin;
 import Objects.CoinBlock;
 import Objects.WarpPipe;
 import com.company.Game;
+import com.company.GameStates;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ini4j.Ini;
+import org.ini4j.IniPreferences;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.prefs.Preferences;
 
 import static Entities.Goomba.GoombaList;
 import static Entities.Piranha.PiranhaList;
@@ -20,8 +27,11 @@ import static Objects.WarpPipe.WarpPipesMap;
 import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.ObjectConstants.COIN;
 import static Utilities.Constants.ObjectConstants.WARPPIPE;
+import static com.company.Game.lobbyWorldValues;
 
 public class LevelBuilder {
+    public static int startingX;
+    public static int startingY;
 
     public static int[][] getLevelData() {
         try {
@@ -43,6 +53,7 @@ public class LevelBuilder {
                         }
                     }
                 }
+                getStartingCoordinates(rootNode);
                 getWarps(rootNode);
                 getCoins(rootNode);
                 getEnemy(rootNode);
@@ -56,6 +67,12 @@ public class LevelBuilder {
             e.printStackTrace();
         }
         return new int[0][0];
+    }
+
+    private static void getStartingCoordinates(JsonNode rootNode) {
+        JsonNode playerStartNode = rootNode.path("playerStart");
+        startingX = playerStartNode.get(0).get(0).asInt();
+        startingY = playerStartNode.get(0).get(1).asInt();
     }
 
     private static void getEnemy(JsonNode rootNode) {
@@ -92,11 +109,18 @@ public class LevelBuilder {
         }
 
         JsonNode worldNode = rootNode.path("worldPipes");
+        int i = 0;
         for (JsonNode warp : worldNode) {
             int x = warp.get(0).asInt();
             int y = warp.get(1).asInt();
-            String world = warp.get(2).asText();
-            WorldWarpPipesMap.put(new WarpPipe(x, y, WARPPIPE), world);
+            if (GameStates.gameStates == GameStates.LOBBY) {
+                WorldWarpPipesMap.put(new WarpPipe(x, y, WARPPIPE), lobbyWorldValues.get(i));
+                i++;
+            }
+            else {
+                String world = warp.get(2).asText();
+                WorldWarpPipesMap.put(new WarpPipe(x, y, WARPPIPE), world);
+            }
         }
     }
 

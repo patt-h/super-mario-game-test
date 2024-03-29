@@ -23,8 +23,4 @@ public class LevelManager {
             }
         }
     }
-    public void initLevel() {
-
-
-    }
 }

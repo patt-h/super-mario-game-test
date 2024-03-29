@@ -51,15 +51,15 @@ public class Goomba extends Enemy {
         }
     }
 
-    public static ArrayList<Goomba> getGoomba() {
-        return GoombaList;
-    }
-
     public void update() {
         updatePosition();
         if (!fireballed) {
             checkCollisions();
         }
         updateAnimationTick();
+    }
+
+    public static ArrayList<Goomba> getGoomba() {
+        return GoombaList;
     }
 }

@@ -108,4 +108,18 @@ public class Constants {
             };
         }
     }
+
+    public static class VisualsConstants {
+        public static final int CLOUD = 0;
+        public static final int GRASS = 1;
+        public static final int FENCE = 2;
+
+        public static int getVisualSpriteAmount(int visual_type) {
+            return switch (visual_type) {
+                case CLOUD -> 3;
+                case GRASS -> 4;
+                default -> 0;
+            };
+        }
+    }
 }

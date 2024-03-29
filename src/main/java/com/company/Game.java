@@ -11,11 +11,19 @@ import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 import Levels.Playing;
 import Objects.ObjectManager;
+import Objects.WarpPipe;
 import Utilities.LoadSave;
+import Visuals.VisualsManager;
+import org.ini4j.Ini;
+import org.ini4j.IniPreferences;
 
+import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.PlayerConstants.DEAD;
 import static Utilities.Constants.PlayerConstants.SMALL;
 
@@ -23,13 +31,6 @@ public class Game implements Runnable{
     private GameWindow gameWindow;
     private GamePanel gamePanel = new GamePanel(this);
     public JLabel FPSlabel = new JLabel();
-    private JLabel playerLabel = new JLabel();
-    private JLabel scoreLabel = new JLabel();
-    private JLabel coinsLabel = new JLabel();
-    private JLabel worldLabel = new JLabel();
-    private JLabel worldNameLabel = new JLabel();
-    private JLabel timeLabel = new JLabel();
-    private JLabel timerLabel = new JLabel();
     private Thread gameThread;
     private final int FPS_SET = 144;
     private final int UPS_SET = 200;
@@ -40,6 +41,7 @@ public class Game implements Runnable{
     private Player player;
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
+    private VisualsManager visualsManager;
     private BufferedImage backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
 
     private Playing playing;
@@ -58,17 +60,13 @@ public class Game implements Runnable{
     public static boolean shouldChange = false;
     public static String world = "lobby";
 
+    public static ArrayList<String> lobbyWorldValues = new ArrayList<>();
+
     public Game() {
+        loadSave();
         initClasses();
         FPSlabel.setForeground(Color.GREEN);
         FPSlabel.setBounds(2, 2, 80, 10);
-        playerLabel.setBounds(15,15,160,30);
-        scoreLabel.setBounds(15,35,160,30);
-        coinsLabel.setBounds(350,35,120,30);
-        worldLabel.setBounds(595,15,120,30);
-        worldNameLabel.setBounds(595,35,100,30);
-        timeLabel.setBounds(GAME_WIDTH-95, 15,120,30);
-        timerLabel.setBounds(GAME_WIDTH-76, 35,120,30);
         gamePanel.setFocusable(true);
         gamePanel.requestFocus();
         gamePanel.requestFocusInWindow();
@@ -79,50 +77,34 @@ public class Game implements Runnable{
 
         try {
             font = Font.createFont(Font.TRUETYPE_FONT, new File("Resources/font.ttf")).deriveFont(20f);
+            smallerFont = Game.font.deriveFont(16f);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(font);
         } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
-        smallerFont = Game.font.deriveFont(16f);
+    }
 
-        playerLabel.setFont(font);
-        playerLabel.setForeground(Color.WHITE);
-
-        scoreLabel.setFont(font);
-        scoreLabel.setForeground(Color.WHITE);
-
-        coinsLabel.setFont(font);
-        coinsLabel.setForeground(Color.WHITE);
-
-        worldLabel.setFont(font);
-        worldLabel.setForeground(Color.WHITE);
-
-        worldNameLabel.setFont(font);
-        worldNameLabel.setForeground(Color.WHITE);
-        worldNameLabel.setHorizontalAlignment(JLabel.CENTER);
-
-        timeLabel.setFont(font);
-        timeLabel.setForeground(Color.WHITE);
-
-        timerLabel.setFont(font);
-        timerLabel.setForeground(Color.WHITE);
-
-        gamePanel.add(playerLabel);
-        gamePanel.add(scoreLabel);
-        gamePanel.add(coinsLabel);
-        gamePanel.add(worldLabel);
-        gamePanel.add(worldNameLabel);
-        gamePanel.add(timeLabel);
-        gamePanel.add(timerLabel);
+    private void loadSave() {
+        try {
+            Ini ini = new Ini(new File("save.ini"));
+            Preferences preferences = new IniPreferences(ini);
+            for (String section : ini.keySet()) {
+                if (preferences.node(section).get("world", null) != null) {
+                    lobbyWorldValues.add(preferences.node(section).get("world", null));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initClasses() {
         player = new Player(0,370);
         objectManager = new ObjectManager(player);
         enemyManager = new EnemyManager(player);
+        visualsManager = new VisualsManager();
         playing = new Playing(player);
-
     }
 
     private void startGameLoop() {
@@ -145,8 +127,8 @@ public class Game implements Runnable{
             playing.initLevel();
             player.lives--;
             player.playerStatus = SMALL;
-            player.x = playing.startX;
-            player.y = playing.startY;
+            player.x = LevelBuilder.startingX;
+            player.y = LevelBuilder.startingY;
         }
 
         if (shouldChange) {
@@ -160,12 +142,13 @@ public class Game implements Runnable{
     }
 
     public void load() {
-        player.x = playing.startX;
-        player.y = playing.startY;
         player.resetDirBooleans();
         enemyManager.resetEnemy();
         objectManager.resetObjects();
+        visualsManager.resetObjects();
         player.lvl = LevelBuilder.getLevelData();
+        player.x = LevelBuilder.startingX;
+        player.y = LevelBuilder.startingY;
         player.initBorderDistance();
         playing.initLevel();
         playing.timeCounter();
@@ -176,14 +159,15 @@ public class Game implements Runnable{
     public void render(Graphics g) {
         if (player.playerStatus != DEAD) {
             g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+            visualsManager.draw(g, player.xLvlOffset);
             objectManager.draw(g, player.xLvlOffset);
             enemyManager.draw(g, player.xLvlOffset);
-
-            playing.render(g, player.xLvlOffset);
             player.render(g, player.xLvlOffset);
+            playing.render(g, player.xLvlOffset);
         }
         else {
             g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
+            visualsManager.draw(g, player.xLvlOffset);
             objectManager.draw(g, player.xLvlOffset);
             enemyManager.draw(g, player.xLvlOffset);
             playing.render(g, player.xLvlOffset);
@@ -197,20 +181,57 @@ public class Game implements Runnable{
             //OUTLINED TEXT ON HUD
             outlineShape(g);
         }
+
+        if (GameStates.gameStates == GameStates.LOBBY) {
+            outlineShapeLobby(g);
+        }
+    }
+
+    private void outlineShapeLobby(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        GlyphVector glyphVectorWorldString = smallerFont.createGlyphVector(g2.getFontRenderContext(), "WORLD");
+        Shape lobbyWorldStringShape = glyphVectorWorldString.getOutline();
+
+        for (Map.Entry<WarpPipe, String> worldPipes : WorldWarpPipesMap.entrySet()) {
+            String lobbyWorld = worldPipes.getValue();
+            String[] parts = lobbyWorld.split("-");
+            lobbyWorld = parts[0].trim();
+            g2.setColor(new Color(15, 30, 60));
+
+            GlyphVector glyphVectorLobbyWorld = smallerFont.createGlyphVector(g2.getFontRenderContext(), lobbyWorld);
+            Shape lobbyWorldShape = glyphVectorLobbyWorld.getOutline();
+
+            g2.translate(worldPipes.getKey().x + 15,worldPipes.getKey().y - 3 * TILES_SIZE);
+            g2.setStroke(new BasicStroke(3.5f));
+            g2.draw(lobbyWorldShape);
+            g2.setColor(Color.WHITE);
+            g2.fill(lobbyWorldShape);
+            g2.translate(-(worldPipes.getKey().x + 15),-(worldPipes.getKey().y - 3 * TILES_SIZE));
+
+            g2.setColor(new Color(15, 30, 60));
+            g2.translate(worldPipes.getKey().x - 18,worldPipes.getKey().y - 3.5 * TILES_SIZE);
+            g2.setStroke(new BasicStroke(3.5f));
+            g2.draw(lobbyWorldStringShape);
+            g2.setColor(Color.WHITE);
+            g2.fill(lobbyWorldStringShape);
+            g2.translate(-(worldPipes.getKey().x - 18),-(worldPipes.getKey().y - 3.5 * TILES_SIZE));
+        }
     }
 
     private void outlineShape(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(new Color(15, 30, 60));
+        g2.setStroke(new BasicStroke(3.5f));
 
         //MARIO
         String mario = "MARIO *" + player.lives;
         GlyphVector glyphVectorMario = font.createGlyphVector(g2.getFontRenderContext(), mario);
         Shape marioShape = glyphVectorMario.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(16,35);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(marioShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(marioShape);
         g2.translate(-16,-35);
 
         //SCORE
@@ -218,9 +239,11 @@ public class Game implements Runnable{
         GlyphVector glyphVectorScore = font.createGlyphVector(g2.getFontRenderContext(), score);
         Shape scoreShape = glyphVectorScore.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(16,55);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(scoreShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(scoreShape);
         g2.translate(-16,-55);
 
         //COINS
@@ -228,9 +251,11 @@ public class Game implements Runnable{
         GlyphVector glyphVectorCoins = font.createGlyphVector(g2.getFontRenderContext(), coins);
         Shape coinsShape = glyphVectorCoins.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(350,55);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(coinsShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(coinsShape);
         g2.translate(-350,-55);
 
         //WORLD
@@ -238,18 +263,22 @@ public class Game implements Runnable{
         GlyphVector glyphVectorWorld = font.createGlyphVector(g2.getFontRenderContext(), world);
         Shape worldShape = glyphVectorWorld.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(596,35);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(worldShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(worldShape);
         g2.translate(-596,-35);
 
         //WORLD NAME
         GlyphVector glyphVectorWorldName = font.createGlyphVector(g2.getFontRenderContext(), this.world);
         Shape worldNameShape = glyphVectorWorldName.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(618,55);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(worldNameShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(worldNameShape);
         g2.translate(-618,-55);
 
         //TIME
@@ -257,9 +286,11 @@ public class Game implements Runnable{
         GlyphVector glyphVectorTime = font.createGlyphVector(g2.getFontRenderContext(), time);
         Shape timeShape = glyphVectorTime.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(GAME_WIDTH-94,35);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(timeShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(timeShape);
         g2.translate(-(GAME_WIDTH-94),-35);
 
         //TIME
@@ -267,19 +298,12 @@ public class Game implements Runnable{
         GlyphVector glyphVectorTimer = font.createGlyphVector(g2.getFontRenderContext(), timer);
         Shape timerShape = glyphVectorTimer.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(GAME_WIDTH-75,55);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(timerShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(timerShape);
         g2.translate(-(GAME_WIDTH-75),-55);
-
-
-        playerLabel.setText(mario);
-        scoreLabel.setText(score);
-        coinsLabel.setText(coins);
-        worldLabel.setText(world);
-        worldNameLabel.setText(this.world);
-        timeLabel.setText(time);
-        timerLabel.setText(timer);
     }
 
     private void miniCoinAniIndex() {

@@ -33,8 +33,6 @@ public class Playing {
     private int blockType;
     public static int lvlLength;
 
-    public int startX = 50;
-    public int startY = 200;
     public static int worldTime = 300;
 
     public Timer timeCounter;

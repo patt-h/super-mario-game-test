@@ -228,11 +228,10 @@ public class EnemyManager {
                     if (fb.isActive()) {
                         if (fb.hitbox.intersects(pi.hitbox) && !pi.fireballed) {
                             pi.fireballed = true;
-                            pi.killed = true;
-                            pi.enemyType = TROOPA;
+                            pi.setKilled(true);
                             fb.setActive(false);
                             KeyInputs.activeBalls--;
-                            player.score += getEnemyScoreAmount(TROOPA);
+                            player.score += getEnemyScoreAmount(PIRANHA);
                         }
                     }
                 }
@@ -341,6 +340,9 @@ public class EnemyManager {
             if (pi.isActive()) {
                 if (!pi.fireballed) {
                     g.drawImage(animations[4][pi.getAniIndex()], (int) pi.x - xLvlOffset, (int) pi.y - 20, 120, 120, null);
+                }
+                if (pi.fireballed) {
+                    pi.setActive(false);
                 }
                 if (Game.debugMode) {
                     g.drawRect((int) pi.hitbox.x - xLvlOffset, (int) pi.hitbox.y, (int) pi.hitbox.width, (int) pi.hitbox.height);

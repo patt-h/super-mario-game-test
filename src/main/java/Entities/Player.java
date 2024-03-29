@@ -39,7 +39,7 @@ public class Player extends Entity {
     private float maxSprint = 2.0f;
     private float leftPlayerSprint;
     private float rightPlayerSprint;
-    public int playerStatus = BIG;
+    public int playerStatus = SMALL;
     public int playerAction = BIG_MARIO_IDLE;
     private boolean moving = false;
     private boolean jumping = false;
@@ -65,7 +65,7 @@ public class Player extends Entity {
     public boolean movedCoin = false;
     public boolean broken = false;
     public int movedX, movedY, leftMovedX, rightMovedX;
-    public int movedCoinX, movedCoinY, leftMovedCoinX, rightMovedCoinX;
+    public int movedCoinX, movedCoinY;
     public int brokenX, brokenY;
 
     public int lives = 4;
