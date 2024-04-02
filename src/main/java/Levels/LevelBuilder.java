@@ -5,28 +5,26 @@ import Entities.Piranha;
 import Entities.Troopa;
 import Objects.Coin;
 import Objects.CoinBlock;
+import Objects.FinishBar;
 import Objects.WarpPipe;
+import Visuals.FinishLine;
 import com.company.Game;
 import com.company.GameStates;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ini4j.Ini;
-import org.ini4j.IniPreferences;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
 import static Entities.Goomba.GoombaList;
 import static Entities.Piranha.PiranhaList;
 import static Entities.Troopa.TroopaList;
 import static Objects.Coin.CoinList;
 import static Objects.CoinBlock.coinBlocksList;
+import static Objects.FinishBar.FinishBarList;
 import static Objects.WarpPipe.WarpPipesMap;
 import static Objects.WarpPipe.WorldWarpPipesMap;
-import static Utilities.Constants.ObjectConstants.COIN;
-import static Utilities.Constants.ObjectConstants.WARPPIPE;
+import static Utilities.Constants.ObjectConstants.*;
+import static Visuals.FinishLine.FinishLineList;
 import static com.company.Game.lobbyWorldValues;
 
 public class LevelBuilder {
@@ -54,6 +52,7 @@ public class LevelBuilder {
                     }
                 }
                 getStartingCoordinates(rootNode);
+                getFinishLine(rootNode);
                 getWarps(rootNode);
                 getCoins(rootNode);
                 getEnemy(rootNode);
@@ -73,6 +72,14 @@ public class LevelBuilder {
         JsonNode playerStartNode = rootNode.path("playerStart");
         startingX = playerStartNode.get(0).get(0).asInt();
         startingY = playerStartNode.get(0).get(1).asInt();
+    }
+
+    private static void getFinishLine(JsonNode rootNode) {
+        JsonNode finishLineNode = rootNode.path("finishLine");
+        if (!finishLineNode.isMissingNode() && !finishLineNode.isNull()) {
+            FinishLineList.add(new FinishLine(finishLineNode.get(0).get(0).asInt(), finishLineNode.get(0).get(1).asInt()));
+            FinishBarList.add(new FinishBar((finishLineNode.get(0).get(0).asInt() + 270), (finishLineNode.get(0).get(1).asInt() + 400), FINISH_BAR));
+        }
     }
 
     private static void getEnemy(JsonNode rootNode) {

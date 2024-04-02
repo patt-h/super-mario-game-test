@@ -1,10 +1,13 @@
 package Objects;
 
-import Entities.Player;
 import Levels.LevelManager;
 import Levels.Playing;
 import com.company.Game;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 
 import java.awt.*;
 import java.awt.font.GlyphVector;
@@ -14,7 +17,6 @@ import static Utilities.Constants.Directions.*;
 import static Utilities.Constants.ObjectConstants.*;
 
 public abstract class GameObject {
-
     public float x, y;
     protected int objType;
     public Rectangle2D.Float hitbox;
@@ -33,11 +35,28 @@ public abstract class GameObject {
     public float airSpeed = 0.0f;
     public static float gravity = 0.04f * Game.SCALE;
 
+    public BufferedImage[] frames;
+
     public GameObject(int x, int y, int objType) {
         levelManager = new LevelManager();
         this.x = x;
         this.y = y;
         this.objType = objType;
+    }
+
+    protected void loadFrames(int framesNumber, int frameLength, String filename) {
+        try {
+            frames = new BufferedImage[framesNumber];
+            URL imageUrl = getClass().getResource("/visuals/"+filename);
+            BufferedImage spriteSheet = ImageIO.read(imageUrl);
+            int frameHeight = spriteSheet.getHeight();
+
+            for (int i = 0; i < frames.length; i++) {
+                frames[i] = spriteSheet.getSubimage(i * frameLength, 0, frameLength, frameHeight);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void updateAnimationTick() {

@@ -14,6 +14,7 @@ import java.util.Map;
 import static Levels.Playing.lvlLength;
 import static Objects.Coin.CoinList;
 import static Objects.CoinBlock.coinBlocksList;
+import static Objects.FinishBar.FinishBarList;
 import static Objects.FireFlower.FireFlowerList;
 import static Objects.Fireball.FireballList;
 import static Objects.Mushroom.MushroomList;
@@ -34,6 +35,7 @@ public class ObjectManager {
     public ArrayList<Coin> coins = new ArrayList<>();
     public Map<WarpPipe, WarpPipe> warppipes = new HashMap<>();
     public Map<WarpPipe, String> worldpipes = new HashMap<>();
+    public ArrayList<FinishBar> finishBar = new ArrayList<>();
 
     public ObjectManager(Player player) {
         this.player = player;
@@ -48,6 +50,7 @@ public class ObjectManager {
         coins = Coin.getCoins();
         warppipes = WarpPipe.getWarpPipes();
         worldpipes = WarpPipe.getWorldPipes();
+        finishBar = FinishBar.getFinishBarList();
     }
 
     public void checkTouched() {
@@ -156,6 +159,7 @@ public class ObjectManager {
         drawFireballs(g, xLvlOffset);
         drawCoins(g, xLvlOffset);
         drawWarpPipes(g, xLvlOffset);
+        drawFinishBar(g, xLvlOffset);
     }
 
     public void drawCoins(Graphics g, int xLvlOffset) {
@@ -243,6 +247,21 @@ public class ObjectManager {
         });
     }
 
+    public void drawFinishBar(Graphics g, int xLvlOffset) {
+        for (FinishBar f : finishBar) {
+            if (f.isActive()) {
+                f.update();
+                f.checkTouched(player);
+                g.drawImage(f.frames[f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y, 66, 24, null);
+
+                if (Game.debugMode) {
+                    g.setColor(Color.RED);
+                    g.drawRect((int)f.hitbox.x - xLvlOffset, (int)f.hitbox.y, (int) f.hitbox.width, (int) f.hitbox.height );
+                }
+            }
+        }
+    }
+
     public void resetObjects() {
         MushroomList.clear();
         FireFlowerList.clear();
@@ -251,5 +270,6 @@ public class ObjectManager {
         FireballList.clear();
         WarpPipesMap.clear();
         WorldWarpPipesMap.clear();
+        FinishBarList.clear();
     }
 }

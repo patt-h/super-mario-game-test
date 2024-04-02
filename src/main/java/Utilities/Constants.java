@@ -47,6 +47,7 @@ public class Constants {
         public static final int FIRE_FLOWER = 5;
         public static final int FIRE_BALL = 6;
         public static final int WARPPIPE = 7;
+        public static final int FINISH_BAR = 8;
 
         public static int getSpriteAmount(int object_type) {
             return switch (object_type) {
@@ -113,6 +114,7 @@ public class Constants {
         public static final int CLOUD = 0;
         public static final int GRASS = 1;
         public static final int FENCE = 2;
+        public static final int FINISH_LINE = 3;
 
         public static int getVisualSpriteAmount(int visual_type) {
             return switch (visual_type) {

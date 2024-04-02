@@ -19,6 +19,9 @@
   "playerStart": [
     [50, 200]
   ],
+  "finishLine": [
+    [300, 194]
+  ],
  "mobs": {
    "goomba": [
      [600, 200],
