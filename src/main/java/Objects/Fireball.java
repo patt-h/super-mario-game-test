@@ -22,6 +22,8 @@ public class Fireball extends GameObject {
 
     public Fireball(int x, int y, int objType, int direction) {
         super(x, y, objType);
+        width = 8 * Game.SCALE;
+        height = 8 * Game.SCALE;
         this.direction = direction;
         doAnimation = true;
         inAir = true;

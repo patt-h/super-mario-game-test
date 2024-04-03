@@ -16,6 +16,8 @@ public class Goomba extends Enemy {
 
     public Goomba(float x, float y) {
         super(x, y);
+        width = 120;
+        height = 120;
         enemyType = GOOMBA;
         direction = LEFT;
         hitbox = new Rectangle2D.Float();

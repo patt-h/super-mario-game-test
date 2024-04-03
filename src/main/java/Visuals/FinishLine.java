@@ -10,6 +10,8 @@ public class FinishLine extends Visuals {
 
     public FinishLine(float x, float y) {
         super(x, y);
+        width = 382;
+        height = 430;
         visualType = FINISH_LINE;
         loadFrames(1,255, "FinishLine.png");
     }
@@ -17,5 +19,4 @@ public class FinishLine extends Visuals {
     public static ArrayList<FinishLine> getFinishLineList() {
         return FinishLineList;
     }
-
 }

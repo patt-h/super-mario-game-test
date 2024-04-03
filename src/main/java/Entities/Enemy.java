@@ -14,6 +14,7 @@ import static Utilities.Constants.EnemyConstants.*;
 
 public abstract class Enemy {
     public float x, y;
+    public int width, height;
     public int enemyType;
     public Rectangle2D.Float hitbox;
     protected Rectangle2D.Float damageHitbox;
@@ -228,5 +229,13 @@ public abstract class Enemy {
 
     public void setKilledByShell(boolean killedByShell) {
         this.killedByShell = killedByShell;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

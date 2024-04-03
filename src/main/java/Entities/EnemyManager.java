@@ -263,12 +263,12 @@ public class EnemyManager {
 
     public void drawGoombas(Graphics g, int xLvlOffset) {
         for (Goomba go : goombas) {
-            if (go.isActive()) {
+            if (go.isActive() && go.x - xLvlOffset < Game.GAME_WIDTH && go.x - xLvlOffset + go.getWidth() > 0) {
                 if (!go.stepped && !go.fireballed) {
-                    g.drawImage(animations[go.accurateAnimationRow][go.getAniIndex()], (int) go.x - xLvlOffset, (int) go.y + 1, 120, 120, null);
+                    g.drawImage(animations[go.accurateAnimationRow][go.getAniIndex()], (int) go.x - xLvlOffset, (int) go.y + 1, go.getWidth(), go.getHeight(), null);
                 }
                 if (go.stepped) {
-                    g.drawImage(animations[go.accurateAnimationRow][2], (int) go.x - xLvlOffset, (int) go.y + 13, 120, 120, null);
+                    g.drawImage(animations[go.accurateAnimationRow][2], (int) go.x - xLvlOffset, (int) go.y + 13, go.getWidth(), go.getHeight(), null);
                     counter++;
                     if (counter >= 144) {
                         go.setActive(false);
@@ -276,7 +276,7 @@ public class EnemyManager {
                     }
                 }
                 if (go.fireballed) {
-                    g.drawImage(animations[go.accurateAnimationRow][3], (int) go.x - xLvlOffset, (int) go.y, 120, 120, null);
+                    g.drawImage(animations[go.accurateAnimationRow][3], (int) go.x - xLvlOffset, (int) go.y, go.getWidth(), go.getHeight(), null);
                     if (go.y > Game.GAME_HEIGHT) {
                         go.setActive(false);
                     }
@@ -307,18 +307,18 @@ public class EnemyManager {
 
     public void drawTroopas(Graphics g, int xLvlOffset) {
         for (Troopa tr : troopas) {
-            if (tr.isActive()) {
+            if (tr.isActive() && tr.x - xLvlOffset < Game.GAME_WIDTH && tr.x - xLvlOffset + tr.getWidth() > 0) {
                 if (!tr.stepped && !tr.kicked && !tr.fireballed) {
-                    g.drawImage(animations[2][tr.getAniIndex()], (int) tr.x - xLvlOffset, (int) tr.y - 20, 120, 120, null);
+                    g.drawImage(animations[2][tr.getAniIndex()], (int) tr.x - xLvlOffset, (int) tr.y - 20, tr.getWidth(), tr.getHeight(), null);
                 }
                 if (tr.stepped && !tr.fireballed) {
-                    g.drawImage(animations[3][0], (int) tr.x - xLvlOffset, (int) tr.y - 14, 120, 120, null);
+                    g.drawImage(animations[3][0], (int) tr.x - xLvlOffset, (int) tr.y - 14, tr.getWidth(), tr.getHeight(), null);
                 }
                 if (tr.kicked && !tr.fireballed) {
-                    g.drawImage(animations[3][tr.getAniIndex()], (int) tr.x - xLvlOffset, (int) tr.y - 14, 120, 120, null);
+                    g.drawImage(animations[3][tr.getAniIndex()], (int) tr.x - xLvlOffset, (int) tr.y - 14, tr.getWidth(), tr.getHeight(), null);
                 }
                 if (tr.fireballed) {
-                    g.drawImage(animations[3][4], (int) tr.x - xLvlOffset, (int) tr.y, 120, 120, null);
+                    g.drawImage(animations[3][4], (int) tr.x - xLvlOffset, (int) tr.y, tr.getWidth(), tr.getHeight(), null);
                     if (tr.y > Game.GAME_HEIGHT) {
                         tr.setActive(false);
                     }
@@ -337,9 +337,9 @@ public class EnemyManager {
 
     public void drawPiranhas(Graphics g, int xLvlOffset) {
         for (Piranha pi : piranhas) {
-            if (pi.isActive()) {
+            if (pi.isActive() && pi.x - xLvlOffset < Game.GAME_WIDTH && pi.x - xLvlOffset + pi.getWidth() > 0) {
                 if (!pi.fireballed) {
-                    g.drawImage(animations[4][pi.getAniIndex()], (int) pi.x - xLvlOffset, (int) pi.y - 20, 120, 120, null);
+                    g.drawImage(animations[4][pi.getAniIndex()], (int) pi.x - xLvlOffset, (int) pi.y - 20, pi.getWidth(), pi.getHeight(), null);
                 }
                 if (pi.fireballed) {
                     pi.setActive(false);

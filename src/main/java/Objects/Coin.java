@@ -11,6 +11,8 @@ public class Coin extends GameObject {
     public Coin(int x, int y, int objType) {
         super(x, y, objType);
         doAnimation = true;
+        width = 10 * Game.SCALE;
+        height = 14 * Game.SCALE;
         hitbox = new Rectangle2D.Float();
         hitbox.width = 10*Game.SCALE;
         hitbox.height = 14*Game.SCALE;

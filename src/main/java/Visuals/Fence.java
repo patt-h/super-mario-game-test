@@ -9,6 +9,8 @@ public class Fence extends Visuals {
 
     public Fence(float x, float y) {
         super(x, y);
+        width = 144;
+        height = 48;
         visualType = FENCE;
         loadFrames(1, 96, "Fence.png");
     }

@@ -3,7 +3,6 @@ package com.company;
 import Entities.EnemyManager;
 import Entities.Player;
 import Levels.LevelBuilder;
-import Levels.LevelManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -320,24 +319,25 @@ public class Game implements Runnable{
 
     @Override
     public void run() {
-        double timePerFrame = 1000000000.0 / FPS_SET;
-        double timePerUpdate = 1000000000.0 / UPS_SET;
+        float timePerFrame = 1000000000f / FPS_SET;
+        float timePerUpdate = 1000000000f / UPS_SET;
 
         long previousTime = System.nanoTime();
 
         int frames = 0;
         int updates = 0;
-        long lastCheck = System.currentTimeMillis();
+        long lastCheck = System.nanoTime();
 
-        double deltaU = 0;
-        double deltaF = 0;
+        float deltaU = 0;
+        float deltaF = 0;
 
         while (true) {
             long currentTime = System.nanoTime();
-
-            deltaU += (currentTime - previousTime) / timePerUpdate;
-            deltaF += (currentTime - previousTime) / timePerFrame;
+            long elapsedTime = currentTime - previousTime;
             previousTime = currentTime;
+
+            deltaU += elapsedTime / timePerUpdate;
+            deltaF += elapsedTime / timePerFrame;
 
             if (deltaU >= 1) {
                 update();
@@ -351,16 +351,22 @@ public class Game implements Runnable{
                 deltaF--;
             }
 
-            if (System.currentTimeMillis() - lastCheck >= 1000) {
-                lastCheck = System.currentTimeMillis();
-                //FPSlabel.setText(String.valueOf(frames) + " | " + String.valueOf(updates));
+            if (System.nanoTime() - lastCheck >= 1000000000L) {
+                lastCheck = System.nanoTime();
+                // FPSlabel.setText(String.valueOf(frames) + " | " + String.valueOf(updates));
                 FPSlabel.setText(String.valueOf(frames));
                 frames = 0;
                 updates = 0;
+            }
 
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
+
 
     public void windowFocusLost() {
         player.resetDirBooleans();

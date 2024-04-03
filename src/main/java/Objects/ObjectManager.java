@@ -164,9 +164,9 @@ public class ObjectManager {
 
     public void drawCoins(Graphics g, int xLvlOffset) {
         for (Coin c : coins) {
-            if (c.isActive()) {
+            if (c.isActive() && c.x - xLvlOffset < Game.GAME_WIDTH && c.x - xLvlOffset + c.getWidth() > 0) {
                 if (c.objType == COIN) {
-                    g.drawImage(animations[8][c.getAniIndex()], (int) c.x - xLvlOffset, (int) c.y, (int) c.hitbox.width, (int) c.hitbox.height, null);
+                    g.drawImage(animations[8][c.getAniIndex()], (int)c.x - xLvlOffset, (int)c.y, c.getWidth(), c.getHeight(), null);
                 }
                 else if (c.objType == COIN_BRICK) {
                     g.drawImage(effects[0][c.getAniIndex()], (int) c.x - xLvlOffset - 5, (int) c.y-50, 20*Game.SCALE, 16*Game.SCALE, null);
@@ -183,8 +183,8 @@ public class ObjectManager {
 
     public void drawMushrooms(Graphics g, int xLvlOffset) {
         for (Mushroom m : mushrooms) {
-            if (m.isActive()) {
-                g.drawImage(animations[0][m.getAniIndex()], (int)m.x - xLvlOffset - 3, (int)m.y+2, Game.TILES_SIZE, Game.TILES_SIZE, null);
+            if (m.isActive() && m.x - xLvlOffset < Game.GAME_WIDTH && m.x - xLvlOffset + m.getWidth() > 0) {
+                g.drawImage(animations[0][m.getAniIndex()], (int)m.x - xLvlOffset - 3, (int)m.y+2, m.getWidth(), m.getHeight(), null);
             }
             if (m.isCollected()) {
                 m.drawScoreAdded(m.x - xLvlOffset, m.y, getScoreAmount(MUSHROOM), g);
@@ -194,8 +194,8 @@ public class ObjectManager {
 
     public void drawFireFlowers(Graphics g, int xLvlOffset) {
         for (FireFlower f : fireFlowers) {
-            if (f.isActive()) {
-                g.drawImage(animations[1][f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y+2, (int)f.hitbox.width, (int)f.hitbox.height, null);
+            if (f.isActive() && f.x - xLvlOffset < Game.GAME_WIDTH && f.x - xLvlOffset + f.getWidth() > 0) {
+                g.drawImage(animations[1][f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y+2, f.getWidth(), f.getHeight(), null);
             }
             if (f.isCollected()) {
                 f.drawScoreAdded(f.x - xLvlOffset, f.y, getScoreAmount(FIRE_FLOWER), g);
@@ -205,9 +205,9 @@ public class ObjectManager {
 
     public void drawFireballs(Graphics g, int xLvlOffset) {
         for (Fireball fb : fireballs) {
-            if (fb.isActive()) {
+            if (fb.isActive() && fb.x - xLvlOffset < Game.GAME_WIDTH && fb.x - xLvlOffset + fb.getWidth() > 0) {
                 if (!fb.collisionX) {
-                    g.drawImage(animations[9][fb.getAniIndex()], (int) fb.x - xLvlOffset, (int) fb.y + 2, (int) fb.hitbox.width, (int) fb.hitbox.height, null);
+                    g.drawImage(animations[9][fb.getAniIndex()], (int) fb.x - xLvlOffset, (int) fb.y + 2, fb.getWidth(), fb.getHeight(), null);
                 }
                 if (fb.collisionX) {
                     fb.value = 0;
@@ -249,10 +249,10 @@ public class ObjectManager {
 
     public void drawFinishBar(Graphics g, int xLvlOffset) {
         for (FinishBar f : finishBar) {
-            if (f.isActive()) {
+            if (f.isActive() && f.x - xLvlOffset < Game.GAME_WIDTH && f.x - xLvlOffset + f.getWidth() > 0) {
                 f.update();
                 f.checkTouched(player);
-                g.drawImage(f.frames[f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y, 66, 24, null);
+                g.drawImage(f.frames[f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y, f.getWidth(), f.getHeight(), null);
 
                 if (Game.debugMode) {
                     g.setColor(Color.RED);

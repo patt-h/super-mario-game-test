@@ -20,6 +20,8 @@ public class Piranha extends Enemy {
 
     public Piranha(float x, float y) {
         super(x, y);
+        width = 120;
+        height = 120;
         enemyType = PIRANHA;
         direction = LEFT;
         hitbox = new Rectangle2D.Float();

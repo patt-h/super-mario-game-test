@@ -83,13 +83,15 @@ public class Playing {
         for (int i = 0; i < lvl.length; i++) {
             for (int j = 0; j < lvl[i].length; j++) {
                 int id = lvl[i][j];
-                if (levelManager.sprites.get(id) == levelManager.sprites.get(115)
-                        || levelManager.sprites.get(id) == levelManager.sprites.get(114)) {
-                    g.drawImage(animations[accurateAnimationRow][animationIndex], j * 48 - LvlOffset, i * 48, 48, 48, null);
-                } else if (levelManager.sprites.get(id) == levelManager.sprites.get(191)) {
-                    g.drawImage(levelManager.sprites.get(190), j * 48 - LvlOffset, i * 48, 48, 48, null);
-                } else {
-                    g.drawImage(levelManager.sprites.get(id), j * 48 - LvlOffset, i * 48, 48, 48, null);
+                if (j * 48 - LvlOffset < Game.GAME_WIDTH && j * 48 - LvlOffset + Game.TILES_SIZE > 0) {
+                    if (levelManager.sprites.get(id) == levelManager.sprites.get(115)
+                            || levelManager.sprites.get(id) == levelManager.sprites.get(114)) {
+                        g.drawImage(animations[accurateAnimationRow][animationIndex], j * 48 - LvlOffset, i * 48, 48, 48, null);
+                    } else if (levelManager.sprites.get(id) == levelManager.sprites.get(191)) {
+                        g.drawImage(levelManager.sprites.get(190), j * 48 - LvlOffset, i * 48, 48, 48, null);
+                    } else {
+                        g.drawImage(levelManager.sprites.get(id), j * 48 - LvlOffset, i * 48, 48, 48, null);
+                    }
                 }
             }
         }

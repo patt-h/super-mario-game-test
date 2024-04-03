@@ -34,27 +34,29 @@ public class VisualsManager {
 
     private void drawVisuals(Graphics g, int xLvlOffset) {
         for (Cloud c : clouds) {
-            if (c.isActive()) {
+            if (c.isActive() && c.x - xLvlOffset < Game.GAME_WIDTH && c.x - xLvlOffset + c.getWidth() > 0) {
                 c.update();
-                g.drawImage(c.frames[c.getAniIndex()], (int)c.x - xLvlOffset, (int)c.y, 97, 72, null);
+                g.drawImage(c.frames[c.getAniIndex()], (int)c.x - xLvlOffset, (int)c.y, c.getWidth(), c.getHeight(), null);
             }
         }
 
         for (Grass gr : grasses) {
-            if (gr.isActive()) {
+            if (gr.isActive() && gr.x - xLvlOffset < Game.GAME_WIDTH && gr.x - xLvlOffset + gr.getWidth() > 0) {
                 gr.update();
-                g.drawImage(gr.frames[gr.getAniIndex()], (int)gr.x - xLvlOffset, (int)gr.y, 96, 48, null);
+                g.drawImage(gr.frames[gr.getAniIndex()], (int)gr.x - xLvlOffset, (int)gr.y, gr.getWidth(), gr.getHeight(), null);
             }
         }
 
         for (Fence f : fences) {
-            if (f.isActive()) {
-                g.drawImage(f.frames[f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y, 144, 48, null);
+            if (f.isActive() && f.x - xLvlOffset < Game.GAME_WIDTH && f.x - xLvlOffset + f.getWidth() > 0) {
+                g.drawImage(f.frames[f.getAniIndex()], (int)f.x - xLvlOffset, (int)f.y, f.getWidth(), f.getHeight(), null);
             }
         }
 
         for (FinishLine fl : finishLine) {
-            g.drawImage(fl.frames[fl.getAniIndex()], (int)fl.x - xLvlOffset, (int)fl.y, 382, 430, null);
+            if (fl.x - xLvlOffset < Game.GAME_WIDTH && fl.x - xLvlOffset + fl.getWidth() > 0) {
+                g.drawImage(fl.frames[fl.getAniIndex()], (int) fl.x - xLvlOffset, (int) fl.y, fl.getWidth(), fl.getHeight(), null);
+            }
         }
     }
 

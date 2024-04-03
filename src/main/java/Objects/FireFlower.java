@@ -12,6 +12,8 @@ public class FireFlower extends GameObject {
 
     public FireFlower(int x, int y, int objType) {
         super(x, y, objType);
+        width = Game.TILES_SIZE;
+        height = Game.TILES_SIZE;
         doAnimation = true;
         hitbox = new Rectangle2D.Float();
         hitbox.width = Game.TILES_SIZE;

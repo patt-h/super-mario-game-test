@@ -9,6 +9,7 @@ import static Utilities.Constants.VisualsConstants.*;
 
 public abstract class Visuals {
     public float x, y;
+    public int width, height;
     public boolean active = true;
     public int visualType;
 
@@ -63,5 +64,13 @@ public abstract class Visuals {
 
     public int getAniIndex() {
         return aniIndex;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

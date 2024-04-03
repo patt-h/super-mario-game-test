@@ -15,6 +15,8 @@ public class FinishBar extends GameObject {
 
     public FinishBar (int x, int y, int objType) {
         super(x, y, objType);
+        width = 66;
+        height = 24;
         doAnimation = false;
         hitbox = new Rectangle2D.Float();
         hitbox.width = 22 * Game.SCALE;

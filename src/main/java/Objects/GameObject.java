@@ -18,6 +18,7 @@ import static Utilities.Constants.ObjectConstants.*;
 
 public abstract class GameObject {
     public float x, y;
+    public int width, height;
     protected int objType;
     public Rectangle2D.Float hitbox;
     protected boolean doAnimation, active = true;
@@ -212,5 +213,13 @@ public abstract class GameObject {
 
     public int getAniIndex() {
         return aniIndex;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

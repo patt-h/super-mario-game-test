@@ -20,6 +20,8 @@ public class Troopa extends Enemy {
 
     public Troopa(float x, float y) {
         super(x, y);
+        width = 120;
+        height = 120;
         enemyType = TROOPA;
         direction = LEFT;
         hitbox = new Rectangle2D.Float();
