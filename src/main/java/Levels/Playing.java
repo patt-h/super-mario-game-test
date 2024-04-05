@@ -2,6 +2,7 @@ package Levels;
 
 import Entities.Player;
 import Objects.CoinBlock;
+import Objects.FinishBar;
 import Objects.Mushroom;
 
 
@@ -33,7 +34,7 @@ public class Playing {
     private int blockType;
     public static int lvlLength;
 
-    public static int worldTime = 300;
+    public static int worldTime;
 
     public Timer timeCounter;
 
@@ -71,7 +72,7 @@ public class Playing {
             @Override
             public void actionPerformed(ActionEvent e) {
                 worldTime--;
-                if (worldTime == 0) {
+                if (worldTime == 0 || FinishBar.GotTaken) {
                     timeCounter.stop();
                 }
             }

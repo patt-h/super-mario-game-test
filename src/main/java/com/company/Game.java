@@ -1,5 +1,6 @@
 package com.company;
 
+import Actions.PlayerDeath;
 import Entities.EnemyManager;
 import Entities.Player;
 import Levels.LevelBuilder;
@@ -24,7 +25,6 @@ import org.ini4j.IniPreferences;
 
 import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.PlayerConstants.DEAD;
-import static Utilities.Constants.PlayerConstants.SMALL;
 
 public class Game implements Runnable{
     private GameWindow gameWindow;
@@ -44,6 +44,7 @@ public class Game implements Runnable{
     private BufferedImage backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
 
     private Playing playing;
+    private PlayerDeath playerDeath;
 
     private int aniTick, aniIndex, aniSpeed;
 
@@ -56,7 +57,7 @@ public class Game implements Runnable{
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
     public static boolean debugMode;
-    public static boolean shouldChange = false;
+    public static boolean changeWorld = false;
     public static String world = "lobby";
 
     public static ArrayList<String> lobbyWorldValues = new ArrayList<>();
@@ -104,6 +105,8 @@ public class Game implements Runnable{
         enemyManager = new EnemyManager(player);
         visualsManager = new VisualsManager();
         playing = new Playing(player);
+
+        playerDeath = new PlayerDeath();
     }
 
     private void startGameLoop() {
@@ -118,19 +121,10 @@ public class Game implements Runnable{
 
         //RESETTING WHOLE MAP AFTER DEATH
         if (player.playerStatus == DEAD && player.y > 6 * GAME_HEIGHT) {
-            playing.worldTime = 300;
-            player.resetDirBooleans();
-            enemyManager.resetEnemy();
-            objectManager.resetObjects();
-            player.lvl = LevelBuilder.getLevelData();
-            playing.initLevel();
-            player.lives--;
-            player.playerStatus = SMALL;
-            player.x = LevelBuilder.startingX;
-            player.y = LevelBuilder.startingY;
+            playerDeath.reloadWorld(player, playing, enemyManager, objectManager);
         }
 
-        if (shouldChange) {
+        if (changeWorld) {
             load();
             GameStates.gameStates = GameStates.PLAYING;
         }
@@ -149,10 +143,11 @@ public class Game implements Runnable{
         player.x = LevelBuilder.startingX;
         player.y = LevelBuilder.startingY;
         player.initBorderDistance();
+        player.inAir = true;
         playing.initLevel();
         playing.timeCounter();
         playing.timeCounter.start();
-        shouldChange = false;
+        changeWorld = false;
     }
 
     public void render(Graphics g) {

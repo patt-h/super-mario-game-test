@@ -147,11 +147,19 @@ public abstract class Enemy {
                         }
                     }
                     //FALLING
-                    if (levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectLeftCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
-                        inAir = true;
+                    if (y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE) {
+                        if (levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectLeftCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                            inAir = true;
+                        }
+                    }
+                    else {
+                        if (levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                            inAir = true;
+                        }
                     }
                 }
                 else {
@@ -186,11 +194,19 @@ public abstract class Enemy {
                         }
                     }
                     //FALLING
-                    if (levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectLeftCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
-                            && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
-                        inAir = true;
+                    if (y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE) {
+                        if (levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectLeftCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                            inAir = true;
+                        }
+                    }
+                    else {
+                        if (levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                            inAir = true;
+                        }
                     }
                 }
                 else {

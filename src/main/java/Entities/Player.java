@@ -1,11 +1,9 @@
 package Entities;
 
+import Actions.FinishLevel;
 import Levels.LevelBuilder;
 import Levels.LevelManager;
-import Objects.Coin;
-import Objects.CoinBlock;
-import Objects.FireFlower;
-import Objects.Mushroom;
+import Objects.*;
 import com.company.Game;
 
 import java.awt.*;
@@ -27,6 +25,7 @@ import static Utilities.Constants.Directions.*;
 public class Player extends Entity {
     public int[][] lvl = LevelBuilder.getLevelData();
     private LevelManager levelManager;
+    private FinishLevel finishLevel;
     public int xLvlOffset;
     public int lvlTilesWide;
     private int maxTilesOffset;
@@ -40,7 +39,7 @@ public class Player extends Entity {
     private float leftPlayerSprint;
     private float rightPlayerSprint;
     public int playerStatus = SMALL;
-    public int playerAction = BIG_MARIO_IDLE;
+    public int playerAction = SMALL_MARIO_IDLE;
     private boolean moving = false;
     private boolean jumping = false;
     private boolean ducking = false;
@@ -71,6 +70,7 @@ public class Player extends Entity {
     public int lives = 4;
     public int score;
     public int coins;
+    private boolean animatedAction = false;
 
     //JUMPING
     public float airSpeed = 0.0f;
@@ -78,6 +78,9 @@ public class Player extends Entity {
     private float gravity = 0.04f * Game.SCALE;
     private float strongerGravity = 0.08f * Game.SCALE;
     private float jumpSpeed = -2.55f * Game.SCALE;
+
+    private float distanceX;
+    private float distanceY;
 
     BufferedImage img;
     BufferedImage smallMario;
@@ -89,6 +92,7 @@ public class Player extends Entity {
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
         levelManager = new LevelManager();
+        finishLevel = new FinishLevel();
         mirrorReflection();
         initBorderDistance();
     }
@@ -544,7 +548,7 @@ public class Player extends Entity {
                 duck = false;
                 isTeleporting = false;
                 immortality = false;
-                Game.shouldChange = true;
+                Game.changeWorld = true;
             }
         }
     }
@@ -563,8 +567,14 @@ public class Player extends Entity {
         checkCloseToBorder();
         fallenOutsideMap();
 
-        if (playerStatus != DEAD) {
-            checkCollisions();
+        if (!animatedAction) {
+            if (y < Game.GAME_HEIGHT - 2 * Game.TILES_SIZE || playerStatus == SMALL) {
+                checkCollisions();
+            }
+        }
+
+        if (FinishBar.GotTaken && !inAir) {
+            finishLevel.finishLevelActions(this);
         }
 
         if (coins == 100) {
@@ -658,6 +668,10 @@ public class Player extends Entity {
         if (playerStatus == SMALL) {
             duck = false;
         }
+
+        if (playerStatus == DEAD) {
+            animatedAction = true;
+        }
     }
 
     private void jump() {
@@ -727,7 +741,6 @@ public class Player extends Entity {
         int tileNum1, tileNum2, tileNum3, tileNum4;
 
         //BLOCKING JUMPING ABOVE HIGHEST BLOCK
-        float distanceX;
         if (y < 0) {
             //COLLISION WHILE WALKING
             if (levelManager.sprites.get(lvl[0][entityRightCol + 1]) != levelManager.sprites.get(90) && direction == RIGHT) {
@@ -749,7 +762,6 @@ public class Player extends Entity {
         }
 
         //COLLISIONS WHILE PLAYER IS TWO BLOCKS HIGH AND HALF OF PLAYER IS OUTSIDE OF MAP
-        float distanceY;
         if (y + 2*Game.TILES_SIZE > 0 && y < 0 && playerStatus != SMALL) {
             tileNum2 = lvl[entityBottomRow][entityRightCol];
             tileNum3 = lvl[entityBottomRow][entityLeftCol];
@@ -792,8 +804,9 @@ public class Player extends Entity {
             }
         }
 
+
         //NORMAL COLLISIONS
-        if (y > 0 && y < Game.GAME_HEIGHT - 2*Game.TILES_SIZE) {
+        if (y > 0 && y < Game.GAME_HEIGHT - Game.TILES_SIZE) {
             switch (direction) {
                 case RIGHT -> {
                     tileNum1 = lvl[entityTopRow][entityRightCol];
@@ -802,6 +815,23 @@ public class Player extends Entity {
                     tileNum4 = lvl[entityTopRow][entityLeftCol];
 
                     //HITTING INTERACTIVE BLOCKS
+
+                    // HITTING COIN BLOCK
+                    if (inAir && airSpeed < 0 &&
+                            (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
+                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
+                            lvl[entityTopRow][entityRightCol] = 152;
+                            coins++;
+                            score+=200;
+                            CoinList.add(new Coin((entityRightCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                        }
+                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
+                            lvl[entityTopRow][entityLeftCol] = 152;
+                            coins++;
+                            score+=200;
+                            CoinList.add(new Coin((entityLeftCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                        }
+                    }
 
                     //HITTING BRICKS
                     if (inAir && airSpeed < 0 &&
@@ -933,18 +963,6 @@ public class Player extends Entity {
 
                     //PLAYER IN AIR COLLISIONS
 
-                    //COLLISION WHEN FALLING
-                    if (inAir && (y < Game.GAME_HEIGHT - 3*Game.TILES_SIZE || playerStatus == SMALL)
-                            && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
-                        distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
-                        if (distanceY < 0) {
-                            y = entityTopRow * Game.TILES_SIZE + 8;
-                            jump = false;
-                            inAir = false;
-                            airSpeed = 0;
-                            collision = true;
-                        }
-                    }
                     //COLLISION WHEN JUMPING
                     if (inAir
                             && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
@@ -955,8 +973,22 @@ public class Player extends Entity {
                             collision = true;
                         }
                     }
+                    //COLLISION WHEN FALLING
+                    if (inAir
+                            && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
+                        distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
+                        if (distanceY < 0) {
+                            y = entityTopRow * Game.TILES_SIZE + 8;
+                            jump = false;
+                            inAir = false;
+                            airSpeed = 0;
+                            collision = true;
+                        }
+                    }
                     //FALLING
-                    if (y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE || playerStatus == SMALL) {
+                    if (entityBottomRow + 1 < lvl.length &&
+                            entityRightCol < lvl[0].length &&
+                            entityBottomRow + 1 < Game.GAME_HEIGHT / Game.TILES_SIZE) {
                         if (levelManager.sprites.get(lvl[entityBottomRow + 1][entityRightCol]) == levelManager.sprites.get(90)
                                 && levelManager.sprites.get(lvl[entityBottomRow + 1][entityLeftCol]) == levelManager.sprites.get(90)
                                 && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
@@ -973,6 +1005,23 @@ public class Player extends Entity {
                     tileNum4 = lvl[entityTopRow][entityRightCol];
 
                     //HITTING INTERACTIVE BLOCKS
+
+                    // HITTING COIN BLOCK
+                    if (inAir && airSpeed < 0 &&
+                            (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) || (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114))) {
+                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(114)) {
+                            lvl[entityTopRow][entityLeftCol] = 152;
+                            coins++;
+                            score+=200;
+                            CoinList.add(new Coin((entityLeftCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                        }
+                        if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
+                            lvl[entityTopRow][entityRightCol] = 152;
+                            coins++;
+                            score+=200;
+                            CoinList.add(new Coin((entityRightCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
+                        }
+                    }
 
                     //HITTING BRICKS
                     if (inAir && airSpeed < 0 &&
@@ -1103,17 +1152,6 @@ public class Player extends Entity {
 
                     //PLAYER IN AIR COLLISIONS
 
-                    //COLLISION WHEN FALLING
-                    if (inAir && (y < Game.GAME_HEIGHT - 3*Game.TILES_SIZE || playerStatus == SMALL)
-                            && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
-                        distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
-                        if (distanceY < 0) {
-                            y = entityTopRow * Game.TILES_SIZE + 8;
-                            jump = false;
-                            inAir = false;
-                            airSpeed = 0;
-                        }
-                    }
                     //COLLISION WHEN JUMPING
                     if (inAir
                             && (levelManager.sprites.get(tileNum1) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum4) != levelManager.sprites.get(90))) {
@@ -1123,8 +1161,20 @@ public class Player extends Entity {
                             airSpeed = 0;
                         }
                     }
+                    //COLLISION WHEN FALLING
+                    if (inAir
+                            && (levelManager.sprites.get(tileNum2) != levelManager.sprites.get(90) || levelManager.sprites.get(tileNum3) != levelManager.sprites.get(90))) {
+                        distanceY = (entityBottomRow) * Game.TILES_SIZE - entityBottomY;
+                        if (distanceY < 0) {
+                            y = entityTopRow * Game.TILES_SIZE + 8;
+                            jump = false;
+                            inAir = false;
+                            airSpeed = 0;
+                        }
+                    }
                     //FALLING
-                    if (y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE || playerStatus == SMALL) {
+                    if (entityBottomRow + 1 < lvl.length &&
+                            entityBottomRow + 1 < Game.GAME_HEIGHT / Game.TILES_SIZE) {
                         if (levelManager.sprites.get(lvl[entityBottomRow + 1][entityRightCol]) == levelManager.sprites.get(90)
                                 && levelManager.sprites.get(lvl[entityBottomRow + 1][entityLeftCol]) == levelManager.sprites.get(90)
                                 && levelManager.sprites.get(lvl[entityBottomRow][entityRightCol]) == levelManager.sprites.get(90)
@@ -1205,5 +1255,17 @@ public class Player extends Entity {
 
     public int getPipeCounter() {
         return pipeCounter;
+    }
+
+    public void setAnimatedAction(boolean animatedAction) {
+        this.animatedAction = animatedAction;
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
+
+    public int getLvlTilesWide() {
+        return lvlTilesWide;
     }
 }

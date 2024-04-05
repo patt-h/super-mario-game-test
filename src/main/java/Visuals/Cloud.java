@@ -20,9 +20,6 @@ public class Cloud extends Visuals {
     }
 
     public static ArrayList<Cloud> getCloudList() {
-        CloudList.add(new Cloud(120,60));
-        CloudList.add(new Cloud(425,70));
-        CloudList.add(new Cloud(700,56));
         return CloudList;
     }
 }

@@ -1,5 +1,6 @@
 package Objects;
 
+import Actions.FinishLevel;
 import Entities.Player;
 import com.company.Game;
 
@@ -11,6 +12,7 @@ public class FinishBar extends GameObject {
     public static ArrayList<FinishBar> FinishBarList = new ArrayList<>();
     private boolean goingUp = true;
     private boolean goingDown = false;
+    public static boolean GotTaken = false;
     private int counter = 0;
 
     public FinishBar (int x, int y, int objType) {
@@ -54,6 +56,7 @@ public class FinishBar extends GameObject {
     public void checkTouched(Player player) {
         if (player.hitbox.intersects(hitbox)) {
             setActive(false);
+            GotTaken = true;
         }
     }
 

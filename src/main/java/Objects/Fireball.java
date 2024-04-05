@@ -1,5 +1,6 @@
 package Objects;
 
+import Input.KeyInputs;
 import Levels.Playing;
 import com.company.Game;
 
@@ -59,13 +60,22 @@ public class Fireball extends GameObject {
 
     public void update() {
         updatePosition();
-        if (y > 0) {
-            collision();
+        if (y < Game.GAME_HEIGHT - Game.TILES_SIZE) {
+            checkCollisions();
+        }
+        if (x > lvlLength * Game.TILES_SIZE - Game.TILES_SIZE || x < 0) {
+            active = false;
+            KeyInputs.activeBalls--;
+        }
+        if (y > Game.GAME_HEIGHT) {
+            setActive(false);
+            KeyInputs.activeBalls--;
         }
         updateAnimationTick();
     }
 
-    public void collision() {
+    @Override
+    public void checkCollisions() {
         for (Fireball fb: FireballList) {
             if (fb.isActive()) {
                 collision = false;
@@ -114,11 +124,19 @@ public class Fireball extends GameObject {
                             }
                         }
                         //FALLING
-                        if (levelManager.sprites.get(Playing.lvl[objectBottomRow+1][objectRightCol]) == levelManager.sprites.get(90)
-                                && levelManager.sprites.get(Playing.lvl[objectBottomRow+1][objectLeftCol]) == levelManager.sprites.get(90)
-                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
-                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
-                            inAir = true;
+                        if (y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE) {
+                            if (levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectRightCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectLeftCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                                inAir = true;
+                            }
+                        }
+                        else {
+                            if (levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                                inAir = true;
+                            }
                         }
                     }
                     case LEFT -> {
@@ -151,11 +169,19 @@ public class Fireball extends GameObject {
                             }
                         }
                         //FALLING
-                        if (levelManager.sprites.get(Playing.lvl[objectBottomRow+1][objectRightCol]) == levelManager.sprites.get(90)
-                                && levelManager.sprites.get(Playing.lvl[objectBottomRow+1][objectLeftCol]) == levelManager.sprites.get(90)
-                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
-                                && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
-                            inAir = true;
+                        if (y < Game.GAME_HEIGHT - 3 * Game.TILES_SIZE) {
+                            if (levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectRightCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow + 1][objectLeftCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                                inAir = true;
+                            }
+                        }
+                        else {
+                            if (levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol]) == levelManager.sprites.get(90)
+                                    && levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol]) == levelManager.sprites.get(90)) {
+                                inAir = true;
+                            }
                         }
                     }
                 }

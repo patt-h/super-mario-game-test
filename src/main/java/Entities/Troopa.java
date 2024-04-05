@@ -73,8 +73,11 @@ public class Troopa extends Enemy {
 
     public void update() {
         updatePosition();
-        if (!fireballed) {
+        if (!fireballed && y < Game.GAME_HEIGHT - Game.TILES_SIZE) {
             checkCollisions();
+        }
+        if (y > Game.GAME_HEIGHT) {
+            setActive(false);
         }
         updateAnimationTick();
     }

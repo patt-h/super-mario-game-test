@@ -16,7 +16,6 @@ public class Fence extends Visuals {
     }
 
     public static ArrayList<Fence> getFenceList() {
-        FenceList.add(new Fence(662, 576));
         return FenceList;
     }
 

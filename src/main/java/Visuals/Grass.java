@@ -20,7 +20,6 @@ public class Grass extends Visuals {
     }
 
     public static ArrayList<Grass> getGrassList() {
-        GrassList.add(new Grass(482,576));
         return GrassList;
     }
 }

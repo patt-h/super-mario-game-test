@@ -7,7 +7,10 @@ import Objects.Coin;
 import Objects.CoinBlock;
 import Objects.FinishBar;
 import Objects.WarpPipe;
+import Visuals.Cloud;
+import Visuals.Fence;
 import Visuals.FinishLine;
+import Visuals.Grass;
 import com.company.Game;
 import com.company.GameStates;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,7 +27,10 @@ import static Objects.FinishBar.FinishBarList;
 import static Objects.WarpPipe.WarpPipesMap;
 import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.ObjectConstants.*;
+import static Visuals.Cloud.CloudList;
+import static Visuals.Fence.FenceList;
 import static Visuals.FinishLine.FinishLineList;
+import static Visuals.Grass.GrassList;
 import static com.company.Game.lobbyWorldValues;
 
 public class LevelBuilder {
@@ -52,10 +58,12 @@ public class LevelBuilder {
                     }
                 }
                 getStartingCoordinates(rootNode);
+                getVisuals(rootNode);
                 getFinishLine(rootNode);
                 getWarps(rootNode);
                 getCoins(rootNode);
                 getEnemy(rootNode);
+                getTime(rootNode);
 
 
                 return lvl;
@@ -79,6 +87,29 @@ public class LevelBuilder {
         if (!finishLineNode.isMissingNode() && !finishLineNode.isNull()) {
             FinishLineList.add(new FinishLine(finishLineNode.get(0).get(0).asInt(), finishLineNode.get(0).get(1).asInt()));
             FinishBarList.add(new FinishBar((finishLineNode.get(0).get(0).asInt() + 270), (finishLineNode.get(0).get(1).asInt() + 400), FINISH_BAR));
+        }
+    }
+
+    private static void getVisuals(JsonNode rootNode) {
+        JsonNode grassNode = rootNode.path("visuals").path("grass");
+        for (JsonNode grass : grassNode) {
+            int x = grass.get(0).asInt();
+            int y = grass.get(1).asInt();
+            GrassList.add(new Grass(x, y));
+        }
+
+        JsonNode cloudsNode = rootNode.path("visuals").path("clouds");
+        for (JsonNode clouds : cloudsNode) {
+            int x = clouds.get(0).asInt();
+            int y = clouds.get(1).asInt();
+            CloudList.add(new Cloud(x, y));
+        }
+
+        JsonNode fenceNode = rootNode.path("visuals").path("fence");
+        for (JsonNode fence : fenceNode) {
+            int x = fence.get(0).asInt();
+            int y = fence.get(1).asInt();
+            FenceList.add(new Fence(x, y));
         }
     }
 
@@ -137,6 +168,16 @@ public class LevelBuilder {
             int x = coin.get(0).asInt();
             int y = coin.get(1).asInt();
             CoinList.add(new Coin(x, y, COIN));
+        }
+    }
+
+    private static void getTime(JsonNode rootNode) {
+        JsonNode timeNode = rootNode.path("time");
+        if (!timeNode.isMissingNode() && !timeNode.isNull()) {
+            Playing.worldTime = timeNode.get(0).get(0).asInt();
+        }
+        else {
+            Playing.worldTime = 300;
         }
     }
 }
