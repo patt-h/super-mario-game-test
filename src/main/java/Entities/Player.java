@@ -33,9 +33,9 @@ public class Player extends Entity {
 
     private int animationTick, animationIndex, animationSpeed = 25;
     private int accurateAnimationRow;
-    private float playerSpeed = 1.0f;
+    private float playerSpeed = 1.25f;
     private float minSprint = 1.0f;
-    private float maxSprint = 2.0f;
+    private float maxSprint = 1.75f;
     private float leftPlayerSprint;
     private float rightPlayerSprint;
     public int playerStatus = SMALL;
@@ -75,8 +75,8 @@ public class Player extends Entity {
     //JUMPING
     public float airSpeed = 0.0f;
     public boolean inAir = false;
-    private float gravity = 0.04f * Game.SCALE;
-    private float strongerGravity = 0.08f * Game.SCALE;
+    private float gravity = 0.03f * Game.SCALE;
+    private float strongerGravity = 0.075f * Game.SCALE;
     private float jumpSpeed = -2.55f * Game.SCALE;
 
     private float distanceX;
@@ -455,26 +455,20 @@ public class Player extends Entity {
     private void sprintCounter() {
         if (direction == LEFT || direction == RIGHT) {
             //ADDING UP SPRINT VALUE
-            if ((sprint && leftPlayerSprint <= maxSprint) && (left) && (!right)) {
-                if (inAir) {
-                    leftPlayerSprint += 0.001f;
-                } else {
-                    leftPlayerSprint += 0.01f;
+            if (sprint && (left || right)) {
+                if (left && leftPlayerSprint <= maxSprint && !right) {
+                    leftPlayerSprint += inAir ? 0.0005f : 0.003f;
                 }
-            }
-            if ((sprint && rightPlayerSprint <= maxSprint) && (right) && (!left)) {
-                if (inAir) {
-                    rightPlayerSprint += 0.001f;
-                } else {
-                    rightPlayerSprint += 0.01f;
+                if (right && rightPlayerSprint <= maxSprint && !left) {
+                    rightPlayerSprint += inAir ? 0.0005f : 0.003f;
                 }
             }
             //SLOWING DOWN WHEN NOTHING IS PRESSED AND MARIO SPRINTED
             if (direction == LEFT && (!sprint && leftPlayerSprint > minSprint) || (!left && !right)) {
-                leftPlayerSprint -= 0.02f;
+                leftPlayerSprint -= 0.01f;
             }
             if (direction == RIGHT && (!sprint && rightPlayerSprint > minSprint) || (!left && !right)) {
-                rightPlayerSprint -= 0.02f;
+                rightPlayerSprint -= 0.01f;
             }
             //PREVIOUS VALUE WHEN PLAYER SPRINT IS BELOW ZERO
             if (leftPlayerSprint < minSprint) {
@@ -925,8 +919,10 @@ public class Player extends Entity {
                                 || levelManager.sprites.get(lvl[entityBottomRow][entityRightCol + 1]) != levelManager.sprites.get(90)) {
                             distanceX = (entityRightCol + 1) * Game.TILES_SIZE - entityRightX;
                             if (distanceX <= 5) {
-                                rightPlayerSprint = 1;
-                                leftPlayerSprint = 1;
+                                if (levelManager.sprites.get(lvl[entityTopRow][entityRightCol + 1]) != levelManager.sprites.get(90) || !inAir) {
+                                    rightPlayerSprint = 1;
+                                    leftPlayerSprint = 1;
+                                }
                                 collision = true;
                             }
                         }
@@ -1114,8 +1110,10 @@ public class Player extends Entity {
                                 || levelManager.sprites.get(lvl[entityBottomRow][entityLeftCol - 1]) != levelManager.sprites.get(90)) {
                             distanceX = entityLeftX - (entityLeftCol) * Game.TILES_SIZE;
                             if (distanceX <= 5) {
-                                rightPlayerSprint = 1;
-                                leftPlayerSprint = 1;
+                                if (levelManager.sprites.get(lvl[entityTopRow][entityLeftCol + 1]) != levelManager.sprites.get(90) || !inAir) {
+                                    rightPlayerSprint = 1;
+                                    leftPlayerSprint = 1;
+                                }
                                 collision = true;
                             }
                         }

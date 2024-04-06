@@ -60,7 +60,7 @@ public class Fireball extends GameObject {
 
     public void update() {
         updatePosition();
-        if (y < Game.GAME_HEIGHT - Game.TILES_SIZE) {
+        if (y > 0 && y < Game.GAME_HEIGHT - Game.TILES_SIZE) {
             checkCollisions();
         }
         if (x > lvlLength * Game.TILES_SIZE - Game.TILES_SIZE || x < 0) {
