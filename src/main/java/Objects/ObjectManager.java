@@ -1,8 +1,8 @@
 package Objects;
 
+import Audio.AudioPlayer;
 import Entities.Player;
 import Input.KeyInputs;
-import Levels.Playing;
 import Utilities.LoadSave;
 import com.company.Game;
 
@@ -26,7 +26,7 @@ import static Utilities.Constants.ObjectConstants.*;
 import static Utilities.Constants.PlayerConstants.*;
 
 public class ObjectManager {
-    Player player;
+    private Player player;
 
     public BufferedImage[][] animations;
     private BufferedImage[][] effects;
@@ -62,6 +62,7 @@ public class ObjectManager {
                     if (player.hitbox.intersects(c.hitbox.x, c.hitbox.y, (int) c.hitbox.width, (int) c.hitbox.height)) {
                         c.setActive(false);
                         player.coins++;
+                        player.getAudioPlayer().playEffect(AudioPlayer.COIN);
                         player.score += getScoreAmount(COIN);
                     }
                 }
@@ -84,6 +85,7 @@ public class ObjectManager {
                     }
                     m.setActive(false);
                     m.setCollected(true);
+                    player.getAudioPlayer().playEffect(AudioPlayer.POWER_UP);
                     player.score += getScoreAmount(MUSHROOM);
                 }
             }
@@ -96,6 +98,7 @@ public class ObjectManager {
                         player.y -= Game.TILES_SIZE;
                         player.playerStatus = BIG;
                         player.bigUpgrade = true;
+
                     }
                     else if (player.playerStatus == BIG) {
                         player.playerStatus = FIRE;
@@ -103,6 +106,7 @@ public class ObjectManager {
                     }
                     f.setActive(false);
                     f.setCollected(true);
+                    player.getAudioPlayer().playEffect(AudioPlayer.POWER_UP);
                     player.score += getScoreAmount(FIRE_FLOWER);
                 }
             }

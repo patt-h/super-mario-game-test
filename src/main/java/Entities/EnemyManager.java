@@ -1,5 +1,6 @@
 package Entities;
 
+import Audio.AudioPlayer;
 import Input.KeyInputs;
 import Objects.Fireball;
 import Utilities.LoadSave;
@@ -89,6 +90,7 @@ public class EnemyManager {
                     go.setKilled(true);
                     player.y -= 48;
                     player.airSpeed = -5;
+                    player.getAudioPlayer().playEffect(AudioPlayer.GOOMBA_DEAD);
                     player.score += getEnemyScoreAmount(GOOMBA);
                 }
                 else if (player.hitbox.intersects(go.hitbox) && !go.stepped && !go.fireballed) {

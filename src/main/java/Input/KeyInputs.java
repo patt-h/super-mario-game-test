@@ -1,6 +1,6 @@
 package Input;
 
-import Entities.Player;
+import Audio.AudioPlayer;
 import Objects.Fireball;
 import com.company.Game;
 import com.company.GamePanel;
@@ -43,8 +43,9 @@ public class KeyInputs implements KeyListener {
                     }
                 }
                 case KeyEvent.VK_Z -> {
-                    if (!blockJump) {
+                    if (!blockJump && !gamePanel.getGame().getPlayer().inAir) {
                         gamePanel.getGame().getPlayer().setJump(true);
+                        gamePanel.getGame().getPlayer().getAudioPlayer().playEffect(AudioPlayer.JUMP);
                         blockJump = true;
                     }
                 }
@@ -53,11 +54,13 @@ public class KeyInputs implements KeyListener {
                     if (gamePanel.getGame().getPlayer().playerStatus == FIRE && !blockFire && activeBalls < 2 && !gamePanel.getGame().getPlayer().isDuck()) {
                         if (gamePanel.getGame().getPlayer().direction == RIGHT) {
                             FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x + Game.TILES_SIZE / 2, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, gamePanel.getGame().getPlayer().direction));
-                        } else if (gamePanel.getGame().getPlayer().direction == LEFT) {
+                        }
+                        else if (gamePanel.getGame().getPlayer().direction == LEFT) {
                             FireballList.add(new Fireball((int) gamePanel.getGame().getPlayer().x, (int) gamePanel.getGame().getPlayer().y + Game.TILES_SIZE / 2, FIRE_BALL, gamePanel.getGame().getPlayer().direction));
                         }
                         blockFire = true;
                         activeBalls++;
+                        gamePanel.getGame().getPlayer().getAudioPlayer().playEffect(AudioPlayer.FIREBALL);
                     }
                 }
 

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class FireFlower extends GameObject {
     public static ArrayList<FireFlower> FireFlowerList = new ArrayList<>();
     private int counter;
-    private boolean ready = false;
+    public boolean ready = false;
 
     public FireFlower(int x, int y, int objType) {
         super(x, y, objType);
@@ -24,9 +24,9 @@ public class FireFlower extends GameObject {
         hitbox.x = x;
         hitbox.y = y;
         if (!ready) {
-            y--;
+            y -= 0.25;
             counter++;
-            if (counter == Game.TILES_SIZE-4) {
+            if (counter == 4 * Game.TILES_SIZE - Game.TILES_SIZE / 4) {
                 ready = true;
             }
         }

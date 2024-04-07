@@ -1,5 +1,6 @@
 package Objects;
 
+import Audio.AudioPlayer;
 import Entities.Player;
 import com.company.Game;
 
@@ -32,6 +33,7 @@ public class WarpPipe extends GameObject {
                 player.exitX = outPipe.x;
                 player.exitY = outPipe.y;
                 player.teleportingIn = true;
+                player.getAudioPlayer().playEffect(AudioPlayer.PIPE);
             }
         }
 
@@ -42,6 +44,7 @@ public class WarpPipe extends GameObject {
             if (player.hitbox.intersects(inPipe.hitbox) && player.duck) {
                 player.x = inPipe.x;
                 player.worldTeleportingIn = true;
+                player.getAudioPlayer().playEffect(AudioPlayer.PIPE);
                 Game.world = world;
             }
         }

@@ -36,9 +36,9 @@ public class Mushroom extends GameObject {
                 x -= 1;
             }
         } else {
-            y--;
+            y -= 0.25;
             counter++;
-            if (counter == Game.TILES_SIZE-4) {
+            if (counter == 4 * Game.TILES_SIZE - Game.TILES_SIZE / 4) {
                 ready = true;
             }
         }

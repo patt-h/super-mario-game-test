@@ -1,5 +1,7 @@
 package Levels;
 
+import Actions.FinishLevel;
+import Audio.AudioPlayer;
 import Entities.Player;
 import Objects.CoinBlock;
 import Objects.FinishBar;
@@ -37,6 +39,7 @@ public class Playing {
     public static int worldTime;
 
     public Timer timeCounter;
+    public Timer timeDecreasing;
 
     public Playing(Player player) {
         this.player = player;
@@ -57,6 +60,9 @@ public class Playing {
 
     public void getOutOfStartingPipe() {
         if (lobby) {
+            if (!player.getAudioPlayer().isPlaying(AudioPlayer.PIPE) && player.x < Game.TILES_SIZE) {
+                player.getAudioPlayer().playEffect(AudioPlayer.PIPE);
+            }
             player.x +=0.5;
             player.playerAction = SMALL_MARIO_WALK;
             if (player.x >= 3 * Game.TILES_SIZE) {

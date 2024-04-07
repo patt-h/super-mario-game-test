@@ -1,6 +1,7 @@
 package Entities;
 
 import Actions.FinishLevel;
+import Audio.AudioPlayer;
 import Levels.LevelBuilder;
 import Levels.LevelManager;
 import Objects.*;
@@ -25,6 +26,7 @@ import static Utilities.Constants.Directions.*;
 public class Player extends Entity {
     public int[][] lvl = LevelBuilder.getLevelData();
     private LevelManager levelManager;
+    private AudioPlayer audioPlayer;
     private FinishLevel finishLevel;
     public int xLvlOffset;
     public int lvlTilesWide;
@@ -92,6 +94,7 @@ public class Player extends Entity {
         direction = RIGHT;
         hitbox = new Rectangle2D.Float();
         levelManager = new LevelManager();
+        audioPlayer = new AudioPlayer();
         finishLevel = new FinishLevel();
         mirrorReflection();
         initBorderDistance();
@@ -511,6 +514,9 @@ public class Player extends Entity {
             y -= 0.5;
             ducking = true;
             pipeCounter++;
+            if (!audioPlayer.isPlaying(AudioPlayer.PIPE)) {
+                audioPlayer.playEffect(AudioPlayer.PIPE);
+            }
             if (playerStatus == SMALL) {
                 if (pipeCounter >= 60) {
                     teleportingOut = false;
@@ -636,7 +642,7 @@ public class Player extends Entity {
         if (jump && !duck) {
             jump();
         }
-        if (inAir) {
+        if (inAir && y < Game.GAME_HEIGHT + Game.TILES_SIZE) {
             y += airSpeed;
             airSpeed += gravity;
             if (!jump && airSpeed < 0 && playerStatus != DEAD) {
@@ -664,6 +670,9 @@ public class Player extends Entity {
         }
 
         if (playerStatus == DEAD) {
+            if (!audioPlayer.isPlaying(AudioPlayer.DEAD) && y < Game.GAME_HEIGHT + Game.TILES_SIZE) {
+                audioPlayer.playEffect(AudioPlayer.DEAD);
+            }
             animatedAction = true;
         }
     }
@@ -817,12 +826,14 @@ public class Player extends Entity {
                             lvl[entityTopRow][entityRightCol] = 152;
                             coins++;
                             score+=200;
+                            audioPlayer.playEffect(AudioPlayer.COIN);
                             CoinList.add(new Coin((entityRightCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                         }
                         if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
                             lvl[entityTopRow][entityLeftCol] = 152;
                             coins++;
                             score+=200;
+                            audioPlayer.playEffect(AudioPlayer.COIN);
                             CoinList.add(new Coin((entityLeftCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                         }
                     }
@@ -866,6 +877,7 @@ public class Player extends Entity {
                                         movedCoin = true;
                                         coins++;
                                         score+=200;
+                                        audioPlayer.playEffect(AudioPlayer.COIN);
                                         cb.movedBlock = true;
                                         cb.setMovedCoinBlockX((int)cb.hitbox.x);
                                         CoinList.add(new Coin((int)cb.hitbox.x, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
@@ -1009,12 +1021,14 @@ public class Player extends Entity {
                             lvl[entityTopRow][entityLeftCol] = 152;
                             coins++;
                             score+=200;
+                            audioPlayer.playEffect(AudioPlayer.COIN);
                             CoinList.add(new Coin((entityLeftCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                         }
                         if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(114)) {
                             lvl[entityTopRow][entityRightCol] = 152;
                             coins++;
                             score+=200;
+                            audioPlayer.playEffect(AudioPlayer.COIN);
                             CoinList.add(new Coin((entityRightCol) * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
                         }
                     }
@@ -1058,6 +1072,7 @@ public class Player extends Entity {
                                         movedCoin = true;
                                         coins++;
                                         score+=200;
+                                        audioPlayer.playEffect(AudioPlayer.COIN);
                                         cb.movedBlock = true;
                                         cb.setMovedCoinBlockX((int)cb.hitbox.x);
                                         CoinList.add(new Coin((int)cb.hitbox.x, (entityTopRow) * Game.TILES_SIZE, COIN_BRICK));
@@ -1265,5 +1280,9 @@ public class Player extends Entity {
 
     public int getLvlTilesWide() {
         return lvlTilesWide;
+    }
+
+    public AudioPlayer getAudioPlayer() {
+        return audioPlayer;
     }
 }

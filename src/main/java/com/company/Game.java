@@ -1,6 +1,7 @@
 package com.company;
 
 import Actions.PlayerDeath;
+import Audio.AudioPlayer;
 import Entities.EnemyManager;
 import Entities.Player;
 import Levels.LevelBuilder;
@@ -38,12 +39,11 @@ public class Game implements Runnable{
     public static Font smallerFont;
 
     private Player player;
+    private Playing playing;
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
     private VisualsManager visualsManager;
     private BufferedImage backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
-
-    private Playing playing;
     private PlayerDeath playerDeath;
 
     private int aniTick, aniIndex, aniSpeed;
@@ -120,7 +120,7 @@ public class Game implements Runnable{
         player.update();
 
         //RESETTING WHOLE MAP AFTER DEATH
-        if (player.playerStatus == DEAD && player.y > 6 * GAME_HEIGHT) {
+        if (player.playerStatus == DEAD && !player.getAudioPlayer().isPlaying(AudioPlayer.DEAD)) {
             playerDeath.reloadWorld(player, playing, enemyManager, objectManager);
         }
 
@@ -370,7 +370,6 @@ public class Game implements Runnable{
     public Player getPlayer() {
         return player;
     }
-
 
     public Playing getPlaying() {
         return playing;

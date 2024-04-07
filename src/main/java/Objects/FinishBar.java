@@ -13,6 +13,7 @@ public class FinishBar extends GameObject {
     private boolean goingUp = true;
     private boolean goingDown = false;
     public static boolean GotTaken = false;
+    public boolean finishSoundPlayed = false;
     private int counter = 0;
 
     public FinishBar (int x, int y, int objType) {
@@ -55,6 +56,8 @@ public class FinishBar extends GameObject {
 
     public void checkTouched(Player player) {
         if (player.hitbox.intersects(hitbox)) {
+            FinishLevel.playFinishSound(player);
+            FinishLevel.startTime = System.nanoTime();
             setActive(false);
             GotTaken = true;
         }
