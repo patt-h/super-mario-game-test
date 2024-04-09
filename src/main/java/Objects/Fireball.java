@@ -101,7 +101,7 @@ public class Fireball extends GameObject {
                             //COLLISION WHILE MOVING
                             if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectRightCol + 1]) != levelManager.sprites.get(90)
                                 || levelManager.sprites.get(Playing.lvl[objectBottomRow][objectRightCol + 1]) != levelManager.sprites.get(90)
-                                && distanceY != 0) {
+                                && distanceY < -1) {
                                 distanceX = (objectRightCol + 1) * Game.TILES_SIZE - objectRightX;
 
                                 if (distanceX <= 16 && distanceX > 8) {
@@ -147,8 +147,9 @@ public class Fireball extends GameObject {
                             //COLLISION WHILE MOVING
                             if (levelManager.sprites.get(Playing.lvl[objectTopRow][objectLeftCol - 1]) != levelManager.sprites.get(90)
                                 || levelManager.sprites.get(Playing.lvl[objectBottomRow][objectLeftCol - 1]) != levelManager.sprites.get(90)
-                                && distanceY != 0) {
+                                && distanceY < -1) {
                                 distanceX = objectLeftX - (objectLeftCol - 1) * Game.TILES_SIZE;
+
                                 if (distanceX <= Game.TILES_SIZE + 16 && distanceX > Game.TILES_SIZE + 8) {
                                     fb.aniIndex = 0;
                                 }

@@ -14,6 +14,9 @@ public class AudioPlayer {
     public static final int GOOMBA_DEAD = 7;
     public static final int BREAK = 8;
     public static final int COIN = 9;
+    public static final int BUMP = 10;
+    public static final int APPEAR = 11;
+    public static final int KICK = 12;
 
     private AudioClip[] effects;
     public static AudioClip timeDecreasing;
@@ -27,7 +30,7 @@ public class AudioPlayer {
     private void loadEffects() {
         String[] effectNames = {
                 "dead", "jump", "powerup", "shoot_fireball", "pipe", "finish_level", "time_decreasing",
-                "goomba_dead", "break", "coin"
+                "goomba_dead", "break", "coin", "bump", "appear", "kick"
         };
         effects = new AudioClip[effectNames.length];
         for (int i = 0; i < effects.length; i++) {

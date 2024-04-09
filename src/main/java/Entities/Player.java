@@ -848,8 +848,10 @@ public class Player extends Entity {
                                 movedX = entityRightCol * 48;
                                 rightMovedX = entityRightCol * 48;
                                 movedY = entityTopRow * 48;
+                                audioPlayer.playEffect(AudioPlayer.BUMP);
                             } else {
                                 lvl[entityTopRow][entityRightCol] = 90;
+                                audioPlayer.playEffect(AudioPlayer.BREAK);
                                 broken = true;
                             }
                         }
@@ -859,8 +861,10 @@ public class Player extends Entity {
                                 movedX = entityLeftCol * 48;
                                 leftMovedX = entityLeftCol * 48;
                                 movedY = entityTopRow * 48;
+                                audioPlayer.playEffect(AudioPlayer.BUMP);
                             } else {
                                 lvl[entityTopRow][entityLeftCol] = 90;
+                                audioPlayer.playEffect(AudioPlayer.BREAK);
                                 broken = true;
                             }
                         }
@@ -908,17 +912,21 @@ public class Player extends Entity {
                             lvl[entityTopRow][entityRightCol] = 152;
                             if (playerStatus == SMALL) {
                                 MushroomList.add(new Mushroom(entityRightCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
-                            } else {
+                            }
+                            else {
                                 FireFlowerList.add(new FireFlower(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
                             }
-                        } else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
+                        }
+                        else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(115)) {
                             lvl[entityTopRow][entityLeftCol] = 152;
                             if (playerStatus == SMALL) {
                                 MushroomList.add(new Mushroom(entityLeftCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, MUSHROOM));
-                            } else {
+                            }
+                            else {
                                 FireFlowerList.add(new FireFlower(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
                             }
                         }
+                        audioPlayer.playEffect(AudioPlayer.APPEAR);
                         collision = true;
                     }
 
@@ -1043,8 +1051,10 @@ public class Player extends Entity {
                                 movedX = entityLeftCol * 48;
                                 leftMovedX = entityLeftCol * 48;
                                 movedY = entityTopRow * 48;
+                                audioPlayer.playEffect(AudioPlayer.BUMP);
                             } else {
                                 lvl[entityTopRow][entityLeftCol] = 90;
+                                audioPlayer.playEffect(AudioPlayer.BREAK);
                                 broken = true;
                             }
                         }
@@ -1054,8 +1064,10 @@ public class Player extends Entity {
                                 movedX = entityRightCol * 48;
                                 rightMovedX = entityRightCol * 48;
                                 movedY = entityTopRow * 48;
+                                audioPlayer.playEffect(AudioPlayer.BUMP);
                             } else {
                                 lvl[entityTopRow][entityRightCol] = 90;
+                                audioPlayer.playEffect(AudioPlayer.BREAK);
                                 broken = true;
                             }
                         }
@@ -1113,6 +1125,7 @@ public class Player extends Entity {
                                 FireFlowerList.add(new FireFlower(entityRightCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
                             }
                         }
+                        audioPlayer.playEffect(AudioPlayer.APPEAR);
                         collision = true;
                     }
 
