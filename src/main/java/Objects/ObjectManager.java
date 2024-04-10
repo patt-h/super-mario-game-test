@@ -22,6 +22,7 @@ import static Objects.Mushroom.MushroomList;
 import static Objects.WarpPipe.WarpPipesMap;
 import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.Directions.LEFT;
+import static Utilities.Constants.Directions.RIGHT;
 import static Utilities.Constants.ObjectConstants.*;
 import static Utilities.Constants.PlayerConstants.*;
 
@@ -118,6 +119,16 @@ public class ObjectManager {
                     if (fb.aniIndex == 3) {
                         fb.aniIndex = 0;
                     }
+                }
+                if (fb.x - player.xLvlOffset > Game.GAME_WIDTH && fb.direction == RIGHT) {
+                    fb.setActive(false);
+                    KeyInputs.activeBalls--;
+                    System.out.println("test");
+                }
+                else if (fb.x - player.xLvlOffset < -fb.width  && fb.direction == LEFT) {
+                    fb.setActive(false);
+                    KeyInputs.activeBalls--;
+                    System.out.println("test");
                 }
             }
         }

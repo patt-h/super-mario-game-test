@@ -83,7 +83,7 @@ public class EnemyManager {
     public void checkTouched() {
         //ADDING NEW ENEMIES WITH SCHEME BELOW
         for (Goomba go : goombas) {
-            if (go.isActive()) {
+            if (go.isActive() && go.x - Game.GAME_WIDTH < player.x) {
                 go.update();
                 if (player.hitbox.intersects(go.damageHitbox) && !player.hitbox.intersects(go.hitbox) && player.airSpeed > 0 && !go.fireballed && !go.stepped && player.playerStatus != DEAD) {
                     go.stepped = true;
@@ -126,7 +126,7 @@ public class EnemyManager {
             }
         }
         for (Troopa tr : troopas) {
-            if (tr.isActive()) {
+            if (tr.isActive() && tr.x - Game.GAME_WIDTH < player.x) {
                 tr.update();
                 //STEPPING
                 if (player.hitbox.intersects(tr.damageHitbox) && !player.hitbox.intersects(tr.hitbox) && player.airSpeed > 0 && player.playerStatus != DEAD && !tr.fireballed && !tr.kicked && !tr.stepped) {
@@ -195,7 +195,7 @@ public class EnemyManager {
         }
         for (Piranha pi : piranhas) {
             //GETTING HIT
-            if (pi.isActive()) {
+            if (pi.isActive() && pi.x - Game.GAME_WIDTH < player.x) {
                 pi.update();
 
                 if (Math.abs(player.x - pi.x) <= 174 && Math.abs(player.x - pi.x) >= 0) {
