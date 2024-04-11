@@ -1,7 +1,7 @@
 package Objects;
 
 import Levels.LevelManager;
-import Levels.Playing;
+import States.Playing;
 import com.company.Game;
 
 import javax.imageio.ImageIO;

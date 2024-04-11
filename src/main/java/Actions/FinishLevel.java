@@ -2,7 +2,7 @@ package Actions;
 
 import Audio.AudioPlayer;
 import Entities.Player;
-import Levels.Playing;
+import States.Playing;
 import Objects.FinishBar;
 import Utilities.ChangeWorld;
 import com.company.Game;
@@ -26,7 +26,7 @@ public class FinishLevel {
                 if (System.nanoTime() - startTime >= 8 * 1000000000L) {
                     if (Playing.worldTime > 0) {
                         // RIP MY EARS, DIDN'T WORK WHEN I WAS TESTING THIS FOR THE FIRST TIME
-                        if (!player.getAudioPlayer().isPlaying(AudioPlayer.TIME_DECREASING)) {
+                        if (!player.getAudioPlayer().isEffectPlaying(AudioPlayer.TIME_DECREASING)) {
                             player.getAudioPlayer().playEffect(AudioPlayer.TIME_DECREASING);
                         }
                         Playing.worldTime--;

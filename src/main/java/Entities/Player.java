@@ -13,7 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
-import static Levels.Playing.lvlLength;
+import static States.Playing.lvlLength;
 import static Objects.Coin.CoinList;
 import static Objects.CoinBlock.coinBlocksList;
 import static Objects.FireFlower.FireFlowerList;
@@ -514,7 +514,7 @@ public class Player extends Entity {
             y -= 0.5;
             ducking = true;
             pipeCounter++;
-            if (!audioPlayer.isPlaying(AudioPlayer.PIPE)) {
+            if (!audioPlayer.isEffectPlaying(AudioPlayer.PIPE)) {
                 audioPlayer.playEffect(AudioPlayer.PIPE);
             }
             if (playerStatus == SMALL) {
@@ -670,7 +670,7 @@ public class Player extends Entity {
         }
 
         if (playerStatus == DEAD) {
-            if (!audioPlayer.isPlaying(AudioPlayer.DEAD) && y < Game.GAME_HEIGHT + Game.TILES_SIZE) {
+            if (!audioPlayer.isEffectPlaying(AudioPlayer.DEAD) && y < Game.GAME_HEIGHT + Game.TILES_SIZE) {
                 audioPlayer.playEffect(AudioPlayer.DEAD);
             }
             animatedAction = true;

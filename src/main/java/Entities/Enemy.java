@@ -1,7 +1,7 @@
 package Entities;
 
 import Levels.LevelManager;
-import Levels.Playing;
+import States.Playing;
 import com.company.Game;
 
 import java.awt.*;

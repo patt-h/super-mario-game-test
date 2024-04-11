@@ -3,7 +3,7 @@ package Actions;
 import Entities.EnemyManager;
 import Entities.Player;
 import Levels.LevelBuilder;
-import Levels.Playing;
+import States.Playing;
 import Objects.ObjectManager;
 
 import static Utilities.Constants.PlayerConstants.SMALL;

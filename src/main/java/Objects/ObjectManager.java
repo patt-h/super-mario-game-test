@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static Levels.Playing.lvlLength;
+import static States.Playing.lvlLength;
 import static Objects.Coin.CoinList;
 import static Objects.CoinBlock.coinBlocksList;
 import static Objects.FinishBar.FinishBarList;
@@ -123,12 +123,10 @@ public class ObjectManager {
                 if (fb.x - player.xLvlOffset > Game.GAME_WIDTH && fb.direction == RIGHT) {
                     fb.setActive(false);
                     KeyInputs.activeBalls--;
-                    System.out.println("test");
                 }
                 else if (fb.x - player.xLvlOffset < -fb.width  && fb.direction == LEFT) {
                     fb.setActive(false);
                     KeyInputs.activeBalls--;
-                    System.out.println("test");
                 }
             }
         }

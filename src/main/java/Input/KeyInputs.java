@@ -60,6 +60,7 @@ public class KeyInputs implements KeyListener {
                         }
                         blockFire = true;
                         activeBalls++;
+                        gamePanel.getGame().getPlayer().getAudioPlayer().playEffect(AudioPlayer.FIREBALL);
                     }
                 }
 

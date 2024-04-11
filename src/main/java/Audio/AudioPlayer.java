@@ -4,6 +4,9 @@ import java.net.URL;
 import javafx.scene.media.AudioClip;
 
 public class AudioPlayer {
+    public static int MAIN_MENU = 0;
+    public static int SAVE_ROOM = 1;
+
     public static final int DEAD = 0;
     public static final int JUMP = 1;
     public static final int POWER_UP = 2;
@@ -19,12 +22,23 @@ public class AudioPlayer {
     public static final int KICK = 12;
 
     private AudioClip[] effects;
-    public static AudioClip timeDecreasing;
+    private AudioClip[] songs;
     private float volume = 0.03f;
 
 
     public AudioPlayer() {
+        loadSongs();
         loadEffects();
+    }
+
+    private void loadSongs() {
+        String[] songNames = {
+                "mainmenu", "savegameroom"
+        };
+        songs = new AudioClip[songNames.length];
+        for (int i = 0; i < songs.length; i++) {
+            songs[i] = getAudioSongClip(songNames[i]);
+        }
     }
 
     private void loadEffects() {
@@ -38,8 +52,18 @@ public class AudioPlayer {
         }
     }
 
-    public boolean isPlaying(int effect) {
+    public boolean isSongPlaying(int song) {
+        return songs[song].isPlaying();
+    }
+
+    public boolean isEffectPlaying(int effect) {
         return effects[effect].isPlaying();
+    }
+
+    public void playSong(int song) {
+        AudioClip clip = songs[song];
+        clip.setVolume(volume);
+        clip.play();
     }
 
     public void playEffect(int effect) {
@@ -48,8 +72,19 @@ public class AudioPlayer {
         clip.play();
     }
 
+    private AudioClip getAudioSongClip(String name) {
+        URL url = getClass().getResource("/Audio/Songs/" + name + ".wav");
+        if (url == null) {
+            System.err.println("Nie znaleziono pliku audio: " + name);
+            return null;
+        }
+
+        return new AudioClip(url.toExternalForm());
+    }
+
+
     private AudioClip getAudioClip(String name) {
-        URL url = getClass().getResource("/Audio/" + name + ".wav");
+        URL url = getClass().getResource("/Audio/Effects/" + name + ".wav");
         if (url == null) {
             System.err.println("Nie znaleziono pliku audio: " + name);
             return null;

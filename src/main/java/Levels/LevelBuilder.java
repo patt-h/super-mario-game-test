@@ -7,6 +7,8 @@ import Objects.Coin;
 import Objects.CoinBlock;
 import Objects.FinishBar;
 import Objects.WarpPipe;
+import States.Playing;
+import Utilities.LoadSave;
 import Visuals.Cloud;
 import Visuals.Fence;
 import Visuals.FinishLine;
@@ -58,6 +60,7 @@ public class LevelBuilder {
                     }
                 }
                 getStartingCoordinates(rootNode);
+                getBackground(rootNode);
                 getVisuals(rootNode);
                 getFinishLine(rootNode);
                 getWarps(rootNode);
@@ -178,6 +181,16 @@ public class LevelBuilder {
         }
         else {
             Playing.worldTime = 300;
+        }
+    }
+
+    private static void getBackground(JsonNode rootNode) {
+        JsonNode backgroundNode = rootNode.path("background");
+        if (!backgroundNode.isMissingNode() && !backgroundNode.isNull()) {
+            Playing.backgroundImg = LoadSave.GetSpriteAtlas(backgroundNode.get(0).get(0).asText());
+        }
+        else {
+            Playing.backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BLUE_SKY_BACKGROUND);
         }
     }
 }

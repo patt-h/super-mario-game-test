@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import Levels.Playing;
+import States.Playing;
 import Objects.ObjectManager;
 import Objects.WarpPipe;
 import Utilities.LoadSave;
@@ -43,7 +43,6 @@ public class Game implements Runnable{
     private ObjectManager objectManager;
     private EnemyManager enemyManager;
     private VisualsManager visualsManager;
-    private BufferedImage backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_IMG);
     private PlayerDeath playerDeath;
 
     private int aniTick, aniIndex, aniSpeed;
@@ -120,7 +119,7 @@ public class Game implements Runnable{
         player.update();
 
         //RESETTING WHOLE MAP AFTER DEATH
-        if (player.playerStatus == DEAD && !player.getAudioPlayer().isPlaying(AudioPlayer.DEAD)) {
+        if (player.playerStatus == DEAD && !player.getAudioPlayer().isEffectPlaying(AudioPlayer.DEAD)) {
             playerDeath.reloadWorld(player, playing, enemyManager, objectManager);
         }
 
@@ -152,7 +151,7 @@ public class Game implements Runnable{
 
     public void render(Graphics g) {
         if (player.playerStatus != DEAD) {
-            g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+            playing.renderBackground(g, player.xLvlOffset);
             visualsManager.draw(g, player.xLvlOffset);
             objectManager.draw(g, player.xLvlOffset);
             enemyManager.draw(g, player.xLvlOffset);
@@ -160,7 +159,7 @@ public class Game implements Runnable{
             playing.render(g, player.xLvlOffset);
         }
         else {
-            g.drawImage(backgroundImg,0,0,Game.GAME_WIDTH,Game.GAME_HEIGHT, null);
+            playing.renderBackground(g, player.xLvlOffset);
             visualsManager.draw(g, player.xLvlOffset);
             objectManager.draw(g, player.xLvlOffset);
             enemyManager.draw(g, player.xLvlOffset);

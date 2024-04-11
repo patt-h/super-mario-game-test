@@ -1,6 +1,5 @@
 package Entities;
 
-import Levels.Playing;
 import com.company.Game;
 
 import java.awt.geom.Rectangle2D;

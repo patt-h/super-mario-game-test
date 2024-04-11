@@ -1,20 +1,20 @@
 package Objects;
 
 import Input.KeyInputs;
-import Levels.Playing;
+import States.Playing;
 import com.company.Game;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-import static Levels.Playing.lvlLength;
+import static States.Playing.lvlLength;
 import static Utilities.Constants.Directions.LEFT;
 import static Utilities.Constants.Directions.RIGHT;
 
 public class Fireball extends GameObject {
     public static ArrayList<Fireball> FireballList = new ArrayList<>();
     public static float jumpSpeed = -0.85f * Game.SCALE;
-    public int value = 4;
+    public int value = 5;
 
     public boolean collision;
     public boolean collisionX;
