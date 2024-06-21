@@ -9,6 +9,7 @@ import static Visuals.Cloud.CloudList;
 import static Visuals.Fence.FenceList;
 import static Visuals.FinishLine.FinishLineList;
 import static Visuals.Grass.GrassList;
+import static Visuals.Hill.HillList;
 
 public class VisualsManager {
 
@@ -16,6 +17,7 @@ public class VisualsManager {
     public ArrayList<Grass> grasses = new ArrayList<>();
     public ArrayList<Fence> fences = new ArrayList<>();
     public ArrayList<FinishLine> finishLine = new ArrayList<>();
+    public ArrayList<Hill> hills = new ArrayList<>();
 
     public VisualsManager() {
         addObjects();
@@ -26,6 +28,7 @@ public class VisualsManager {
         grasses = Grass.getGrassList();
         fences = Fence.getFenceList();
         finishLine = FinishLine.getFinishLineList();
+        hills = Hill.getHillList();
     }
 
     public void draw(Graphics g, int xLvlOffset) {
@@ -58,6 +61,12 @@ public class VisualsManager {
                 g.drawImage(fl.frames[fl.getAniIndex()], (int) fl.x - xLvlOffset, (int) fl.y, fl.getWidth(), fl.getHeight(), null);
             }
         }
+
+        for (Hill h : hills) {
+            if (h.isActive() && h.x - xLvlOffset < Game.GAME_WIDTH && h.x - xLvlOffset + h.getWidth() > 0) {
+                g.drawImage(h.frames[h.getAniIndex()], (int)h.x - xLvlOffset, (int)h.y, h.getWidth(), h.getHeight(), null);
+            }
+        }
     }
 
     public void resetObjects() {
@@ -65,5 +74,6 @@ public class VisualsManager {
         GrassList.clear();
         FenceList.clear();
         FinishLineList.clear();
+        HillList.clear();
     }
 }

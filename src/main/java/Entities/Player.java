@@ -460,10 +460,10 @@ public class Player extends Entity {
             //ADDING UP SPRINT VALUE
             if (sprint && (left || right)) {
                 if (left && leftPlayerSprint <= maxSprint && !right) {
-                    leftPlayerSprint += inAir ? 0.0005f : 0.003f;
+                    leftPlayerSprint += inAir ? 0.002f : 0.01f;
                 }
                 if (right && rightPlayerSprint <= maxSprint && !left) {
-                    rightPlayerSprint += inAir ? 0.0005f : 0.003f;
+                    rightPlayerSprint += inAir ? 0.002f : 0.01f;
                 }
             }
             //SLOWING DOWN WHEN NOTHING IS PRESSED AND MARIO SPRINTED

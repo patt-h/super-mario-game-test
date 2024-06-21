@@ -9,10 +9,7 @@ import Objects.FinishBar;
 import Objects.WarpPipe;
 import States.Playing;
 import Utilities.LoadSave;
-import Visuals.Cloud;
-import Visuals.Fence;
-import Visuals.FinishLine;
-import Visuals.Grass;
+import Visuals.*;
 import com.company.Game;
 import com.company.GameStates;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,6 +30,7 @@ import static Visuals.Cloud.CloudList;
 import static Visuals.Fence.FenceList;
 import static Visuals.FinishLine.FinishLineList;
 import static Visuals.Grass.GrassList;
+import static Visuals.Hill.HillList;
 import static com.company.Game.lobbyWorldValues;
 
 public class LevelBuilder {
@@ -113,6 +111,13 @@ public class LevelBuilder {
             int x = fence.get(0).asInt();
             int y = fence.get(1).asInt();
             FenceList.add(new Fence(x, y));
+        }
+
+        JsonNode hillsNode = rootNode.path("visuals").path("hills");
+        for (JsonNode hills : hillsNode) {
+            int x = hills.get(0).asInt();
+            int y = hills.get(1).asInt();
+            HillList.add(new Hill(x, y));
         }
     }
 

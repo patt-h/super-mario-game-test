@@ -115,6 +115,7 @@ public class Constants {
         public static final int GRASS = 1;
         public static final int FENCE = 2;
         public static final int FINISH_LINE = 3;
+        public static final int HILL = 4;
 
         public static int getVisualSpriteAmount(int visual_type) {
             return switch (visual_type) {
