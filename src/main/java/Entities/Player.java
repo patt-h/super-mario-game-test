@@ -13,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
+import static Objects.GreenMushroom.GreenMushroomList;
 import static States.Playing.lvlLength;
 import static Objects.Coin.CoinList;
 import static Objects.CoinBlock.coinBlocksList;
@@ -925,6 +926,21 @@ public class Player extends Entity {
                             else {
                                 FireFlowerList.add(new FireFlower(entityLeftCol * Game.TILES_SIZE, (entityTopRow) * Game.TILES_SIZE - 5, FIRE_FLOWER));
                             }
+                        }
+                        audioPlayer.playEffect(AudioPlayer.APPEAR);
+                        collision = true;
+                    }
+
+                    //HITTING GREENMUSHROOM BLOCK
+                    if (inAir && airSpeed < 0 &&
+                            (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(117) || levelManager.sprites.get(tileNum4) == levelManager.sprites.get(117))) {
+                        if (levelManager.sprites.get(tileNum1) == levelManager.sprites.get(117)) {
+                            lvl[entityTopRow][entityRightCol] = 152;
+                            GreenMushroomList.add(new GreenMushroom(entityRightCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, GREEN_MUSHROOM));
+                        }
+                        else if (levelManager.sprites.get(tileNum4) == levelManager.sprites.get(117)) {
+                            lvl[entityTopRow][entityLeftCol] = 152;
+                            GreenMushroomList.add(new GreenMushroom(entityLeftCol * Game.TILES_SIZE + 3, (entityTopRow) * Game.TILES_SIZE - 5, GREEN_MUSHROOM));
                         }
                         audioPlayer.playEffect(AudioPlayer.APPEAR);
                         collision = true;

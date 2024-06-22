@@ -48,10 +48,11 @@ public class Constants {
         public static final int FIRE_BALL = 6;
         public static final int WARPPIPE = 7;
         public static final int FINISH_BAR = 8;
+        public static final int GREEN_MUSHROOM = 9;
 
         public static int getSpriteAmount(int object_type) {
             return switch (object_type) {
-                case MUSHROOM, WARPPIPE -> 0;
+                case MUSHROOM, WARPPIPE, GREEN_MUSHROOM -> 0;
                 case PRIZE_BLOCK, COIN -> 3;
                 case FIRE_FLOWER, FIRE_BALL -> 4;
                 case COIN_BRICK -> 9;

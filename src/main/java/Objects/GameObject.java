@@ -80,21 +80,43 @@ public abstract class GameObject {
 
     public void drawScoreAdded(float x, float y, int score, Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(new Color(15, 30, 60));
+        g2.setStroke(new BasicStroke(3.5f));
 
         GlyphVector glyphVectorScore = Game.smallerFont.createGlyphVector(g2.getFontRenderContext(), String.valueOf(score));
         Shape scoreShape = glyphVectorScore.getOutline();
 
+        g2.setColor(new Color(15, 30, 60));
         g2.translate(x + 1, y);
-        g2.setStroke(new BasicStroke(3.5f));
         g2.draw(scoreShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(scoreShape);
         g2.translate(-(x + 1), -y);
 
-        g.setFont(Game.smallerFont);
-        g.setColor(Color.WHITE);
         if (collected) {
             collectedCounter++;
-            g.drawString(String.valueOf(score), (int) x, (int) y);
+            if (collectedCounter >= 60) {
+                collected = false;
+                collectedCounter = 0;
+            }
+        }
+    }
+
+    public void drawString(float x, float y, String text, Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setStroke(new BasicStroke(3.5f));
+
+        GlyphVector glyphVectorString = Game.smallerFont.createGlyphVector(g2.getFontRenderContext(), text);
+        Shape stringShape = glyphVectorString.getOutline();
+
+        g2.setColor(new Color(15, 30, 60));
+        g2.translate(x + 1, y);
+        g2.draw(stringShape);
+        g2.setColor(Color.WHITE);
+        g2.fill(stringShape);
+        g2.translate(-(x + 1), -y);
+
+        if (collected) {
+            collectedCounter++;
             if (collectedCounter >= 60) {
                 collected = false;
                 collectedCounter = 0;

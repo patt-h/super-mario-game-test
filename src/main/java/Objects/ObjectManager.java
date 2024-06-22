@@ -19,6 +19,7 @@ import static Objects.FinishBar.FinishBarList;
 import static Objects.FireFlower.FireFlowerList;
 import static Objects.Fireball.FireballList;
 import static Objects.Mushroom.MushroomList;
+import static Objects.GreenMushroom.GreenMushroomList;
 import static Objects.WarpPipe.WarpPipesMap;
 import static Objects.WarpPipe.WorldWarpPipesMap;
 import static Utilities.Constants.Directions.LEFT;
@@ -38,6 +39,7 @@ public class ObjectManager {
     public Map<WarpPipe, WarpPipe> warppipes = new HashMap<>();
     public Map<WarpPipe, String> worldpipes = new HashMap<>();
     public ArrayList<FinishBar> finishBar = new ArrayList<>();
+    public ArrayList<GreenMushroom> greenMushrooms = new ArrayList<>();
 
     public ObjectManager(Player player) {
         this.player = player;
@@ -53,6 +55,7 @@ public class ObjectManager {
         warppipes = WarpPipe.getWarpPipes();
         worldpipes = WarpPipe.getWorldPipes();
         finishBar = FinishBar.getFinishBarList();
+        greenMushrooms = GreenMushroom.getGreenMushrooms();
     }
 
     public void checkTouched() {
@@ -88,6 +91,18 @@ public class ObjectManager {
                     m.setCollected(true);
                     player.getAudioPlayer().playEffect(AudioPlayer.POWER_UP);
                     player.score += getScoreAmount(MUSHROOM);
+                }
+            }
+        }
+        for (GreenMushroom gm : greenMushrooms) {
+            if (gm.isActive()) {
+                gm.update();
+                if (player.hitbox.intersects(gm.hitbox.x, gm.hitbox.y, (int) gm.hitbox.width, (int) gm.hitbox.height)) {
+                    gm.setActive(false);
+                    gm.setCollected(true);
+                    // TODO: CHANGE IT TO 1UP SOUND
+                    player.getAudioPlayer().playEffect(AudioPlayer.POWER_UP);
+                    player.lives++;
                 }
             }
         }
@@ -174,6 +189,7 @@ public class ObjectManager {
         drawCoins(g, xLvlOffset);
         drawWarpPipes(g, xLvlOffset);
         drawFinishBar(g, xLvlOffset);
+        drawGreenMushrooms(g, xLvlOffset);
     }
 
     public void drawCoins(Graphics g, int xLvlOffset) {
@@ -202,6 +218,17 @@ public class ObjectManager {
             }
             if (m.isCollected()) {
                 m.drawScoreAdded(m.x - xLvlOffset, m.y, getScoreAmount(MUSHROOM), g);
+            }
+        }
+    }
+
+    public void drawGreenMushrooms(Graphics g, int xLvlOffset) {
+        for (GreenMushroom gm : greenMushrooms) {
+            if (gm.isActive() && gm.x - xLvlOffset < Game.GAME_WIDTH && gm.x - xLvlOffset + gm.getWidth() > 0) {
+                g.drawImage(animations[0][1], (int)gm.x - xLvlOffset - 3, (int)gm.y+2, gm.getWidth(), gm.getHeight(), null);
+            }
+            if (gm.isCollected()) {
+                gm.drawString(gm.x - xLvlOffset, gm.y, "1UP", g);
             }
         }
     }
@@ -285,5 +312,6 @@ public class ObjectManager {
         WarpPipesMap.clear();
         WorldWarpPipesMap.clear();
         FinishBarList.clear();
+        GreenMushroomList.clear();
     }
 }

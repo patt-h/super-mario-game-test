@@ -42,9 +42,9 @@ public class Goomba extends Enemy {
 
         if (!stepped) {
             if (direction == RIGHT) {
-                x += 1;
+                x += 0.75;
             } else {
-                x -= 1;
+                x -= 0.75;
             }
         }
         if (fireballed) {

@@ -98,7 +98,7 @@ public class Playing {
             for (int j = 0; j < lvl[i].length; j++) {
                 int id = lvl[i][j];
                 if (j * 48 - LvlOffset < Game.GAME_WIDTH && j * 48 - LvlOffset + Game.TILES_SIZE > 0) {
-                    if (levelManager.sprites.get(id) == levelManager.sprites.get(115)
+                    if (levelManager.sprites.get(id) == levelManager.sprites.get(115) || levelManager.sprites.get(id) == levelManager.sprites.get(117)
                             || levelManager.sprites.get(id) == levelManager.sprites.get(114)) {
                         g.drawImage(animations[accurateAnimationRow][animationIndex], j * 48 - LvlOffset, i * 48, 48, 48, null);
                     } else if (levelManager.sprites.get(id) == levelManager.sprites.get(191)) {
